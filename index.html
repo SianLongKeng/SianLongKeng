@@ -247,7 +247,15 @@
   }
   .choice.selected{border-color:var(--accent);background:var(--accent-wash);}
   .choice.selected .letter{background:var(--accent);color:var(--accent-contrast);border-color:var(--accent);}
+  .choice:disabled{opacity:0.6;cursor:not-allowed;}
+  .choice.reveal-correct{border-color:var(--good);background:var(--good-wash);}
+  .choice.reveal-correct .letter{background:var(--good);color:#fff;border-color:var(--good);}
   .mission-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;}
+  .mission-complete{padding:40px 32px;text-align:center;}
+  .mission-complete h3{font-size:1.4rem;margin-bottom:16px;}
+  .mission-complete-score{font-size:2.6rem;font-weight:600;margin-bottom:14px;}
+  .mission-complete p{color:var(--ink-soft);font-size:0.9rem;margin-bottom:24px;max-width:40ch;margin-left:auto;margin-right:auto;}
+  .mission-complete .mission-actions{justify-content:center;}
   .feedback{margin-top:18px;padding:14px 16px;border-radius:var(--radius-md);font-size:0.88rem;display:none;}
   .feedback.show{display:block;animation:fade .3s ease both;}
   .feedback.ok{background:var(--good-wash);color:var(--ink);border:1px solid var(--good);}
@@ -267,8 +275,32 @@
   .bubble.student .who{color:rgba(255,255,255,0.7);}
   @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bubble.student .who{color:rgba(0,0,0,0.55);}}
   :root[data-theme="dark"] .bubble.student .who{color:rgba(0,0,0,0.55);}
-  .reflect-prompt{margin:26px 26px 0;padding:16px 18px;border-radius:var(--radius-md);background:var(--accent-wash);border:1px solid var(--border);font-size:0.88rem;}
+  .chat{max-height:420px;overflow-y:auto;}
+  .reflect-prompt{
+    margin:18px 26px 0;padding:16px 18px;border-radius:var(--radius-md);background:var(--accent-wash);border:1px solid var(--border);font-size:0.88rem;
+    opacity:0;transform:translateY(6px);transition:opacity .4s ease, transform .4s ease;pointer-events:none;max-height:0;overflow:hidden;
+  }
+  .reflect-prompt.show{opacity:1;transform:none;pointer-events:auto;max-height:200px;margin-top:18px;}
   .reflect-prompt b{color:var(--accent-strong);}
+  .coach-quick{display:flex;gap:8px;flex-wrap:wrap;padding:16px 26px 0;}
+  .quick-chip{
+    appearance:none;font-size:0.78rem;border:1px solid var(--border-strong);background:var(--surface-2);border-radius:999px;
+    padding:7px 13px;cursor:pointer;color:var(--ink-soft);font-family:inherit;
+  }
+  .quick-chip:hover{border-color:var(--accent-strong);color:var(--ink);}
+  .quick-chip:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px;}
+  .coach-input-row{display:flex;gap:10px;padding:16px 26px 26px;}
+  .coach-input{
+    flex:1;border:1px solid var(--border-strong);background:var(--surface-2);border-radius:999px;
+    padding:11px 18px;font-size:0.9rem;color:var(--ink);font-family:inherit;
+  }
+  .coach-input:focus{outline:2px solid var(--accent-strong);outline-offset:1px;border-color:var(--accent);}
+  .coach-send{flex-shrink:0;}
+  .bubble.typing{display:inline-flex;gap:5px;align-items:center;padding:15px 17px;}
+  .typing-dot{width:6px;height:6px;border-radius:50%;background:var(--ink-muted);animation:typingBounce 1.2s infinite ease-in-out;}
+  .typing-dot:nth-child(2){animation-delay:0.15s;}
+  .typing-dot:nth-child(3){animation-delay:0.3s;}
+  @keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:0.4;}30%{transform:translateY(-4px);opacity:1;}}
 
   /* ---------- diagnosis / killer demo ---------- */
   .killer-banner{
@@ -424,13 +456,6 @@
   .kpi-bar-fill{height:100%;background:var(--accent);}
   .kpi-target{font-size:0.7rem;color:var(--ink-muted);margin-top:6px;font-family:"IBM Plex Mono",monospace;}
 
-  .roadmap{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);}
-  .rm-row{display:grid;grid-template-columns:140px 110px 1fr;gap:16px;padding:16px 20px;align-items:center;}
-  .rm-row + .rm-row{border-top:1px solid var(--border);}
-  .rm-phase{font-weight:600;font-size:0.88rem;}
-  .rm-when{font-family:"IBM Plex Mono",monospace;font-size:0.76rem;color:var(--ink-muted);}
-  .rm-goal{font-size:0.84rem;color:var(--ink-soft);}
-
   .footer-tag{margin-top:60px;padding-top:22px;border-top:1px solid var(--border);font-size:0.76rem;color:var(--ink-muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
 </style>
 </head>
@@ -514,23 +539,28 @@
       <span class="step-pill" data-step="3">Improve</span>
     </div>
     <div class="mission-layout">
-      <div class="card mission-card">
+      <div class="card mission-card" id="mission-card">
         <div class="mission-title">มิชชันที่ 3 · สวนสาธารณะชุมชน</div>
         <p class="mission-scenario">เทศบาลให้งบประมาณ 50,000 บาท เพื่อสร้างสวนสาธารณะขนาด 200 ตร.ม. โดยกำหนดให้ 60% ของพื้นที่ทั้งหมดใช้ปูหญ้า ส่วนที่เหลือเป็นทางเดินและสนามเด็กเล่น</p>
-        <span class="progress-label mono">ข้อที่ 7 / 10</span>
-        <div class="progress-track"><div class="progress-fill" style="width:70%"></div></div>
-        <p class="question-text">พื้นที่ที่ต้องปูหญ้าคิดเป็นกี่ตารางเมตร?</p>
-        <div class="choices" id="mission-choices">
-          <button class="choice" data-correct="false"><span class="letter">A</span> 80 ตร.ม.</button>
-          <button class="choice" data-correct="true"><span class="letter">B</span> 120 ตร.ม.</button>
-          <button class="choice" data-correct="false"><span class="letter">C</span> 140 ตร.ม.</button>
-          <button class="choice" data-correct="false"><span class="letter">D</span> 160 ตร.ม.</button>
-        </div>
+        <span class="progress-label mono" id="mission-progress-label">ข้อที่ 1 / 5</span>
+        <div class="progress-track"><div class="progress-fill" id="mission-progress-fill" style="width:0%"></div></div>
+        <p class="question-text" id="mission-question-text"></p>
+        <div class="choices" id="mission-choices"></div>
         <div class="mission-actions">
           <button class="btn btn-primary" id="mission-submit">ส่งคำตอบ</button>
+          <button class="btn btn-primary" id="mission-next" style="display:none;">ข้อถัดไป →</button>
           <button class="btn btn-ghost" data-goto="coach">ขอ Hint จาก AI Coach</button>
         </div>
         <div class="feedback" id="mission-feedback"></div>
+      </div>
+      <div class="card mission-complete" id="mission-complete" style="display:none;">
+        <h3>ภารกิจเสร็จสิ้น!</h3>
+        <div class="mission-complete-score mono" id="mission-complete-score">0 / 5</div>
+        <p id="mission-complete-msg"></p>
+        <div class="mission-actions">
+          <button class="btn btn-primary" data-goto="diagnosis">ดู Learning DNA ของคุณ →</button>
+          <button class="btn btn-ghost" id="mission-restart">ทำภารกิจใหม่</button>
+        </div>
       </div>
       <div class="card side-note">
         <h3>EduTwin กำลังสังเกตอะไรอยู่</h3>
@@ -550,18 +580,20 @@
     <div class="section-head">
       <span class="eyebrow">AI Learning Coach</span>
       <h2>Socratic Questioning — ไม่เฉลย ช่วยให้คิดเอง</h2>
-      <p class="lede">แทนที่จะให้คำตอบทันที AI Coach จะถามนำ ให้ตัวอย่าง และชวนสะท้อนคิด ระหว่างที่นักเรียนติดอยู่กับโจทย์เดิม</p>
+      <p class="lede">แทนที่จะให้คำตอบทันที AI Coach จะถามนำ ให้ตัวอย่าง และชวนสะท้อนคิด — ลองพิมพ์คุยกับ AI Coach ได้เลย เหมือนแชทจริง</p>
     </div>
     <div class="coach-layout card">
-      <div class="chat">
-        <div class="bubble student"><span class="who">นักเรียน</span>หนูไม่รู้จะเริ่มตรงไหนค่ะ 😣</div>
-        <div class="bubble ai"><span class="who">AI Coach</span>ไม่เป็นไรค่ะ ลองเริ่มจากสิ่งที่รู้ก่อน — พื้นที่สวนทั้งหมดมีกี่ตารางเมตร?</div>
-        <div class="bubble student"><span class="who">นักเรียน</span>200 ตร.ม. ค่ะ</div>
-        <div class="bubble ai"><span class="who">AI Coach</span>ดีมาก แล้วโจทย์บอกว่าใช้ปูหญ้ากี่เปอร์เซ็นต์ของพื้นที่ทั้งหมด? ลองเขียนเป็นสมการดูสิคะ</div>
-        <div class="bubble student"><span class="who">นักเรียน</span>60% ค่ะ... งั้นก็ 200 × 0.6 ใช่ไหมคะ</div>
-        <div class="bubble ai"><span class="who">AI Coach</span>ลองคำนวณดูเลยค่ะ แล้วบอกหนูว่าได้เท่าไหร่ — เทียบกับตัวเลือกที่มีให้ ตรงกับข้อไหน?</div>
+      <div class="chat" id="coach-chat"></div>
+      <div class="reflect-prompt" id="reflect-prompt"><b>Reflection Prompt:</b> อะไรทำให้ตอนแรกหนูไม่มั่นใจว่าจะเริ่มตรงไหน?</div>
+      <div class="coach-quick" id="coach-quick">
+        <button class="quick-chip" type="button">หนูไม่รู้จะเริ่มตรงไหนค่ะ</button>
+        <button class="quick-chip" type="button">200 ตร.ม. ค่ะ</button>
+        <button class="quick-chip" type="button">60% ค่ะ</button>
       </div>
-      <div class="reflect-prompt"><b>Reflection Prompt:</b> อะไรทำให้ตอนแรกหนูไม่มั่นใจว่าจะเริ่มตรงไหน?</div>
+      <div class="coach-input-row">
+        <input type="text" id="coach-input" class="coach-input" placeholder="พิมพ์ข้อความถึง AI Coach…" autocomplete="off">
+        <button class="btn btn-primary coach-send" id="coach-send">ส่ง</button>
+      </div>
     </div>
   </section>
 
@@ -661,17 +693,6 @@
     </div>
     <div id="kpi-groups"></div>
 
-    <div class="section-head">
-      <span class="eyebrow">Implementation Roadmap</span>
-      <h2>แผนดำเนินงาน 12 เดือน</h2>
-    </div>
-    <div class="roadmap">
-      <div class="rm-row"><div class="rm-phase">Phase 1 — Prototype</div><div class="rm-when mono">เดือน 1</div><div class="rm-goal">Student App, Mission, Learning DNA, Mistake DNA — Prototype End-to-End</div></div>
-      <div class="rm-row"><div class="rm-phase">Phase 2 — Pilot</div><div class="rm-when mono">เดือน 2–3</div><div class="rm-goal">ทดลองกับ 1 โรงเรียน 1–2 ห้องเรียน 1 วิชา และเก็บ Feedback</div></div>
-      <div class="rm-row"><div class="rm-phase">Phase 3 — Improve</div><div class="rm-when mono">เดือน 4–6</div><div class="rm-goal">Teacher Copilot, Adaptive Mission, Learning Analytics</div></div>
-      <div class="rm-row"><div class="rm-phase">Phase 4 — Scale</div><div class="rm-when mono">เดือน 7–12</div><div class="rm-goal">ขยายหลายวิชา หลายระดับชั้น และหลายโรงเรียน</div></div>
-    </div>
-
     <div class="footer-tag">
       <span>EduTwin — From Scores to Learning DNA.</span>
       <span>MINDMESH · Hackathon 2026 Prototype</span>
@@ -704,15 +725,24 @@
     el.addEventListener("click", function(){ goto(el.dataset.goto); });
   });
 
-  /* ---------------- mission interaction ---------------- */
-  var choices = document.querySelectorAll("#mission-choices .choice");
-  choices.forEach(function(c){
-    c.addEventListener("click", function(){
-      choices.forEach(function(x){ x.classList.remove("selected"); });
-      c.classList.add("selected");
-    });
-  });
+  /* ---------------- mission interaction (real one-at-a-time flow) ---------------- */
+  var MISSION_QUESTIONS = [
+    { q:"พื้นที่ที่ต้องปูหญ้า (60% ของพื้นที่ทั้งหมด) คิดเป็นกี่ตารางเมตร?",
+      choices:[{t:"80 ตร.ม.",c:false},{t:"120 ตร.ม.",c:true},{t:"140 ตร.ม.",c:false},{t:"160 ตร.ม.",c:false}] },
+    { q:"พื้นที่ที่เหลือสำหรับทางเดินและสนามเด็กเล่นมีกี่ตารางเมตร?",
+      choices:[{t:"60 ตร.ม.",c:false},{t:"70 ตร.ม.",c:false},{t:"80 ตร.ม.",c:true},{t:"90 ตร.ม.",c:false}] },
+    { q:"ถ้าทางเดินใช้พื้นที่ 30 ตร.ม. สนามเด็กเล่นจะเหลือพื้นที่กี่ตารางเมตร?",
+      choices:[{t:"40 ตร.ม.",c:false},{t:"50 ตร.ม.",c:true},{t:"55 ตร.ม.",c:false},{t:"60 ตร.ม.",c:false}] },
+    { q:"งบประมาณสำหรับปูหญ้าคือ 40% ของงบทั้งหมด 50,000 บาท เป็นเงินเท่าไหร่?",
+      choices:[{t:"15,000 บาท",c:false},{t:"18,000 บาท",c:false},{t:"20,000 บาท",c:true},{t:"25,000 บาท",c:false}] },
+    { q:"งบประมาณที่เหลือสำหรับทางเดินและสนามเด็กเล่นเป็นเงินเท่าไหร่?",
+      choices:[{t:"25,000 บาท",c:false},{t:"28,000 บาท",c:false},{t:"30,000 บาท",c:true},{t:"32,000 บาท",c:false}] }
+  ];
+  var missionIndex = 0;
+  var missionScore = 0;
   var missionAttempts = 0;
+  var LETTERS = ["A","B","C","D"];
+
   function setMissionStep(idx){
     document.querySelectorAll("#mission-stepper .step-pill").forEach(function(p){
       var i = Number(p.dataset.step);
@@ -720,8 +750,65 @@
       p.classList.toggle("on", i === idx);
     });
   }
+
+  function bindChoiceClick(btn, choicesEl){
+    btn.addEventListener("click", function(){
+      if(btn.disabled) return;
+      choicesEl.querySelectorAll(".choice").forEach(function(x){ x.classList.remove("selected"); });
+      btn.classList.add("selected");
+    });
+  }
+
+  function renderMissionQuestion(){
+    var q = MISSION_QUESTIONS[missionIndex];
+    document.getElementById("mission-progress-label").textContent = "ข้อที่ " + (missionIndex + 1) + " / " + MISSION_QUESTIONS.length;
+    document.getElementById("mission-progress-fill").style.width = Math.round((missionIndex / MISSION_QUESTIONS.length) * 100) + "%";
+    document.getElementById("mission-question-text").textContent = q.q;
+    var choicesEl = document.getElementById("mission-choices");
+    choicesEl.innerHTML = "";
+    q.choices.forEach(function(ch, i){
+      var btn = document.createElement("button");
+      btn.className = "choice";
+      btn.dataset.correct = ch.c ? "true" : "false";
+      btn.innerHTML = '<span class="letter">' + LETTERS[i] + '</span> ' + ch.t;
+      bindChoiceClick(btn, choicesEl);
+      choicesEl.appendChild(btn);
+    });
+    missionAttempts = 0;
+    setMissionStep(0);
+    var fb = document.getElementById("mission-feedback");
+    fb.className = "feedback";
+    fb.textContent = "";
+    document.getElementById("mission-submit").style.display = "";
+    document.getElementById("mission-next").style.display = "none";
+  }
+
+  function lockMissionChoices(){
+    document.querySelectorAll("#mission-choices .choice").forEach(function(b){ b.disabled = true; });
+  }
+
+  function showMissionNext(isLast){
+    document.getElementById("mission-submit").style.display = "none";
+    var nextBtn = document.getElementById("mission-next");
+    nextBtn.style.display = "";
+    nextBtn.textContent = isLast ? "ดูสรุปผล →" : "ข้อถัดไป →";
+  }
+
+  function showMissionComplete(){
+    document.getElementById("mission-card").style.display = "none";
+    document.getElementById("mission-complete").style.display = "block";
+    document.getElementById("mission-complete-score").textContent = missionScore + " / " + MISSION_QUESTIONS.length;
+    var msg = missionScore >= 4
+      ? "เก่งมาก! หนูเข้าใจเรื่องนี้ดีมากเลย"
+      : missionScore >= 2
+      ? "ทำได้ดี แต่ลองทบทวนอีกนิดกับ AI Coach นะ"
+      : "ไม่เป็นไร ลองทบทวน Concept กับ AI Coach ก่อนแล้วค่อยลองใหม่";
+    document.getElementById("mission-complete-msg").textContent = msg;
+  }
+
   document.getElementById("mission-submit").addEventListener("click", function(){
-    var selected = document.querySelector("#mission-choices .choice.selected");
+    var choicesEl = document.getElementById("mission-choices");
+    var selected = choicesEl.querySelector(".choice.selected");
     var fb = document.getElementById("mission-feedback");
     if(!selected){
       fb.className = "feedback show no";
@@ -730,18 +817,124 @@
     }
     var correct = selected.dataset.correct === "true";
     missionAttempts++;
+    var isLast = missionIndex === MISSION_QUESTIONS.length - 1;
     fb.className = "feedback show " + (correct ? "ok" : "no");
     if(correct){
+      missionScore++;
       setMissionStep(3);
-      fb.textContent = "ถูกต้อง! บันทึกวิธีคิดของหนูไว้ใน Learning DNA แล้ว — ไปข้อถัดไปกันเลย";
+      fb.textContent = "ถูกต้อง! บันทึกวิธีคิดของหนูไว้ใน Learning DNA แล้ว" + (isLast ? " — ทำครบทุกข้อแล้ว" : " — ไปข้อถัดไปกันเลย");
+      lockMissionChoices();
+      showMissionNext(isLast);
     } else if(missionAttempts === 1){
       setMissionStep(1);
-      fb.textContent = "ยังไม่ถูกค่ะ — EduTwin บันทึกไว้แล้วว่าข้อนี้พลาดตรงไหน ลองใช้ AI Coach ช่วยไล่ทีละขั้นตอนดูไหมคะ?";
+      fb.textContent = "ยังไม่ถูกค่ะ — EduTwin บันทึกไว้แล้วว่าข้อนี้พลาดตรงไหน ลองใช้ AI Coach ช่วยไล่ทีละขั้นตอน หรือลองใหม่อีกครั้งได้เลย";
     } else {
       setMissionStep(2);
-      fb.textContent = "ลองอีกครั้งก็ยังไม่ตรงค่ะ — ก่อนลองใหม่ ลองสะท้อนคิดดูว่าติดตรงไหน แล้วค่อยกลับมาตอบอีกครั้ง";
+      fb.textContent = "ลองอีกครั้งก็ยังไม่ตรงค่ะ — ไม่เป็นไร ไปข้อถัดไปก่อน แล้วค่อยกลับมาสะท้อนคิดทีหลัง";
+      var correctBtn = choicesEl.querySelector('.choice[data-correct="true"]');
+      if(correctBtn) correctBtn.classList.add("reveal-correct");
+      lockMissionChoices();
+      showMissionNext(isLast);
     }
   });
+
+  document.getElementById("mission-next").addEventListener("click", function(){
+    missionIndex++;
+    if(missionIndex < MISSION_QUESTIONS.length){
+      renderMissionQuestion();
+    } else {
+      showMissionComplete();
+    }
+  });
+
+  document.getElementById("mission-restart").addEventListener("click", function(){
+    missionIndex = 0;
+    missionScore = 0;
+    document.getElementById("mission-complete").style.display = "none";
+    document.getElementById("mission-card").style.display = "";
+    renderMissionQuestion();
+  });
+
+  renderMissionQuestion();
+
+  /* ---------------- AI coach (live chat) ---------------- */
+  var COACH_SCRIPT = [
+    "ลองเริ่มจากสิ่งที่รู้ก่อนนะคะ — พื้นที่สวนทั้งหมดมีกี่ตารางเมตร?",
+    "ดีมาก แล้วโจทย์บอกว่าใช้ปูหญ้ากี่เปอร์เซ็นต์ของพื้นที่ทั้งหมด? ลองเขียนเป็นสมการดูสิคะ",
+    "เกือบแล้วค่ะ ลองคำนวณ 200 × 0.6 ดูอีกครั้ง แล้วเทียบกับตัวเลือกที่มีให้ว่าตรงข้อไหน",
+    "เยี่ยมมาก! พอได้คำตอบแล้ว ลองกลับไปกดเลือกในหน้า Mission ได้เลยค่ะ"
+  ];
+  var coachChat = document.getElementById("coach-chat");
+  var coachStep = 0;
+  var coachBusy = false;
+
+  function coachScrollToBottom(){
+    coachChat.scrollTop = coachChat.scrollHeight;
+  }
+
+  function appendCoachBubble(who, text){
+    var div = document.createElement("div");
+    div.className = "bubble " + who;
+    var whoLabel = who === "student" ? "นักเรียน" : "AI Coach";
+    div.innerHTML = '<span class="who">' + whoLabel + '</span>';
+    div.appendChild(document.createTextNode(text));
+    coachChat.appendChild(div);
+    coachScrollToBottom();
+    return div;
+  }
+
+  function showCoachTyping(){
+    var div = document.createElement("div");
+    div.className = "bubble ai typing";
+    div.id = "coach-typing";
+    div.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+    coachChat.appendChild(div);
+    coachScrollToBottom();
+  }
+
+  function hideCoachTyping(){
+    var t = document.getElementById("coach-typing");
+    if(t) t.remove();
+  }
+
+  function sendCoachMessage(text){
+    text = (text || "").trim();
+    if(!text || coachBusy) return;
+    appendCoachBubble("student", text);
+    document.getElementById("coach-input").value = "";
+    coachBusy = true;
+    showCoachTyping();
+    setTimeout(function(){
+      hideCoachTyping();
+      if(coachStep < COACH_SCRIPT.length){
+        appendCoachBubble("ai", COACH_SCRIPT[coachStep]);
+        coachStep++;
+        if(coachStep === COACH_SCRIPT.length){
+          setTimeout(function(){
+            document.getElementById("reflect-prompt").classList.add("show");
+          }, 500);
+        }
+      } else {
+        appendCoachBubble("ai", "เยี่ยมมากค่ะ ลองกลับไปทำภารกิจต่อได้เลยนะคะ 🙌");
+      }
+      coachBusy = false;
+    }, 700 + Math.random() * 500);
+  }
+
+  document.getElementById("coach-send").addEventListener("click", function(){
+    sendCoachMessage(document.getElementById("coach-input").value);
+  });
+  document.getElementById("coach-input").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      sendCoachMessage(this.value);
+    }
+  });
+  document.querySelectorAll("#coach-quick .quick-chip").forEach(function(chip){
+    chip.addEventListener("click", function(){ sendCoachMessage(chip.textContent); });
+  });
+
+  appendCoachBubble("ai", "สวัสดีค่ะ ติดตรงไหนบอกครูได้เลยนะคะ 😊 พิมพ์เล่าให้ฟังหน่อยว่าหนูคิดถึงไหนแล้ว");
 
   /* ---------------- mistake categories (shared) ---------------- */
   var MISTAKE_TYPES = [
