@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EduTwin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#f5f6f2;
+    --surface:#ffffff;
+    --surface-2:#fbfbf8;
+    --ink:#14171a;
+    --ink-soft:#565b57;
+    --ink-muted:#8b9088;
+    --border:rgba(20,23,26,0.10);
+    --border-strong:rgba(20,23,26,0.16);
+    --accent:#23265b;
+    --accent-strong:#4b3fa0;
+    --accent-contrast:#ffffff;
+    --accent-wash:rgba(35,38,91,0.07);
+    --good:#0ca30c;
+    --good-wash:rgba(12,163,12,0.12);
+    --warning:#fab219;
+    --warning-wash:rgba(250,178,25,0.16);
+    --serious:#ec835a;
+    --serious-wash:rgba(236,131,90,0.14);
+    --critical:#d03b3b;
+    --cat-1:#2a78d6;
+    --cat-2:#eb6834;
+    --cat-3:#1baf7a;
+    --cat-4:#eda100;
+    --cat-5:#e87ba4;
+    --cat-6:#008300;
+    --grid:#e1e0d9;
+    --axis:#c3c2b7;
+    --shadow: 0 1px 2px rgba(20,23,26,0.04), 0 8px 24px -12px rgba(20,23,26,0.16);
+    --radius-sm:6px;
+    --radius-md:12px;
+    --radius-lg:20px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --paper:#0d0e0c;
+      --surface:#17181a;
+      --surface-2:#1d1f20;
+      --ink:#f5f5f2;
+      --ink-soft:#c3c2b7;
+      --ink-muted:#898781;
+      --border:rgba(255,255,255,0.10);
+      --border-strong:rgba(255,255,255,0.18);
+      --accent:#9c93e8;
+      --accent-strong:#b6aeef;
+      --accent-contrast:#14121f;
+      --accent-wash:rgba(156,147,232,0.14);
+      --good:#0ca30c;
+      --good-wash:rgba(12,163,12,0.18);
+      --warning:#fab219;
+      --warning-wash:rgba(250,178,25,0.16);
+      --serious:#ec835a;
+      --serious-wash:rgba(236,131,90,0.18);
+      --critical:#e66767;
+      --cat-1:#3987e5;
+      --cat-2:#d95926;
+      --cat-3:#199e70;
+      --cat-4:#c98500;
+      --cat-5:#d55181;
+      --cat-6:#3ec93e;
+      --grid:#2c2c2a;
+      --axis:#383835;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -14px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0d0e0c;
+    --surface:#17181a;
+    --surface-2:#1d1f20;
+    --ink:#f5f5f2;
+    --ink-soft:#c3c2b7;
+    --ink-muted:#898781;
+    --border:rgba(255,255,255,0.10);
+    --border-strong:rgba(255,255,255,0.18);
+    --accent:#9c93e8;
+    --accent-strong:#b6aeef;
+    --accent-contrast:#14121f;
+    --accent-wash:rgba(156,147,232,0.14);
+    --good:#0ca30c;
+    --good-wash:rgba(12,163,12,0.18);
+    --warning:#fab219;
+    --warning-wash:rgba(250,178,25,0.16);
+    --serious:#ec835a;
+    --serious-wash:rgba(236,131,90,0.18);
+    --critical:#e66767;
+    --cat-1:#3987e5;
+    --cat-2:#d95926;
+    --cat-3:#199e70;
+    --cat-4:#c98500;
+    --cat-5:#d55181;
+    --cat-6:#3ec93e;
+    --grid:#2c2c2a;
+    --axis:#383835;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -14px rgba(0,0,0,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+  }
+  h1,h2,h3{
+    font-family:"Fraunces", Georgia, "Times New Roman", serif;
+    font-weight:640;
+    letter-spacing:-0.01em;
+    text-wrap:balance;
+    margin:0;
+    color:var(--ink);
+  }
+  p{margin:0;}
+  button{font-family:inherit;}
+  .mono{font-family:"IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;}
+  .num{font-variant-numeric:tabular-nums;}
+  a{color:var(--accent);}
+  ::selection{background:var(--accent-wash);}
+
+  /* ---------- app shell ---------- */
+  .app{max-width:1180px;margin:0 auto;padding:0 24px 80px;}
+  .topbar{
+    position:sticky;top:0;z-index:40;
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .topbar-inner{
+    max-width:1180px;margin:0 auto;padding:14px 24px;
+    display:flex;align-items:center;gap:28px;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:baseline;gap:8px;flex-shrink:0;}
+  .brand-mark{
+    font-family:"Fraunces", serif;font-weight:640;font-size:1.15rem;letter-spacing:-0.01em;color:var(--ink);
+  }
+  .brand-tag{font-size:0.68rem;color:var(--ink-muted);letter-spacing:0.06em;text-transform:uppercase;}
+  .tabs{display:flex;gap:2px;flex-wrap:wrap;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px;}
+  .tab{
+    appearance:none;border:none;background:transparent;color:var(--ink-soft);
+    font-size:0.83rem;font-weight:500;padding:8px 14px;border-radius:999px;cursor:pointer;
+    transition:background .15s ease, color .15s ease;white-space:nowrap;
+  }
+  .tab:hover{color:var(--ink);}
+  .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-contrast);}
+  .tab:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px;}
+
+  .screen{display:none;padding-top:40px;}
+  .screen.active{display:block;animation:fade .35s ease both;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion: reduce){
+    .screen.active{animation:none;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;font-size:0.72rem;letter-spacing:0.10em;text-transform:uppercase;
+    color:var(--accent-strong);font-weight:600;
+  }
+  .lede{color:var(--ink-soft);font-size:1.02rem;max-width:62ch;}
+
+  /* ---------- landing ---------- */
+  .hero{
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;
+    padding:20px 0 64px;
+  }
+  @media (max-width:820px){.hero{grid-template-columns:1fr;}}
+  .hero h1{font-size:clamp(2.1rem, 4.2vw, 3.4rem);line-height:1.06;margin:14px 0 18px;}
+  .hero .same-score{
+    font-family:"Fraunces", serif;font-style:italic;font-weight:500;color:var(--accent-strong);
+    font-size:1.15rem;margin-bottom:26px;display:block;
+  }
+  .cta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .btn{
+    appearance:none;border:1px solid transparent;border-radius:999px;cursor:pointer;
+    font-size:0.92rem;font-weight:600;padding:12px 22px;transition:transform .15s ease, opacity .15s ease;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--accent);color:var(--accent-contrast);}
+  .btn-primary:hover{opacity:0.92;}
+  .btn-ghost{background:transparent;border-color:var(--border-strong);color:var(--ink);}
+  .btn-ghost:hover{background:var(--surface-2);}
+  .btn:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px;}
+  .btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+  .helix-wrap{position:relative;aspect-ratio:1/1.05;max-width:360px;margin:0 auto;}
+  .flow-row{
+    display:flex;align-items:center;gap:10px;margin-top:36px;flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace;font-size:0.78rem;letter-spacing:0.04em;
+  }
+  .flow-step{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--ink-soft);}
+  .flow-arrow{color:var(--ink-muted);}
+
+  .value-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-top:8px;}
+  @media (max-width:720px){.value-grid{grid-template-columns:1fr;}}
+  .value-cell{background:var(--surface);padding:24px 22px;}
+  .value-cell h3{font-size:1.02rem;margin-bottom:8px;}
+  .value-cell p{color:var(--ink-soft);font-size:0.89rem;}
+  .value-num{font-family:"IBM Plex Mono",monospace;color:var(--ink-muted);font-size:0.75rem;margin-bottom:10px;display:block;}
+
+  /* ---------- generic sections ---------- */
+  .section-head{margin-bottom:22px;display:flex;flex-direction:column;gap:6px;}
+  .section-head h2{font-size:1.55rem;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);}
+  .stepper{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .step-pill{
+    font-family:"IBM Plex Mono",monospace;font-size:0.72rem;padding:5px 11px;border-radius:999px;
+    border:1px solid var(--border);color:var(--ink-muted);
+  }
+  .step-pill.on{border-color:var(--accent);color:var(--accent-strong);background:var(--accent-wash);font-weight:600;}
+  .step-pill.done{border-color:var(--good);color:var(--good);background:var(--good-wash);}
+  .step-pill.done::before{content:"✓ ";}
+
+  /* ---------- mission screen ---------- */
+  .mission-layout{display:grid;grid-template-columns:1.5fr 1fr;gap:22px;}
+  @media (max-width:900px){.mission-layout{grid-template-columns:1fr;}}
+  .mission-card{padding:28px;}
+  .mission-title{font-size:1.3rem;margin-bottom:10px;}
+  .mission-scenario{color:var(--ink-soft);font-size:0.94rem;margin-bottom:20px;padding-bottom:20px;border-bottom:1px dashed var(--border-strong);}
+  .progress-track{height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin-bottom:8px;border:1px solid var(--border);}
+  .progress-fill{height:100%;background:var(--accent);border-radius:999px;}
+  .progress-label{font-family:"IBM Plex Mono",monospace;font-size:0.72rem;color:var(--ink-muted);margin-bottom:22px;display:block;}
+  .question-text{font-size:1.06rem;font-weight:600;margin-bottom:16px;}
+  .choices{display:grid;gap:10px;}
+  .choice{
+    text-align:left;border:1px solid var(--border-strong);background:var(--surface-2);border-radius:var(--radius-md);
+    padding:13px 16px;cursor:pointer;font-size:0.92rem;color:var(--ink);display:flex;align-items:center;gap:10px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .choice:hover{border-color:var(--accent-strong);}
+  .choice .letter{
+    font-family:"IBM Plex Mono",monospace;font-size:0.75rem;width:22px;height:22px;border-radius:6px;
+    background:var(--surface);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .choice.selected{border-color:var(--accent);background:var(--accent-wash);}
+  .choice.selected .letter{background:var(--accent);color:var(--accent-contrast);border-color:var(--accent);}
+  .mission-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;}
+  .feedback{margin-top:18px;padding:14px 16px;border-radius:var(--radius-md);font-size:0.88rem;display:none;}
+  .feedback.show{display:block;animation:fade .3s ease both;}
+  .feedback.ok{background:var(--good-wash);color:var(--ink);border:1px solid var(--good);}
+  .feedback.no{background:var(--serious-wash);color:var(--ink);border:1px solid var(--serious);}
+  .side-note{padding:22px;font-size:0.87rem;color:var(--ink-soft);}
+  .side-note h3{font-size:0.95rem;margin-bottom:10px;color:var(--ink);}
+  .side-note ul{margin:0;padding-left:18px;}
+  .side-note li{margin-bottom:6px;}
+
+  /* ---------- coach screen ---------- */
+  .coach-layout{max-width:640px;margin:0 auto;}
+  .chat{display:flex;flex-direction:column;gap:14px;padding:26px;}
+  .bubble{max-width:80%;padding:12px 15px;border-radius:16px;font-size:0.92rem;line-height:1.5;}
+  .bubble.student{align-self:flex-end;background:var(--accent);color:var(--accent-contrast);border-bottom-right-radius:4px;}
+  .bubble.ai{align-self:flex-start;background:var(--surface-2);border:1px solid var(--border);border-bottom-left-radius:4px;}
+  .who{font-family:"IBM Plex Mono",monospace;font-size:0.66rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-muted);margin-bottom:4px;display:block;}
+  .bubble.student .who{color:rgba(255,255,255,0.7);}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bubble.student .who{color:rgba(0,0,0,0.55);}}
+  :root[data-theme="dark"] .bubble.student .who{color:rgba(0,0,0,0.55);}
+  .reflect-prompt{margin:26px 26px 0;padding:16px 18px;border-radius:var(--radius-md);background:var(--accent-wash);border:1px solid var(--border);font-size:0.88rem;}
+  .reflect-prompt b{color:var(--accent-strong);}
+
+  /* ---------- diagnosis / killer demo ---------- */
+  .killer-banner{
+    text-align:center;padding:34px 20px 30px;border-radius:var(--radius-lg);
+    background:var(--surface);border:1px solid var(--border);margin-bottom:28px;
+  }
+  .killer-banner .eyebrow{display:block;margin-bottom:10px;}
+  .killer-banner h2{font-size:1.7rem;margin-bottom:8px;}
+  .killer-banner p{color:var(--ink-soft);max-width:56ch;margin:0 auto;font-size:0.92rem;}
+
+  .score-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;}
+  @media (max-width:760px){.score-row{grid-template-columns:1fr;}}
+  .score-card{padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .score-id{display:flex;align-items:center;gap:12px;}
+  .avatar{
+    width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:0.85rem;color:#fff;flex-shrink:0;
+  }
+  .score-name{font-weight:600;font-size:0.98rem;}
+  .score-sub{font-size:0.78rem;color:var(--ink-muted);}
+  .score-num{font-family:"IBM Plex Mono",monospace;font-size:1.9rem;font-weight:600;}
+  .score-den{color:var(--ink-muted);font-size:1rem;}
+
+  .analyze-bar{display:flex;justify-content:center;margin-bottom:30px;}
+  .scan-status{font-family:"IBM Plex Mono",monospace;font-size:0.8rem;color:var(--ink-muted);margin-top:10px;text-align:center;display:none;}
+  .scan-status.show{display:block;}
+
+  .diag-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;opacity:0;transform:translateY(10px);transition:opacity .5s ease, transform .5s ease;pointer-events:none;}
+  .diag-grid.revealed{opacity:1;transform:none;pointer-events:auto;}
+  @media (max-width:900px){.diag-grid{grid-template-columns:1fr;}}
+  .diag-card{padding:24px;}
+  .diag-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .diag-card-head h3{font-size:1.05rem;}
+  .chip{
+    font-family:"IBM Plex Mono",monospace;font-size:0.68rem;font-weight:600;letter-spacing:0.03em;
+    padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;text-transform:uppercase;
+  }
+  .chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .chip.serious{background:var(--serious-wash);color:var(--serious);}
+  .chip.warning{background:var(--warning-wash);color:#8a5a00;}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.warning{color:var(--warning);}}
+  :root[data-theme="dark"] .chip.warning{color:var(--warning);}
+  .chip.good{background:var(--good-wash);color:var(--good);}
+
+  .radar-wrap{display:flex;justify-content:center;margin:14px 0 6px;}
+  .root-cause{font-size:0.86rem;color:var(--ink-soft);padding:12px 0;border-top:1px dashed var(--border-strong);margin-top:6px;}
+  .root-cause b{color:var(--ink);}
+  .mistake-bars{display:flex;flex-direction:column;gap:8px;margin:14px 0;}
+  .mbar-row{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:8px;font-size:0.78rem;}
+  .mbar-label{color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mbar-track{height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden;border:1px solid var(--border);}
+  .mbar-fill{height:100%;border-radius:999px;}
+  .mbar-pct{font-family:"IBM Plex Mono",monospace;text-align:right;color:var(--ink-muted);}
+  .intervention{
+    margin-top:14px;padding:14px 16px;border-radius:var(--radius-md);background:var(--surface-2);
+    border-left:3px solid var(--accent);font-size:0.86rem;
+  }
+  .intervention b{display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-strong);margin-bottom:6px;font-family:"IBM Plex Mono",monospace;}
+
+  .growth-card{padding:26px 28px;margin-top:22px;opacity:0;transform:translateY(10px);transition:opacity .5s ease .1s, transform .5s ease .1s;pointer-events:none;}
+  .growth-card.revealed{opacity:1;transform:none;pointer-events:auto;}
+  .growth-card-head{margin-bottom:6px;}
+  .growth-card-head h3{font-size:1.05rem;}
+  .growth-card-head p{color:var(--ink-soft);font-size:0.86rem;margin-top:4px;}
+  .growth-student{margin-top:24px;padding-top:22px;border-top:1px dashed var(--border-strong);}
+  .growth-student:first-of-type{border-top:none;margin-top:18px;padding-top:0;}
+  .growth-name-row{display:flex;align-items:center;gap:8px;margin-bottom:18px;}
+  .growth-name{font-weight:600;font-size:0.9rem;}
+  .growth-path{display:flex;justify-content:space-between;position:relative;padding-top:4px;}
+  .growth-path::before{content:"";position:absolute;top:9px;left:8%;right:8%;height:2px;background:var(--border-strong);z-index:0;}
+  .growth-node{position:relative;z-index:1;flex:1;text-align:center;padding:0 4px;}
+  .growth-dot{width:11px;height:11px;border-radius:50%;background:var(--surface);border:2px solid currentColor;margin:0 auto 9px;}
+  .growth-step-label{font-size:0.74rem;font-weight:600;color:var(--ink);line-height:1.3;}
+  .growth-step-time{font-size:0.66rem;color:var(--ink-muted);font-family:"IBM Plex Mono",monospace;margin-top:3px;}
+
+  .closing-line{
+    text-align:center;margin-top:34px;padding:30px 20px;border-radius:var(--radius-lg);
+    background:var(--accent);color:var(--accent-contrast);opacity:0;transform:translateY(8px);
+    transition:opacity .6s ease .2s, transform .6s ease .2s;
+  }
+  .closing-line.revealed{opacity:1;transform:none;}
+  .closing-line h2{color:inherit;font-size:1.4rem;font-style:italic;}
+  .closing-line span{display:block;font-family:"IBM Plex Mono",monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;opacity:0.75;margin-top:8px;}
+
+  .mistake-legend{display:flex;flex-wrap:wrap;gap:12px 18px;justify-content:center;margin:22px 0 0;padding-top:18px;border-top:1px solid var(--border);}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:0.76rem;color:var(--ink-soft);}
+  .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+  /* ---------- teacher screen ---------- */
+  .pulse-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px;}
+  @media (max-width:760px){.pulse-row{grid-template-columns:1fr;}}
+  .pulse-card{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-left:4px solid var(--group-color, var(--accent));}
+  .pulse-count{font-family:"IBM Plex Mono",monospace;font-size:1.7rem;font-weight:600;}
+  .pulse-label{font-size:0.8rem;color:var(--ink-soft);margin-top:2px;}
+
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:900px){.board{grid-template-columns:1fr;}}
+  .board-col{display:flex;flex-direction:column;gap:10px;}
+  .board-col-head{display:flex;align-items:center;justify-content:space-between;padding:0 2px 6px;}
+  .board-col-head h3{font-size:0.92rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .board-col-head .dot{width:9px;height:9px;border-radius:50%;}
+  .board-count{font-family:"IBM Plex Mono",monospace;font-size:0.75rem;color:var(--ink-muted);}
+  .board-advice{font-size:0.76rem;color:var(--ink-soft);margin:-2px 0 6px;padding-bottom:10px;border-bottom:1px dashed var(--border);}
+  .stu-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:13px 14px;
+    cursor:pointer;transition:border-color .15s ease, transform .15s ease;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    text-align:left;width:100%;appearance:none;
+  }
+  .stu-card:hover{border-color:var(--accent-strong);transform:translateY(-1px);}
+  .stu-card:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px;}
+  .stu-name{font-size:0.88rem;font-weight:600;}
+  .stu-meta{font-size:0.74rem;color:var(--ink-muted);margin-top:2px;}
+  .stu-score{font-family:"IBM Plex Mono",monospace;font-size:0.95rem;font-weight:600;color:var(--ink-soft);flex-shrink:0;}
+
+  /* ---------- drawer ---------- */
+  .drawer-overlay{
+    position:fixed;inset:0;background:rgba(10,10,10,0.42);z-index:80;display:none;
+    align-items:flex-start;justify-content:flex-end;
+  }
+  .drawer-overlay.open{display:flex;animation:fade .2s ease both;}
+  .drawer{
+    width:min(420px, 100%);height:100%;background:var(--surface);border-left:1px solid var(--border);
+    padding:26px 26px 40px;overflow-y:auto;box-shadow:var(--shadow);
+  }
+  .drawer-close{
+    appearance:none;border:1px solid var(--border-strong);background:var(--surface-2);border-radius:8px;
+    width:30px;height:30px;cursor:pointer;color:var(--ink);font-size:0.95rem;float:right;
+  }
+  .drawer h3{font-size:1.15rem;margin-bottom:2px;}
+  .drawer-sub{font-size:0.8rem;color:var(--ink-muted);margin-bottom:20px;}
+
+  /* ---------- impact ---------- */
+  .sim-banner{
+    display:flex;gap:10px;align-items:flex-start;padding:14px 16px;border-radius:var(--radius-md);
+    background:var(--warning-wash);border:1px solid var(--warning);font-size:0.83rem;color:var(--ink);margin-bottom:26px;
+  }
+  .sim-banner b{color:#8a5a00;}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sim-banner b{color:var(--warning);}}
+  :root[data-theme="dark"] .sim-banner b{color:var(--warning);}
+  .kpi-group{margin-bottom:30px;}
+  .kpi-group-title{font-family:"IBM Plex Mono",monospace;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-muted);margin-bottom:12px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media (max-width:1000px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
+  @media (max-width:820px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.kpi-grid{grid-template-columns:1fr;}}
+  .kpi-tile{padding:20px 20px 18px;}
+  .kpi-label{font-size:0.78rem;color:var(--ink-soft);margin-bottom:10px;}
+  .kpi-value{font-family:"IBM Plex Mono",monospace;font-size:1.7rem;font-weight:600;display:flex;align-items:baseline;gap:6px;}
+  .kpi-delta{font-size:0.85rem;font-weight:600;}
+  .kpi-delta.up{color:var(--good);}
+  .kpi-delta.down{color:var(--good);}
+  .kpi-bar{height:6px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);overflow:hidden;margin-top:12px;}
+  .kpi-bar-fill{height:100%;background:var(--accent);}
+  .kpi-target{font-size:0.7rem;color:var(--ink-muted);margin-top:6px;font-family:"IBM Plex Mono",monospace;}
+
+  .roadmap{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);}
+  .rm-row{display:grid;grid-template-columns:140px 110px 1fr;gap:16px;padding:16px 20px;align-items:center;}
+  .rm-row + .rm-row{border-top:1px solid var(--border);}
+  .rm-phase{font-weight:600;font-size:0.88rem;}
+  .rm-when{font-family:"IBM Plex Mono",monospace;font-size:0.76rem;color:var(--ink-muted);}
+  .rm-goal{font-size:0.84rem;color:var(--ink-soft);}
+
+  .footer-tag{margin-top:60px;padding-top:22px;border-top:1px solid var(--border);font-size:0.76rem;color:var(--ink-muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">EduTwin</span>
+      <span class="brand-tag">by MINDMESH</span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="EduTwin prototype screens">
+      <button class="tab" role="tab" data-screen="landing" aria-selected="true">Landing</button>
+      <button class="tab" role="tab" data-screen="mission" aria-selected="false">Student Mission</button>
+      <button class="tab" role="tab" data-screen="coach" aria-selected="false">AI Coach</button>
+      <button class="tab" role="tab" data-screen="diagnosis" aria-selected="false">Diagnosis</button>
+      <button class="tab" role="tab" data-screen="teacher" aria-selected="false">Teacher</button>
+      <button class="tab" role="tab" data-screen="impact" aria-selected="false">Impact</button>
+    </nav>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- ============ LANDING ============ -->
+  <section class="screen active" id="screen-landing">
+    <div class="hero">
+      <div>
+        <span class="eyebrow">EduTwin — AI Learning Twin Platform</span>
+        <h1>From Scores to<br>Learning DNA.</h1>
+        <span class="same-score">“Same Score ≠ Same Learning.”</span>
+        <p class="lede">EduTwin สร้าง Digital Learning Twin ของนักเรียนจากพฤติกรรมการเรียนรู้จริง — คำตอบ วิธีคิด การขอ Hint การอธิบายเหตุผล และ Reflection — แล้วเปลี่ยนข้อมูลเหล่านี้เป็น Learning DNA เพื่อช่วยนักเรียนและครูเข้าใจว่า “เรียนรู้อย่างไร” ไม่ใช่แค่ดูคะแนน</p>
+        <div class="cta-row" style="margin-top:26px;">
+          <button class="btn btn-primary" data-goto="mission">Start Learning →</button>
+          <button class="btn btn-ghost" data-goto="diagnosis">ดู Killer Demo</button>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">LEARN</span><span class="flow-arrow">→</span>
+          <span class="flow-step">DIAGNOSE</span><span class="flow-arrow">→</span>
+          <span class="flow-step">ADAPT</span>
+        </div>
+      </div>
+      <div class="helix-wrap" aria-hidden="true">
+        <svg id="helix-svg" viewBox="0 0 300 320" width="100%" height="100%"></svg>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>Same Score ≠ Same Learning.</h2>
+      <p class="lede">นักเรียนที่ได้คะแนนเท่ากันอาจมี Learning Gap คนละแบบ — ระบบทั่วไปตอบแค่ “ได้กี่คะแนน” แต่ EduTwin อธิบายว่า “ผิดเพราะอะไร”</p>
+    </div>
+    <div class="value-grid">
+      <div class="value-cell">
+        <span class="value-num">01</span>
+        <h3>Learning DNA</h3>
+        <p>Profile รายบุคคล — Concept, Application, Critical Thinking, Problem Solving, Creativity, Collaboration, Confidence</p>
+      </div>
+      <div class="value-cell">
+        <span class="value-num">02</span>
+        <h3>Mistake DNA</h3>
+        <p>จำแนก Root Cause ของความผิดพลาด แล้วเชื่อมไปยัง Intervention ที่ตรงจุด ไม่ใช่การเฉลยซ้ำ</p>
+      </div>
+      <div class="value-cell">
+        <span class="value-num">03</span>
+        <h3>Teacher Copilot</h3>
+        <p>เปลี่ยนข้อมูลนักเรียนทั้งห้องเป็น Action — จัดกลุ่มตาม Learning Gap และแนะนำ Intervention</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISSION ============ -->
+  <section class="screen" id="screen-mission">
+    <div class="section-head">
+      <span class="eyebrow">Student · Adaptive Mission</span>
+      <h2>ภารกิจ: ออกแบบงบประมาณสวนสาธารณะ</h2>
+    </div>
+    <div class="stepper" id="mission-stepper">
+      <span class="step-pill on" data-step="0">Explore</span>
+      <span class="step-pill" data-step="1">Fail</span>
+      <span class="step-pill" data-step="2">Reflect</span>
+      <span class="step-pill" data-step="3">Improve</span>
+    </div>
+    <div class="mission-layout">
+      <div class="card mission-card">
+        <div class="mission-title">มิชชันที่ 3 · สวนสาธารณะชุมชน</div>
+        <p class="mission-scenario">เทศบาลให้งบประมาณ 50,000 บาท เพื่อสร้างสวนสาธารณะขนาด 200 ตร.ม. โดยกำหนดให้ 60% ของพื้นที่ทั้งหมดใช้ปูหญ้า ส่วนที่เหลือเป็นทางเดินและสนามเด็กเล่น</p>
+        <span class="progress-label mono">ข้อที่ 7 / 10</span>
+        <div class="progress-track"><div class="progress-fill" style="width:70%"></div></div>
+        <p class="question-text">พื้นที่ที่ต้องปูหญ้าคิดเป็นกี่ตารางเมตร?</p>
+        <div class="choices" id="mission-choices">
+          <button class="choice" data-correct="false"><span class="letter">A</span> 80 ตร.ม.</button>
+          <button class="choice" data-correct="true"><span class="letter">B</span> 120 ตร.ม.</button>
+          <button class="choice" data-correct="false"><span class="letter">C</span> 140 ตร.ม.</button>
+          <button class="choice" data-correct="false"><span class="letter">D</span> 160 ตร.ม.</button>
+        </div>
+        <div class="mission-actions">
+          <button class="btn btn-primary" id="mission-submit">ส่งคำตอบ</button>
+          <button class="btn btn-ghost" data-goto="coach">ขอ Hint จาก AI Coach</button>
+        </div>
+        <div class="feedback" id="mission-feedback"></div>
+      </div>
+      <div class="card side-note">
+        <h3>EduTwin กำลังสังเกตอะไรอยู่</h3>
+        <ul>
+          <li>เวลาที่ใช้คิดต่อข้อ และรูปแบบการลองผิดลองถูก</li>
+          <li>จำนวนครั้งที่ขอ Hint และประเภทของ Hint ที่ใช้</li>
+          <li>วิธีอธิบายเหตุผลก่อนเลือกคำตอบ</li>
+          <li>Reflection หลังทำภารกิจเสร็จ</li>
+        </ul>
+        <p style="margin-top:14px;">ข้อมูลทั้งหมดนี้จะถูกประมวลผลเป็น <strong>Learning DNA</strong> และ <strong>Mistake DNA</strong> ไม่ใช่แค่ถูก/ผิด</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AI COACH ============ -->
+  <section class="screen" id="screen-coach">
+    <div class="section-head">
+      <span class="eyebrow">AI Learning Coach</span>
+      <h2>Socratic Questioning — ไม่เฉลย ช่วยให้คิดเอง</h2>
+      <p class="lede">แทนที่จะให้คำตอบทันที AI Coach จะถามนำ ให้ตัวอย่าง และชวนสะท้อนคิด ระหว่างที่นักเรียนติดอยู่กับโจทย์เดิม</p>
+    </div>
+    <div class="coach-layout card">
+      <div class="chat">
+        <div class="bubble student"><span class="who">นักเรียน</span>หนูไม่รู้จะเริ่มตรงไหนค่ะ 😣</div>
+        <div class="bubble ai"><span class="who">AI Coach</span>ไม่เป็นไรค่ะ ลองเริ่มจากสิ่งที่รู้ก่อน — พื้นที่สวนทั้งหมดมีกี่ตารางเมตร?</div>
+        <div class="bubble student"><span class="who">นักเรียน</span>200 ตร.ม. ค่ะ</div>
+        <div class="bubble ai"><span class="who">AI Coach</span>ดีมาก แล้วโจทย์บอกว่าใช้ปูหญ้ากี่เปอร์เซ็นต์ของพื้นที่ทั้งหมด? ลองเขียนเป็นสมการดูสิคะ</div>
+        <div class="bubble student"><span class="who">นักเรียน</span>60% ค่ะ... งั้นก็ 200 × 0.6 ใช่ไหมคะ</div>
+        <div class="bubble ai"><span class="who">AI Coach</span>ลองคำนวณดูเลยค่ะ แล้วบอกหนูว่าได้เท่าไหร่ — เทียบกับตัวเลือกที่มีให้ ตรงกับข้อไหน?</div>
+      </div>
+      <div class="reflect-prompt"><b>Reflection Prompt:</b> อะไรทำให้ตอนแรกหนูไม่มั่นใจว่าจะเริ่มตรงไหน?</div>
+    </div>
+  </section>
+
+  <!-- ============ DIAGNOSIS / KILLER DEMO ============ -->
+  <section class="screen" id="screen-diagnosis">
+    <div class="killer-banner">
+      <span class="eyebrow">Killer Demo</span>
+      <h2>นักเรียนสองคน คะแนนเท่ากัน 6/10</h2>
+      <p>Ploy และ Tan ทำภารกิจ “งบประมาณสวนสาธารณะ” ชุดเดียวกัน ได้คะแนนเท่ากันเป๊ะ — กด Analyze เพื่อดูว่า EduTwin มองเห็นอะไรที่คะแนนมองไม่เห็น</p>
+    </div>
+
+    <div class="score-row">
+      <div class="card score-card">
+        <div class="score-id">
+          <div class="avatar" style="background:var(--cat-1);">PP</div>
+          <div><div class="score-name">Ploy P.</div><div class="score-sub">ป.5 · ห้อง 2</div></div>
+        </div>
+        <div class="score-num mono">6<span class="score-den">/10</span></div>
+      </div>
+      <div class="card score-card">
+        <div class="score-id">
+          <div class="avatar" style="background:var(--cat-2);">TK</div>
+          <div><div class="score-name">Tan K.</div><div class="score-sub">ป.5 · ห้อง 2</div></div>
+        </div>
+        <div class="score-num mono">6<span class="score-den">/10</span></div>
+      </div>
+    </div>
+
+    <div class="analyze-bar">
+      <div style="text-align:center;">
+        <button class="btn btn-primary" id="analyze-btn">วิเคราะห์ด้วย AI · Analyze</button>
+        <div class="scan-status mono" id="scan-status">กำลังวิเคราะห์ Learning Pattern และ Mistake Pattern…</div>
+      </div>
+    </div>
+
+    <div class="diag-grid" id="diag-grid">
+      <div class="card diag-card">
+        <div class="diag-card-head">
+          <h3>Ploy P. — Learning DNA</h3>
+          <span class="chip serious">Concept Gap</span>
+        </div>
+        <div class="radar-wrap" id="radar-ploy"></div>
+        <p class="root-cause"><b>Root Cause:</b> เข้าใจสูตร “เปอร์เซ็นต์ของพื้นที่” คลาดเคลื่อน — ตีความ 60% ผิดเป็นสัดส่วนของเส้นรอบรูปแทนที่จะเป็นพื้นที่ทั้งหมด (Misconception)</p>
+        <div class="mistake-bars" id="mistake-ploy"></div>
+        <div class="intervention"><b>AI Intervention</b>ทบทวน Concept เปอร์เซ็นต์กับพื้นที่ผ่าน Micro-lesson 5 นาที + โจทย์ฝึกแบบ Visual ก่อนกลับไปทำ Mission ต่อ</div>
+      </div>
+      <div class="card diag-card">
+        <div class="diag-card-head">
+          <h3>Tan K. — Learning DNA</h3>
+          <span class="chip warning">Application Gap</span>
+        </div>
+        <div class="radar-wrap" id="radar-tan"></div>
+        <p class="root-cause"><b>Root Cause:</b> เข้าใจเปอร์เซ็นต์ดี แต่สับสนลำดับขั้นตอนเมื่อโจทย์มีหลายเงื่อนไขต่อกัน (งบประมาณ + พื้นที่ + ส่วนที่เหลือ) — Application Gap ไม่ใช่ Concept Gap</p>
+        <div class="mistake-bars" id="mistake-tan"></div>
+        <div class="intervention"><b>AI Intervention</b>เพิ่ม Mission แบบ Multi-step Real-world Problem พร้อม Worked Example ทีละขั้น เพื่อฝึกลำดับการแก้โจทย์ซับซ้อน</div>
+      </div>
+    </div>
+
+    <div class="mistake-legend" id="mistake-legend"></div>
+
+    <div class="card growth-card" id="growth-card">
+      <div class="growth-card-head">
+        <span class="eyebrow">AI Growth Plan</span>
+        <h3>เส้นทางพัฒนาที่ AI แนะนำ — คนละเส้นทาง แม้คะแนนจะเท่ากัน</h3>
+        <p>เมื่อ Root Cause ต่างกัน AI จะออกแบบลำดับ Mission ถัดไปให้ไม่เหมือนกัน ไม่ใช่ให้ทำแบบฝึกหัดชุดเดียวกันซ้ำ</p>
+      </div>
+      <div id="growth-paths"></div>
+    </div>
+
+    <div class="closing-line" id="closing-line">
+      <h2>“Same Score ≠ Same Learning.”</h2>
+      <span>EduTwin — From Scores to Learning DNA</span>
+    </div>
+  </section>
+
+  <!-- ============ TEACHER ============ -->
+  <section class="screen" id="screen-teacher">
+    <div class="section-head">
+      <span class="eyebrow">Teacher Copilot</span>
+      <h2>Class Pulse — ห้อง ป.5/2</h2>
+      <p class="lede">EduTwin จัดกลุ่มนักเรียนทั้งห้องตาม Learning Gap โดยอัตโนมัติ พร้อมแนะนำ Intervention ที่เหมาะกับแต่ละกลุ่ม — คลิกที่นักเรียนเพื่อดู Learning DNA รายบุคคล</p>
+    </div>
+
+    <div class="pulse-row" id="pulse-row"></div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- ============ IMPACT ============ -->
+  <section class="screen" id="screen-impact">
+    <div class="section-head">
+      <span class="eyebrow">Impact Dashboard</span>
+      <h2>เป้าหมายผลลัพธ์การเรียนรู้</h2>
+    </div>
+    <div class="sim-banner">
+      <span>⚠</span>
+      <span><b>Prototype Simulation:</b> ตัวเลขด้านล่างเป็นเป้าหมายจำลองสำหรับสาธิตแนวคิด ยังไม่ใช่ผลการทดลองจริงจากโรงเรียน</span>
+    </div>
+    <div id="kpi-groups"></div>
+
+    <div class="section-head">
+      <span class="eyebrow">Implementation Roadmap</span>
+      <h2>แผนดำเนินงาน 12 เดือน</h2>
+    </div>
+    <div class="roadmap">
+      <div class="rm-row"><div class="rm-phase">Phase 1 — Prototype</div><div class="rm-when mono">เดือน 1</div><div class="rm-goal">Student App, Mission, Learning DNA, Mistake DNA — Prototype End-to-End</div></div>
+      <div class="rm-row"><div class="rm-phase">Phase 2 — Pilot</div><div class="rm-when mono">เดือน 2–3</div><div class="rm-goal">ทดลองกับ 1 โรงเรียน 1–2 ห้องเรียน 1 วิชา และเก็บ Feedback</div></div>
+      <div class="rm-row"><div class="rm-phase">Phase 3 — Improve</div><div class="rm-when mono">เดือน 4–6</div><div class="rm-goal">Teacher Copilot, Adaptive Mission, Learning Analytics</div></div>
+      <div class="rm-row"><div class="rm-phase">Phase 4 — Scale</div><div class="rm-when mono">เดือน 7–12</div><div class="rm-goal">ขยายหลายวิชา หลายระดับชั้น และหลายโรงเรียน</div></div>
+    </div>
+
+    <div class="footer-tag">
+      <span>EduTwin — From Scores to Learning DNA.</span>
+      <span>MINDMESH · Hackathon 2026 Prototype</span>
+    </div>
+  </section>
+
+</div>
+
+<div class="drawer-overlay" id="drawer-overlay">
+  <div class="drawer">
+    <button class="drawer-close" id="drawer-close">✕</button>
+    <div id="drawer-content"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- navigation ---------------- */
+  var tabs = document.querySelectorAll(".tab");
+  var screens = document.querySelectorAll(".screen");
+  function goto(name){
+    tabs.forEach(function(t){ t.setAttribute("aria-selected", t.dataset.screen === name ? "true" : "false"); });
+    screens.forEach(function(s){ s.classList.toggle("active", s.id === "screen-" + name); });
+    window.scrollTo({top:0, behavior:"instant"});
+  }
+  tabs.forEach(function(t){ t.addEventListener("click", function(){ goto(t.dataset.screen); }); });
+  document.querySelectorAll("[data-goto]").forEach(function(el){
+    el.addEventListener("click", function(){ goto(el.dataset.goto); });
+  });
+
+  /* ---------------- mission interaction ---------------- */
+  var choices = document.querySelectorAll("#mission-choices .choice");
+  choices.forEach(function(c){
+    c.addEventListener("click", function(){
+      choices.forEach(function(x){ x.classList.remove("selected"); });
+      c.classList.add("selected");
+    });
+  });
+  var missionAttempts = 0;
+  function setMissionStep(idx){
+    document.querySelectorAll("#mission-stepper .step-pill").forEach(function(p){
+      var i = Number(p.dataset.step);
+      p.classList.toggle("done", i < idx);
+      p.classList.toggle("on", i === idx);
+    });
+  }
+  document.getElementById("mission-submit").addEventListener("click", function(){
+    var selected = document.querySelector("#mission-choices .choice.selected");
+    var fb = document.getElementById("mission-feedback");
+    if(!selected){
+      fb.className = "feedback show no";
+      fb.textContent = "เลือกคำตอบก่อนนะ แล้วค่อยส่งคำตอบ";
+      return;
+    }
+    var correct = selected.dataset.correct === "true";
+    missionAttempts++;
+    fb.className = "feedback show " + (correct ? "ok" : "no");
+    if(correct){
+      setMissionStep(3);
+      fb.textContent = "ถูกต้อง! บันทึกวิธีคิดของหนูไว้ใน Learning DNA แล้ว — ไปข้อถัดไปกันเลย";
+    } else if(missionAttempts === 1){
+      setMissionStep(1);
+      fb.textContent = "ยังไม่ถูกค่ะ — EduTwin บันทึกไว้แล้วว่าข้อนี้พลาดตรงไหน ลองใช้ AI Coach ช่วยไล่ทีละขั้นตอนดูไหมคะ?";
+    } else {
+      setMissionStep(2);
+      fb.textContent = "ลองอีกครั้งก็ยังไม่ตรงค่ะ — ก่อนลองใหม่ ลองสะท้อนคิดดูว่าติดตรงไหน แล้วค่อยกลับมาตอบอีกครั้ง";
+    }
+  });
+
+  /* ---------------- mistake categories (shared) ---------------- */
+  var MISTAKE_TYPES = [
+    {name:"Misconception", color:"var(--cat-1)"},
+    {name:"Logic Gap", color:"var(--cat-2)"},
+    {name:"Calculation Error", color:"var(--cat-3)"},
+    {name:"Misread Question", color:"var(--cat-4)"},
+    {name:"Wrong Concept Recall", color:"var(--cat-5)"},
+    {name:"Guessing", color:"var(--cat-6)"}
+  ];
+  function colorFor(name){
+    var m = MISTAKE_TYPES.filter(function(t){return t.name===name;})[0];
+    return m ? m.color : "var(--ink-muted)";
+  }
+  function renderMistakeBars(el, mistakes){
+    el.innerHTML = "";
+    mistakes.forEach(function(m){
+      var row = document.createElement("div");
+      row.className = "mbar-row";
+      row.innerHTML =
+        '<span class="mbar-label">' + m.cat + '</span>' +
+        '<span class="mbar-track"><span class="mbar-fill" style="width:' + m.pct + '%;background:' + colorFor(m.cat) + '"></span></span>' +
+        '<span class="mbar-pct mono">' + m.pct + '%</span>';
+      el.appendChild(row);
+    });
+  }
+  var legendEl = document.getElementById("mistake-legend");
+  MISTAKE_TYPES.forEach(function(t){
+    var item = document.createElement("span");
+    item.className = "legend-item";
+    item.innerHTML = '<span class="legend-dot" style="background:' + t.color + '"></span>' + t.name;
+    legendEl.appendChild(item);
+  });
+
+  /* ---------------- radar chart ---------------- */
+  var AXES = ["Concept","Application","Think","Solve","Create","Collab","Confidence"];
+  function radarSVG(values, color, size){
+    size = size || 240;
+    var cx = size/2, cy = size/2 - 6, r = size*0.32;
+    var n = AXES.length;
+    function pt(i, frac){
+      var ang = -Math.PI/2 + i * (2*Math.PI/n);
+      return [cx + r*frac*Math.cos(ang), cy + r*frac*Math.sin(ang)];
+    }
+    var svg = '<svg viewBox="0 0 ' + size + ' ' + (size) + '" width="' + size + '" height="' + size + '" style="overflow:visible">';
+    [0.25,0.5,0.75,1].forEach(function(f){
+      var pts = [];
+      for(var i=0;i<n;i++){ pts.push(pt(i,f).join(",")); }
+      svg += '<polygon points="' + pts.join(" ") + '" fill="none" stroke="var(--grid)" stroke-width="1"/>';
+    });
+    for(var i=0;i<n;i++){
+      var p = pt(i,1);
+      svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0] + '" y2="' + p[1] + '" stroke="var(--axis)" stroke-width="1"/>';
+    }
+    var dataPts = values.map(function(v,i){ return pt(i, v/100); });
+    svg += '<polygon points="' + dataPts.map(function(p){return p.join(",");}).join(" ") + '" fill="' + color + '" fill-opacity="0.20" stroke="' + color + '" stroke-width="2" stroke-linejoin="round"/>';
+    dataPts.forEach(function(p){
+      svg += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.4" fill="' + color + '" stroke="var(--surface)" stroke-width="1.5"/>';
+    });
+    for(var i=0;i<n;i++){
+      var lp = pt(i, 1.24);
+      var ang = -Math.PI/2 + i * (2*Math.PI/n);
+      var cos = Math.cos(ang);
+      var anchor = cos > 0.25 ? "start" : (cos < -0.25 ? "end" : "middle");
+      svg += '<text x="' + lp[0] + '" y="' + lp[1] + '" text-anchor="' + anchor + '" dominant-baseline="middle" font-size="10" font-family="IBM Plex Sans, sans-serif" fill="var(--ink-muted)">' + AXES[i] + '</text>';
+    }
+    svg += '</svg>';
+    return svg;
+  }
+
+  /* ---------------- killer demo data + interaction ---------------- */
+  var PLOY_DNA = [35,70,55,60,65,72,50];
+  var TAN_DNA  = [78,40,58,45,60,55,62];
+  var PLOY_MISTAKES = [
+    {cat:"Misconception", pct:45},
+    {cat:"Wrong Concept Recall", pct:25},
+    {cat:"Calculation Error", pct:15},
+    {cat:"Logic Gap", pct:10},
+    {cat:"Misread Question", pct:5}
+  ];
+  var TAN_MISTAKES = [
+    {cat:"Logic Gap", pct:40},
+    {cat:"Calculation Error", pct:30},
+    {cat:"Misread Question", pct:20},
+    {cat:"Misconception", pct:10}
+  ];
+
+  /* ---------------- AI growth plan ---------------- */
+  var GROWTH_PATHS = [
+    {name:"Ploy P.", color:"var(--cat-1)", steps:[
+      {label:"Micro-lesson: เปอร์เซ็นต์คือ...", time:"10 นาที"},
+      {label:"ฝึกจับคู่ % กับพื้นที่ (Visual)", time:"15 นาที"},
+      {label:"ลองมิชชันสวนสาธารณะอีกครั้ง", time:"1 มิชชัน"},
+      {label:"ปลดล็อกมิชชันที่ 4", time:"ถัดไป"}
+    ]},
+    {name:"Tan K.", color:"var(--cat-2)", steps:[
+      {label:"Worked Example: โจทย์หลายขั้นตอน", time:"10 นาที"},
+      {label:"ฝึก Multi-step Budget Problem", time:"20 นาที"},
+      {label:"ใช้ Checklist ลำดับคิดระหว่างทำ", time:"1 มิชชัน"},
+      {label:"ปลดล็อกมิชชันที่ 4", time:"ถัดไป"}
+    ]}
+  ];
+  function renderGrowthPaths(){
+    var el = document.getElementById("growth-paths");
+    el.innerHTML = "";
+    GROWTH_PATHS.forEach(function(g){
+      var wrap = document.createElement("div");
+      wrap.className = "growth-student";
+      var nodes = g.steps.map(function(s){
+        return '<div class="growth-node">' +
+          '<div class="growth-dot"></div>' +
+          '<div class="growth-step-label">' + s.label + '</div>' +
+          '<div class="growth-step-time">' + s.time + '</div>' +
+          '</div>';
+      }).join("");
+      wrap.innerHTML =
+        '<div class="growth-name-row"><span class="growth-name">' + g.name + '</span></div>' +
+        '<div class="growth-path" style="color:' + g.color + '">' + nodes + '</div>';
+      el.appendChild(wrap);
+    });
+  }
+
+  var analyzed = false;
+  document.getElementById("analyze-btn").addEventListener("click", function(){
+    if(analyzed) return;
+    analyzed = true;
+    var btn = this;
+    var status = document.getElementById("scan-status");
+    btn.disabled = true;
+    btn.textContent = "กำลังวิเคราะห์…";
+    status.classList.add("show");
+    setTimeout(function(){
+      document.getElementById("radar-ploy").innerHTML = radarSVG(PLOY_DNA, "var(--cat-1)");
+      document.getElementById("radar-tan").innerHTML = radarSVG(TAN_DNA, "var(--cat-2)");
+      renderMistakeBars(document.getElementById("mistake-ploy"), PLOY_MISTAKES);
+      renderMistakeBars(document.getElementById("mistake-tan"), TAN_MISTAKES);
+      document.getElementById("diag-grid").classList.add("revealed");
+      renderGrowthPaths();
+      document.getElementById("growth-card").classList.add("revealed");
+      status.textContent = "วิเคราะห์เสร็จสิ้น — พบ Learning Gap คนละแบบ";
+      btn.textContent = "วิเคราะห์เสร็จแล้ว ✓";
+      document.getElementById("closing-line").classList.add("revealed");
+    }, 1100);
+  });
+
+  /* ---------------- helix decoration (landing) ---------------- */
+  (function(){
+    var svg = document.getElementById("helix-svg");
+    var w = 300, h = 320, turns = 3, steps = 60;
+    var pathA = [], pathB = [];
+    for(var i=0;i<=steps;i++){
+      var t = i/steps;
+      var y = 20 + t*(h-40);
+      var x1 = w/2 + Math.sin(t*turns*2*Math.PI) * 62;
+      var x2 = w/2 - Math.sin(t*turns*2*Math.PI) * 62;
+      pathA.push([x1,y]); pathB.push([x2,y]);
+    }
+    function toPath(pts){
+      return "M " + pts.map(function(p){return p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" L ");
+    }
+    var rungs = "";
+    for(var i=4;i<pathA.length;i+=6){
+      rungs += '<line x1="'+pathA[i][0].toFixed(1)+'" y1="'+pathA[i][1].toFixed(1)+'" x2="'+pathB[i][0].toFixed(1)+'" y2="'+pathB[i][1].toFixed(1)+'" stroke="var(--border-strong)" stroke-width="1.5"/>';
+    }
+    svg.innerHTML =
+      rungs +
+      '<path d="' + toPath(pathA) + '" fill="none" stroke="var(--cat-1)" stroke-width="3" stroke-linecap="round" opacity="0.85"/>' +
+      '<path d="' + toPath(pathB) + '" fill="none" stroke="var(--cat-2)" stroke-width="3" stroke-linecap="round" opacity="0.85"/>';
+  })();
+
+  /* ---------------- teacher data ---------------- */
+  var GROUPS = {
+    concept:{label:"Concept Gap", color:"var(--serious)", advice:"แนะนำ: Micro-lesson ทบทวน Concept ก่อนกลับไปทำ Mission ต่อ"},
+    application:{label:"Application Gap", color:"var(--warning)", advice:"แนะนำ: Multi-step Practice + Worked Example ทีละขั้น"},
+    mastery:{label:"Mastery", color:"var(--good)", advice:"แนะนำ: ปลดล็อก Challenge Mission ระดับสูงขึ้น"}
+  };
+  var STUDENTS = [
+    {id:"ploy", name:"Ploy P.", score:6, group:"concept", topMistake:"Misconception",
+      dna:[35,70,55,60,65,72,50], mistakes:PLOY_MISTAKES,
+      rootCause:"เข้าใจสูตรเปอร์เซ็นต์ของพื้นที่คลาดเคลื่อน (Misconception)",
+      intervention:"Micro-lesson ทบทวนเปอร์เซ็นต์กับพื้นที่ + โจทย์ฝึกแบบ Visual"},
+    {id:"tan", name:"Tan K.", score:6, group:"application", topMistake:"Logic Gap",
+      dna:[78,40,58,45,60,55,62], mistakes:TAN_MISTAKES,
+      rootCause:"สับสนลำดับขั้นตอนในโจทย์หลายเงื่อนไข (Application Gap)",
+      intervention:"Multi-step Real-world Problem พร้อม Worked Example"},
+    {id:"min", name:"Min S.", score:5, group:"concept", topMistake:"Misconception",
+      dna:[30,55,48,52,58,66,44], mistakes:[{cat:"Misconception",pct:50},{cat:"Wrong Concept Recall",pct:30},{cat:"Logic Gap",pct:20}],
+      rootCause:"ยังสับสนความหมายของ % กับสัดส่วนโดยตรง",
+      intervention:"ทบทวน Concept พื้นฐานเรื่องอัตราส่วนและร้อยละ"},
+    {id:"ohm", name:"Ohm C.", score:6, group:"concept", topMistake:"Wrong Concept Recall",
+      dna:[40,62,50,58,60,70,52], mistakes:[{cat:"Wrong Concept Recall",pct:40},{cat:"Misconception",pct:35},{cat:"Calculation Error",pct:25}],
+      rootCause:"จำสูตรพื้นที่สับกับสูตรเส้นรอบรูป",
+      intervention:"การ์ดสรุปสูตร + แบบฝึกจับคู่สูตรกับสถานการณ์"},
+    {id:"bee", name:"Bee A.", score:4, group:"concept", topMistake:"Misconception",
+      dna:[28,48,40,45,55,60,38], mistakes:[{cat:"Misconception",pct:55},{cat:"Calculation Error",pct:25},{cat:"Guessing",pct:20}],
+      rootCause:"ยังไม่เข้าใจความสัมพันธ์ระหว่างร้อยละกับพื้นที่จริง",
+      intervention:"เริ่มจาก Concept พื้นฐานใหม่ พร้อม 1:1 Coaching"},
+    {id:"gift", name:"Gift W.", score:7, group:"application", topMistake:"Logic Gap",
+      dna:[75,48,60,50,62,58,64], mistakes:[{cat:"Logic Gap",pct:45},{cat:"Misread Question",pct:30},{cat:"Calculation Error",pct:25}],
+      rootCause:"เข้าใจ Concept ดี แต่วางลำดับขั้นตอนแก้โจทย์สับสน",
+      intervention:"ฝึก Multi-step Problem พร้อม Checklist ลำดับคิด"},
+    {id:"copter", name:"Copter L.", score:6, group:"application", topMistake:"Calculation Error",
+      dna:[70,42,55,48,58,52,60], mistakes:[{cat:"Calculation Error",pct:50},{cat:"Logic Gap",pct:30},{cat:"Misread Question",pct:20}],
+      rootCause:"เข้าใจวิธีคิดถูก แต่คำนวณเลขผิดพลาดบ่อย",
+      intervention:"ฝึกความละเอียดในการคำนวณ + เครื่องมือ Self-check"},
+    {id:"fah", name:"Fah R.", score:9, group:"mastery", topMistake:"—",
+      dna:[88,85,80,82,78,84,86], mistakes:[{cat:"Calculation Error",pct:100}],
+      rootCause:"ผิดพลาดเล็กน้อยจากความไม่ระมัดระวัง ไม่ใช่ Gap เชิงความเข้าใจ",
+      intervention:"เพิ่ม Challenge Mission ระดับสูงขึ้นเพื่อขยายศักยภาพ"},
+    {id:"boss", name:"Boss N.", score:8, group:"mastery", topMistake:"—",
+      dna:[82,80,78,80,75,88,80], mistakes:[{cat:"Misread Question",pct:100}],
+      rootCause:"อ่านโจทย์เร็วเกินไปในบางข้อ",
+      intervention:"ฝึก Reflection ก่อนส่งคำตอบ + Peer Teaching"},
+    {id:"ice", name:"Ice T.", score:9, group:"mastery", topMistake:"—",
+      dna:[90,88,84,86,80,82,90], mistakes:[{cat:"Guessing",pct:100}],
+      rootCause:"เดาในข้อที่หมดเวลา ไม่ใช่ปัญหาความเข้าใจ",
+      intervention:"เพิ่ม Advanced Mission และบทบาท Peer Mentor"}
+  ];
+
+  function renderPulse(){
+    var el = document.getElementById("pulse-row");
+    el.innerHTML = "";
+    Object.keys(GROUPS).forEach(function(key){
+      var g = GROUPS[key];
+      var count = STUDENTS.filter(function(s){return s.group===key;}).length;
+      var div = document.createElement("div");
+      div.className = "card pulse-card";
+      div.style.setProperty("--group-color", g.color);
+      div.innerHTML =
+        '<div><div class="pulse-count">' + count + '</div><div class="pulse-label">' + g.label + '</div></div>' +
+        '<span class="chip ' + (key==="concept"?"serious":key==="application"?"warning":"good") + '">' + g.label + '</span>';
+      el.appendChild(div);
+    });
+  }
+
+  function renderBoard(){
+    var el = document.getElementById("board");
+    el.innerHTML = "";
+    Object.keys(GROUPS).forEach(function(key){
+      var g = GROUPS[key];
+      var list = STUDENTS.filter(function(s){return s.group===key;});
+      var col = document.createElement("div");
+      col.className = "board-col";
+      var head = document.createElement("div");
+      head.className = "board-col-head";
+      head.innerHTML = '<h3><span class="dot" style="background:' + g.color + '"></span>' + g.label + '</h3><span class="board-count mono">' + list.length + '</span>';
+      col.appendChild(head);
+      var advice = document.createElement("p");
+      advice.className = "board-advice";
+      advice.textContent = g.advice;
+      col.appendChild(advice);
+      list.forEach(function(s){
+        var card = document.createElement("button");
+        card.className = "stu-card";
+        card.innerHTML =
+          '<span><span class="stu-name">' + s.name + '</span><span class="stu-meta">' + s.topMistake + '</span></span>' +
+          '<span class="stu-score mono">' + s.score + '/10</span>';
+        card.addEventListener("click", function(){ openDrawer(s); });
+        col.appendChild(card);
+      });
+      el.appendChild(col);
+    });
+  }
+
+  var overlay = document.getElementById("drawer-overlay");
+  var drawerContent = document.getElementById("drawer-content");
+  function openDrawer(s){
+    var g = GROUPS[s.group];
+    drawerContent.innerHTML =
+      '<h3>' + s.name + '</h3>' +
+      '<div class="drawer-sub">คะแนน ' + s.score + '/10 · <span class="chip ' + (s.group==="concept"?"serious":s.group==="application"?"warning":"good") + '">' + g.label + '</span></div>' +
+      '<div class="radar-wrap">' + radarSVG(s.dna, g.color, 190) + '</div>' +
+      '<p class="root-cause"><b>Root Cause:</b> ' + s.rootCause + '</p>' +
+      '<div class="mistake-bars" id="drawer-mistakes"></div>' +
+      '<div class="intervention"><b>AI Intervention</b>' + s.intervention + '</div>';
+    renderMistakeBars(document.getElementById("drawer-mistakes"), s.mistakes);
+    overlay.classList.add("open");
+  }
+  document.getElementById("drawer-close").addEventListener("click", function(){ overlay.classList.remove("open"); });
+  overlay.addEventListener("click", function(e){ if(e.target === overlay) overlay.classList.remove("open"); });
+
+  renderPulse();
+  renderBoard();
+
+  /* ---------------- impact KPIs ---------------- */
+  var KPI_GROUPS = [
+    {key:"student", title:"Student", items:[
+      {label:"Student Learning Gap", value:"-32%", pct:68, target:"Target: ลดลง 30–40% ภายใน 1 ภาคเรียน"},
+      {label:"Completion Rate", value:"87%", pct:87, target:"Target: มากกว่า 85%"},
+      {label:"Active Learning Participation", value:"+26%", pct:63, target:"Target: เพิ่มขึ้นจาก Baseline"},
+      {label:"Reflection Quality Index", value:"+41%", pct:55, target:"Target: เพิ่มขึ้นจาก Baseline"}
+    ]},
+    {key:"teacher", title:"Teacher", items:[
+      {label:"Teacher Analysis Time", value:"-58%", pct:58, target:"Target: ลดเวลาวิเคราะห์รายบุคคล"},
+      {label:"Learning Gap Identification Accuracy", value:"88%", pct:88, target:"Target: > 85% เทียบกับการประเมินของครู"},
+      {label:"Interventions Issued / เดือน", value:"54", pct:68, target:"Target: เพิ่มขึ้นจาก Baseline (ครูออกแบบเอง)"}
+    ]},
+    {key:"system", title:"System", items:[
+      {label:"AI Diagnosis Accuracy", value:"91%", pct:91, target:"Target: > 90% (Prototype Eval)"},
+      {label:"Recommendation Acceptance Rate", value:"76%", pct:76, target:"Target: > 70% ครูตอบรับคำแนะนำของ AI"},
+      {label:"Student Retention", value:"92%", pct:92, target:"Target: มากกว่า 90% ระหว่าง Pilot"}
+    ]}
+  ];
+  var kpiGroupsEl = document.getElementById("kpi-groups");
+  KPI_GROUPS.forEach(function(group){
+    var section = document.createElement("div");
+    section.className = "kpi-group";
+    var title = document.createElement("div");
+    title.className = "kpi-group-title";
+    title.textContent = group.title;
+    section.appendChild(title);
+    var grid = document.createElement("div");
+    grid.className = "kpi-grid";
+    group.items.forEach(function(k){
+      var div = document.createElement("div");
+      div.className = "card kpi-tile";
+      div.innerHTML =
+        '<div class="kpi-label">' + k.label + '</div>' +
+        '<div class="kpi-value">' + k.value + '</div>' +
+        '<div class="kpi-bar"><div class="kpi-bar-fill" style="width:' + k.pct + '%"></div></div>' +
+        '<div class="kpi-target">' + k.target + '</div>';
+      grid.appendChild(div);
+    });
+    section.appendChild(grid);
+    kpiGroupsEl.appendChild(section);
+  });
+
+})();
+</script>
+</body>
+</html>
