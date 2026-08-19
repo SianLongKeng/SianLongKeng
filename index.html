@@ -514,6 +514,11 @@
   .tech-table td:first-child{font-weight:600;white-space:nowrap;}
   .arch-flow{font-family:"IBM Plex Mono",monospace;font-size:0.78rem;color:var(--ink-soft);padding:16px 20px;border-top:1px dashed var(--border-strong);line-height:1.8;}
 
+  .flow-figure{margin:0 0 40px;}
+  .flow-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);padding:8px;}
+  .flow-scroll svg{display:block;min-width:640px;}
+  .flow-caption{font-size:0.82rem;color:var(--ink-soft);margin-top:12px;}
+
   /* ---------- pitch screen ---------- */
   .pitch-timeline{border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden;margin-bottom:40px;}
   .pitch-seg{display:grid;grid-template-columns:96px 1fr;gap:18px;padding:18px 22px;border-bottom:1px solid var(--border);}
@@ -870,6 +875,79 @@
         </tbody>
       </table>
     </div>
+
+    <div class="section-head">
+      <span class="eyebrow">Product Flow</span>
+      <h2>ข้อมูลนักเรียนไหลไปเป็น Learning DNA ได้อย่างไร</h2>
+    </div>
+    <figure class="flow-figure">
+      <div class="flow-scroll">
+        <svg viewBox="0 0 1020 260" role="img" aria-label="Product flow: Student generates Learning Actions, processed by the Data Engine and AI Learning Analysis into Learning DNA and Mistake DNA, which drive AI Recommendation into Student Coach and Teacher Copilot, producing Better Learning Outcome.">
+          <defs>
+            <marker id="flow-arrow" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+              <polygon points="0,0 8,3.5 0,7" fill="var(--ink-muted)"/>
+            </marker>
+          </defs>
+
+          <!-- row 1 connectors -->
+          <line x1="240" y1="62" x2="266" y2="62" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <line x1="490" y1="62" x2="516" y2="62" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <line x1="740" y1="62" x2="766" y2="62" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <!-- turn down -->
+          <line x1="880" y1="94" x2="880" y2="166" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <!-- row 2 connectors (reverse direction) -->
+          <line x1="770" y1="202" x2="744" y2="202" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <line x1="520" y1="202" x2="494" y2="202" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <line x1="270" y1="202" x2="244" y2="202" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+          <!-- n1 Student -->
+          <rect x="20" y="30" width="220" height="64" rx="10" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <text x="32" y="46" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-muted)">01</text>
+          <text x="130" y="68" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Student</text>
+
+          <!-- n2 Learning Actions -->
+          <rect x="270" y="30" width="220" height="64" rx="10" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <text x="282" y="46" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-muted)">02</text>
+          <text x="380" y="68" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Learning Actions</text>
+
+          <!-- n3 Data Engine -->
+          <rect x="520" y="30" width="220" height="64" rx="10" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <text x="532" y="46" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-muted)">03</text>
+          <text x="630" y="68" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Data Engine</text>
+
+          <!-- n4 AI Learning Analysis (accent) -->
+          <rect x="770" y="30" width="220" height="64" rx="10" fill="var(--accent-wash)" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="782" y="46" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--accent-strong)">04</text>
+          <text x="880" y="59" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">AI Learning</text>
+          <text x="880" y="76" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Analysis</text>
+
+          <!-- n5 Learning DNA + Mistake DNA (accent) -->
+          <rect x="770" y="170" width="220" height="64" rx="10" fill="var(--accent-wash)" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="782" y="186" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--accent-strong)">05</text>
+          <text x="880" y="199" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Learning DNA +</text>
+          <text x="880" y="216" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Mistake DNA</text>
+
+          <!-- n6 AI Recommendation (accent) -->
+          <rect x="520" y="170" width="220" height="64" rx="10" fill="var(--accent-wash)" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="532" y="186" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--accent-strong)">06</text>
+          <text x="630" y="199" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">AI</text>
+          <text x="630" y="216" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Recommendation</text>
+
+          <!-- n7 Student Coach / Teacher Copilot -->
+          <rect x="270" y="170" width="220" height="64" rx="10" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <text x="282" y="186" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-muted)">07</text>
+          <text x="380" y="199" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Student Coach /</text>
+          <text x="380" y="216" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Teacher Copilot</text>
+
+          <!-- n8 Better Learning Outcome (good) -->
+          <rect x="20" y="170" width="220" height="64" rx="10" fill="var(--good-wash)" stroke="var(--good)" stroke-width="1.5"/>
+          <text x="32" y="186" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--good)">08</text>
+          <text x="130" y="199" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Better Learning</text>
+          <text x="130" y="216" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Outcome</text>
+        </svg>
+      </div>
+      <figcaption class="flow-caption">พฤติกรรมของนักเรียน (คำตอบ, Hint, เหตุผล, Reflection) ไหลผ่าน Data Engine และ AI Learning Analysis กลายเป็น Learning DNA + Mistake DNA จากนั้น AI สร้างคำแนะนำที่ส่งต่อให้ทั้งนักเรียน (ผ่าน Coach) และครู (ผ่าน Copilot) เพื่อผลลัพธ์การเรียนรู้ที่ดีขึ้น</figcaption>
+    </figure>
 
     <div class="section-head">
       <span class="eyebrow">Technology & Architecture</span>
