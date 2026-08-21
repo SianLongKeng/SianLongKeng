@@ -103,6 +103,13 @@ const PITCH_SEGMENTS = [
   },
 ];
 
+const ROADMAP_PHASES = [
+  { phase: "Phase 1 — Prototype", timeframe: "เดือน 1", goal: "Student App, Mission, Learning DNA, Mistake DNA; Prototype End-to-End" },
+  { phase: "Phase 2 — Pilot", timeframe: "เดือน 2–3", goal: "ทดลองกับ 1 โรงเรียน 1–2 ห้องเรียน 1 วิชา และเก็บ Feedback" },
+  { phase: "Phase 3 — Improve", timeframe: "เดือน 4–6", goal: "Teacher Copilot, Adaptive Mission, Learning Analytics" },
+  { phase: "Phase 4 — Scale", timeframe: "เดือน 7–12", goal: "ขยายหลายวิชา หลายระดับชั้น และหลายโรงเรียน" },
+];
+
 const DECK_ITEMS = [
   { num: "01", title: "Cover", desc: "— MINDMESH × EduTwin" },
   { num: "02", title: "Problem", desc: "— Same Score ≠ Same Learning" },
@@ -354,6 +361,32 @@ export default function Home() {
               <li>Custom Integration</li>
             </ul>
           </div>
+        </div>
+
+        {/* ============ IMPLEMENTATION ROADMAP ============ */}
+        <div className="section-head">
+          <span className="eyebrow">Implementation Roadmap</span>
+          <h2>4-Phase Rollout Plan · แผนดำเนินงาน 4 ระยะ</h2>
+        </div>
+        <div className="table-wrap">
+          <table className="tech-table">
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Timeframe</th>
+                <th>Goal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ROADMAP_PHASES.map((r) => (
+                <tr key={r.phase}>
+                  <td>{r.phase}</td>
+                  <td>{r.timeframe}</td>
+                  <td>{r.goal}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* ============ COMPETITIVE POSITIONING ============ */}
