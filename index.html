@@ -660,9 +660,9 @@
           <span class="chip serious">Concept Gap</span>
         </div>
         <div class="radar-wrap" id="radar-ploy"></div>
-        <p class="root-cause"><b>Root Cause:</b> เข้าใจสูตร “เปอร์เซ็นต์ของพื้นที่” คลาดเคลื่อน — ตีความ 60% ผิดเป็นสัดส่วนของเส้นรอบรูปแทนที่จะเป็นพื้นที่ทั้งหมด (Misconception)</p>
+        <p class="root-cause" id="root-cause-ploy"><b>Root Cause:</b> เข้าใจสูตร “เปอร์เซ็นต์ของพื้นที่” คลาดเคลื่อน — ตีความ 60% ผิดเป็นสัดส่วนของเส้นรอบรูปแทนที่จะเป็นพื้นที่ทั้งหมด (Misconception)</p>
         <div class="mistake-bars" id="mistake-ploy"></div>
-        <div class="intervention"><b>AI Intervention</b>ทบทวน Concept เปอร์เซ็นต์กับพื้นที่ผ่าน Micro-lesson 5 นาที + โจทย์ฝึกแบบ Visual ก่อนกลับไปทำ Mission ต่อ</div>
+        <div class="intervention" id="intervention-ploy"><b>AI Intervention</b>ทบทวน Concept เปอร์เซ็นต์กับพื้นที่ผ่าน Micro-lesson 5 นาที + โจทย์ฝึกแบบ Visual ก่อนกลับไปทำ Mission ต่อ</div>
       </div>
       <div class="card diag-card">
         <div class="diag-card-head">
@@ -670,9 +670,9 @@
           <span class="chip warning">Application Gap</span>
         </div>
         <div class="radar-wrap" id="radar-tan"></div>
-        <p class="root-cause"><b>Root Cause:</b> เข้าใจเปอร์เซ็นต์ดี แต่สับสนลำดับขั้นตอนเมื่อโจทย์มีหลายเงื่อนไขต่อกัน (งบประมาณ + พื้นที่ + ส่วนที่เหลือ) — Application Gap ไม่ใช่ Concept Gap</p>
+        <p class="root-cause" id="root-cause-tan"><b>Root Cause:</b> เข้าใจเปอร์เซ็นต์ดี แต่สับสนลำดับขั้นตอนเมื่อโจทย์มีหลายเงื่อนไขต่อกัน (งบประมาณ + พื้นที่ + ส่วนที่เหลือ) — Application Gap ไม่ใช่ Concept Gap</p>
         <div class="mistake-bars" id="mistake-tan"></div>
-        <div class="intervention"><b>AI Intervention</b>เพิ่ม Mission แบบ Multi-step Real-world Problem พร้อม Worked Example ทีละขั้น เพื่อฝึกลำดับการแก้โจทย์ซับซ้อน</div>
+        <div class="intervention" id="intervention-tan"><b>AI Intervention</b>เพิ่ม Mission แบบ Multi-step Real-world Problem พร้อม Worked Example ทีละขั้น เพื่อฝึกลำดับการแก้โจทย์ซับซ้อน</div>
       </div>
     </div>
 
@@ -1138,16 +1138,12 @@
 
   renderMissionQuestion();
 
-  /* ---------------- AI coach (live chat) ---------------- */
-  var COACH_SCRIPT = [
-    "ลองเริ่มจากสิ่งที่รู้ก่อนนะคะ — พื้นที่สวนทั้งหมดมีกี่ตารางเมตร?",
-    "ดีมาก แล้วโจทย์บอกว่าใช้ปูหญ้ากี่เปอร์เซ็นต์ของพื้นที่ทั้งหมด? ลองเขียนเป็นสมการดูสิคะ",
-    "เกือบแล้วค่ะ ลองคำนวณ 200 × 0.6 ดูอีกครั้ง แล้วเทียบกับตัวเลือกที่มีให้ว่าตรงข้อไหน",
-    "เยี่ยมมาก! พอได้คำตอบแล้ว ลองกลับไปกดเลือกในหน้า Mission ได้เลยค่ะ"
-  ];
+  /* ---------------- AI coach (live chat, real LLM) ---------------- */
+  var COACH_API = "https://edutwin-admin.vercel.app/api/coach";
   var coachChat = document.getElementById("coach-chat");
-  var coachStep = 0;
+  var coachHistory = [];
   var coachBusy = false;
+  var reflectShown = false;
 
   function coachScrollToBottom(){
     coachChat.scrollTop = coachChat.scrollHeight;
@@ -1182,24 +1178,35 @@
     text = (text || "").trim();
     if(!text || coachBusy) return;
     appendCoachBubble("student", text);
+    coachHistory.push({who:"student", text:text});
     document.getElementById("coach-input").value = "";
     coachBusy = true;
     showCoachTyping();
-    setTimeout(function(){
-      hideCoachTyping();
-      if(coachStep < COACH_SCRIPT.length){
-        appendCoachBubble("ai", COACH_SCRIPT[coachStep]);
-        coachStep++;
-        if(coachStep === COACH_SCRIPT.length){
+    fetch(COACH_API, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({messages: coachHistory})
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        hideCoachTyping();
+        var reply = data && data.reply ? data.reply : "ขอโทษค่ะ ลองพิมพ์อีกครั้งนะคะ";
+        appendCoachBubble("ai", reply);
+        coachHistory.push({who:"ai", text:reply});
+        var studentTurns = coachHistory.filter(function(m){ return m.who === "student"; }).length;
+        if(!reflectShown && studentTurns >= 3){
+          reflectShown = true;
           setTimeout(function(){
             document.getElementById("reflect-prompt").classList.add("show");
           }, 500);
         }
-      } else {
-        appendCoachBubble("ai", "เยี่ยมมากค่ะ ลองกลับไปทำภารกิจต่อได้เลยนะคะ 🙌");
-      }
-      coachBusy = false;
-    }, 700 + Math.random() * 500);
+        coachBusy = false;
+      })
+      .catch(function(){
+        hideCoachTyping();
+        appendCoachBubble("ai", "ขอโทษค่ะ ระบบขัดข้องชั่วคราว ลองใหม่อีกครั้งนะคะ");
+        coachBusy = false;
+      });
   }
 
   document.getElementById("coach-send").addEventListener("click", function(){
@@ -1338,6 +1345,28 @@
     });
   }
 
+  var MISTAKE_DNA_API = "https://edutwin-admin.vercel.app/api/mistake-dna";
+
+  function fetchMistakeAnalysis(studentLabel, mistakes, dna){
+    return fetch(MISTAKE_DNA_API, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({studentLabel:studentLabel, mistakes:mistakes, dna:dna})
+    }).then(function(res){ return res.json(); });
+  }
+
+  function applyAnalysis(prefix, fallbackLabel, data){
+    var rc = document.getElementById("root-cause-" + prefix);
+    var iv = document.getElementById("intervention-" + prefix);
+    if(data && data.rootCause){
+      rc.innerHTML = "<b>Root Cause:</b> " + data.rootCause;
+    }
+    if(data && data.intervention){
+      iv.innerHTML = "<b>AI Intervention</b>" + data.intervention;
+    }
+    // On fetch failure, the pre-written fallback text already in the DOM stays as-is.
+  }
+
   var analyzed = false;
   document.getElementById("analyze-btn").addEventListener("click", function(){
     if(analyzed) return;
@@ -1347,18 +1376,23 @@
     btn.disabled = true;
     btn.textContent = "กำลังวิเคราะห์…";
     status.classList.add("show");
-    setTimeout(function(){
-      document.getElementById("radar-ploy").innerHTML = radarSVG(PLOY_DNA, "var(--cat-1)");
-      document.getElementById("radar-tan").innerHTML = radarSVG(TAN_DNA, "var(--cat-2)");
-      renderMistakeBars(document.getElementById("mistake-ploy"), PLOY_MISTAKES);
-      renderMistakeBars(document.getElementById("mistake-tan"), TAN_MISTAKES);
+
+    document.getElementById("radar-ploy").innerHTML = radarSVG(PLOY_DNA, "var(--cat-1)");
+    document.getElementById("radar-tan").innerHTML = radarSVG(TAN_DNA, "var(--cat-2)");
+    renderMistakeBars(document.getElementById("mistake-ploy"), PLOY_MISTAKES);
+    renderMistakeBars(document.getElementById("mistake-tan"), TAN_MISTAKES);
+
+    Promise.all([
+      fetchMistakeAnalysis("Ploy P.", PLOY_MISTAKES, PLOY_DNA).then(function(d){ applyAnalysis("ploy", "Ploy P.", d); }).catch(function(){}),
+      fetchMistakeAnalysis("Tan K.", TAN_MISTAKES, TAN_DNA).then(function(d){ applyAnalysis("tan", "Tan K.", d); }).catch(function(){})
+    ]).then(function(){
       document.getElementById("diag-grid").classList.add("revealed");
       renderGrowthPaths();
       document.getElementById("growth-card").classList.add("revealed");
       status.textContent = "วิเคราะห์เสร็จสิ้น — พบ Learning Gap คนละแบบ";
       btn.textContent = "วิเคราะห์เสร็จแล้ว ✓";
       document.getElementById("closing-line").classList.add("revealed");
-    }, 1100);
+    });
   });
 
   /* ---------------- helix decoration (landing) ---------------- */
