@@ -13,7 +13,7 @@ export default function LogoutButton() {
 
   return (
     <button className="btn btn-ghost btn-small" type="button" onClick={onClick}>
-      ออกจากระบบ
+      Log Out · ออกจากระบบ
     </button>
   );
 }

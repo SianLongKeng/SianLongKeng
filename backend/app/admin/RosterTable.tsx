@@ -35,7 +35,7 @@ export default function RosterTable({ students, classes }: { students: Student[]
             กรองตามห้องเรียน
           </label>
           <select id="classFilter" value={classFilter} onChange={(e) => setClassFilter(e.target.value)}>
-            <option value="all">ทุกห้อง ({students.length} คน)</option>
+            <option value="all">All Classes ({students.length}) · ทุกห้อง ({students.length} คน)</option>
             {classes.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name} · {c.subject}
@@ -47,11 +47,11 @@ export default function RosterTable({ students, classes }: { students: Student[]
       <table>
         <thead>
           <tr>
-            <th>เลขประจำตัว</th>
-            <th>ชื่อ-สกุล</th>
-            <th>ชื่อเล่น</th>
-            <th>ห้อง</th>
-            <th>จัดการ</th>
+            <th>Student ID · เลขประจำตัว</th>
+            <th>Name · ชื่อ-สกุล</th>
+            <th>Nickname · ชื่อเล่น</th>
+            <th>Class · ห้อง</th>
+            <th>Actions · จัดการ</th>
           </tr>
         </thead>
         <tbody>
@@ -60,7 +60,11 @@ export default function RosterTable({ students, classes }: { students: Student[]
           ))}
           {filtered.length === 0 && (
             <tr>
-              <td colSpan={5}>{students.length === 0 ? "ยังไม่มีนักเรียนในระบบ" : "ไม่มีนักเรียนในห้องนี้"}</td>
+              <td colSpan={5}>
+                {students.length === 0
+                  ? "No students yet · ยังไม่มีนักเรียนในระบบ"
+                  : "No students in this class · ไม่มีนักเรียนในห้องนี้"}
+              </td>
             </tr>
           )}
         </tbody>

@@ -50,7 +50,7 @@ export default function AddStudentForm({ classes }: { classes: ClassOption[] }) 
 
   return (
     <form onSubmit={onSubmit}>
-      <label htmlFor="classId">ห้องเรียน</label>
+      <label htmlFor="classId">Class · ห้องเรียน</label>
       <select id="classId" value={classId} onChange={(e) => setClassId(e.target.value)}>
         {classes.map((c) => (
           <option key={c.id} value={c.id}>
@@ -59,21 +59,21 @@ export default function AddStudentForm({ classes }: { classes: ClassOption[] }) 
         ))}
       </select>
 
-      <label htmlFor="studentNumber">เลขประจำตัว</label>
+      <label htmlFor="studentNumber">Student ID · เลขประจำตัว</label>
       <input id="studentNumber" required value={studentNumber} onChange={(e) => setStudentNumber(e.target.value)} />
 
-      <label htmlFor="firstName">ชื่อ</label>
+      <label htmlFor="firstName">First Name · ชื่อ</label>
       <input id="firstName" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
 
-      <label htmlFor="lastName">นามสกุล</label>
+      <label htmlFor="lastName">Last Name · นามสกุล</label>
       <input id="lastName" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
 
-      <label htmlFor="nickname">ชื่อเล่น (ไม่บังคับ)</label>
+      <label htmlFor="nickname">Nickname (optional) · ชื่อเล่น (ไม่บังคับ)</label>
       <input id="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
 
       {error && <p className="error">{error}</p>}
       <button className="btn btn-primary" type="submit" disabled={busy} style={{ marginTop: 12 }}>
-        {busy ? "กำลังบันทึก..." : "เพิ่มนักเรียน"}
+        {busy ? "Saving... · กำลังบันทึก..." : "Add Student · เพิ่มนักเรียน"}
       </button>
     </form>
   );

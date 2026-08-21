@@ -51,7 +51,7 @@ export default function BulkAddForm({ classes }: { classes: ClassOption[] }) {
 
   return (
     <form onSubmit={onSubmit}>
-      <label htmlFor="bulkClassId">ห้องเรียน</label>
+      <label htmlFor="bulkClassId">Class · ห้องเรียน</label>
       <select id="bulkClassId" value={classId} onChange={(e) => setClassId(e.target.value)}>
         {classes.map((c) => (
           <option key={c.id} value={c.id}>
@@ -60,7 +60,7 @@ export default function BulkAddForm({ classes }: { classes: ClassOption[] }) {
         ))}
       </select>
 
-      <label htmlFor="bulkText">รายชื่อนักเรียน (บรรทัดละ 1 คน)</label>
+      <label htmlFor="bulkText">Student List (one per line) · รายชื่อนักเรียน (บรรทัดละ 1 คน)</label>
       <textarea
         id="bulkText"
         required
@@ -73,7 +73,7 @@ export default function BulkAddForm({ classes }: { classes: ClassOption[] }) {
       {error && <p className="error">{error}</p>}
       {summary && <p className="success">{summary}</p>}
       <button className="btn btn-primary" type="submit" disabled={busy} style={{ marginTop: 12 }}>
-        {busy ? "กำลังบันทึก..." : "เพิ่มรายชื่อทั้งหมด"}
+        {busy ? "Saving... · กำลังบันทึก..." : "Add All · เพิ่มรายชื่อทั้งหมด"}
       </button>
     </form>
   );

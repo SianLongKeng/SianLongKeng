@@ -17,10 +17,10 @@ export default function AddStudentPanel({ classes }: { classes: ClassOption[] })
     <div>
       <div className="tab-toggle" role="tablist">
         <button type="button" role="tab" aria-selected={mode === "single"} onClick={() => setMode("single")}>
-          เพิ่มทีละคน
+          Add One · เพิ่มทีละคน
         </button>
         <button type="button" role="tab" aria-selected={mode === "bulk"} onClick={() => setMode("bulk")}>
-          เพิ่มทีละหลายคน
+          Bulk Add · เพิ่มทีละหลายคน
         </button>
       </div>
       {mode === "single" ? <AddStudentForm classes={classes} /> : <BulkAddForm classes={classes} />}

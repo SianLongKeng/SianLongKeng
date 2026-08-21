@@ -64,12 +64,12 @@ p {
 
 .brand-mark {
   font-family: "Fraunces", serif;
-  font-weight: 640;
-  font-size: 1.15rem;
+  font-weight: 680;
+  font-size: 2.3rem;
   letter-spacing: -0.01em;
   color: var(--ink);
   display: block;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .card {

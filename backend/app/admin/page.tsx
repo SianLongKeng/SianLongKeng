@@ -55,7 +55,7 @@ export default async function AdminPage() {
         <div className="card-head">
           <div>
             <span className="eyebrow">Teacher Copilot</span>
-            <h1>รายชื่อนักเรียน</h1>
+            <h1>Student Roster · รายชื่อนักเรียน</h1>
             <p className="lede">เข้าสู่ระบบในนาม {session.email}</p>
           </div>
           <LogoutButton />
@@ -68,7 +68,7 @@ export default async function AdminPage() {
 
       <div className="card">
         <span className="eyebrow">Roster</span>
-        <h2 style={{ marginBottom: 16 }}>เพิ่มนักเรียน</h2>
+        <h2 style={{ marginBottom: 16 }}>Add Students · เพิ่มนักเรียน</h2>
         <AddStudentPanel classes={classes} />
       </div>
     </div>

@@ -85,10 +85,10 @@ export default function StudentRow({ student }: { student: Student }) {
         <td>
           <div className="row-actions">
             <button className="btn btn-primary btn-small" type="button" onClick={save} disabled={busy}>
-              บันทึก
+              Save · บันทึก
             </button>
             <button className="btn btn-ghost btn-small" type="button" onClick={cancelEdit} disabled={busy}>
-              ยกเลิก
+              Cancel · ยกเลิก
             </button>
           </div>
           {error && <p className="error">{error}</p>}
@@ -108,10 +108,10 @@ export default function StudentRow({ student }: { student: Student }) {
       <td>
         <div className="row-actions">
           <button className="btn btn-ghost btn-small" type="button" onClick={() => setEditing(true)}>
-            แก้ไข
+            Edit · แก้ไข
           </button>
           <button className="btn btn-danger btn-small" type="button" onClick={remove} disabled={busy}>
-            ลบ
+            Delete · ลบ
           </button>
         </div>
         {error && <p className="error">{error}</p>}

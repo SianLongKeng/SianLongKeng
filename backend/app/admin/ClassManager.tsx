@@ -72,7 +72,7 @@ function ClassRow({ cls }: { cls: ClassItem }) {
         <td>
           <div className="row-actions">
             <button className="btn btn-primary btn-small" type="button" onClick={save} disabled={busy}>
-              บันทึก
+              Save · บันทึก
             </button>
             <button
               className="btn btn-ghost btn-small"
@@ -84,7 +84,7 @@ function ClassRow({ cls }: { cls: ClassItem }) {
               }}
               disabled={busy}
             >
-              ยกเลิก
+              Cancel · ยกเลิก
             </button>
           </div>
           {error && <p className="error">{error}</p>}
@@ -101,10 +101,10 @@ function ClassRow({ cls }: { cls: ClassItem }) {
       <td>
         <div className="row-actions">
           <button className="btn btn-ghost btn-small" type="button" onClick={() => setEditing(true)}>
-            แก้ไข
+            Edit · แก้ไข
           </button>
           <button className="btn btn-danger btn-small" type="button" onClick={remove} disabled={busy}>
-            ลบ
+            Delete · ลบ
           </button>
         </div>
         {error && <p className="error">{error}</p>}
@@ -146,11 +146,11 @@ function AddClassForm() {
   return (
     <form onSubmit={onSubmit} style={{ display: "flex", gap: 10, alignItems: "flex-end", flexWrap: "wrap" }}>
       <div style={{ flex: "1 1 160px" }}>
-        <label htmlFor="newClassName">ห้องเรียนใหม่</label>
+        <label htmlFor="newClassName">New Class · ห้องเรียนใหม่</label>
         <input id="newClassName" required placeholder="เช่น ป.6/1" value={name} onChange={(e) => setName(e.target.value)} />
       </div>
       <div style={{ flex: "1 1 160px" }}>
-        <label htmlFor="newClassSubject">วิชา</label>
+        <label htmlFor="newClassSubject">Subject · วิชา</label>
         <input
           id="newClassSubject"
           required
@@ -160,7 +160,7 @@ function AddClassForm() {
         />
       </div>
       <button className="btn btn-primary" type="submit" disabled={busy} style={{ marginBottom: 0 }}>
-        {busy ? "กำลังเพิ่ม..." : "เพิ่มห้องเรียน"}
+        {busy ? "Adding... · กำลังเพิ่ม..." : "Add Class · เพิ่มห้องเรียน"}
       </button>
       {error && <p className="error" style={{ width: "100%" }}>{error}</p>}
     </form>
@@ -171,7 +171,7 @@ export default function ClassManager({ classes }: { classes: ClassItem[] }) {
   return (
     <div className="card">
       <span className="eyebrow">Classes</span>
-      <h2 style={{ marginBottom: 4 }}>ห้องเรียนที่สอน</h2>
+      <h2 style={{ marginBottom: 4 }}>Classes You Teach · ห้องเรียนที่สอน</h2>
       <p className="lede" style={{ marginBottom: 12 }}>
         อาจารย์หนึ่งคนสอนได้หลายห้อง หลายวิชา — เพิ่มห้องใหม่ได้ตลอดเวลา
       </p>
@@ -179,10 +179,10 @@ export default function ClassManager({ classes }: { classes: ClassItem[] }) {
       <table>
         <thead>
           <tr>
-            <th>ห้องเรียน</th>
-            <th>วิชา</th>
-            <th>จำนวนนักเรียน</th>
-            <th>จัดการ</th>
+            <th>Class · ห้องเรียน</th>
+            <th>Subject · วิชา</th>
+            <th>Students · จำนวนนักเรียน</th>
+            <th>Actions · จัดการ</th>
           </tr>
         </thead>
         <tbody>
@@ -191,7 +191,7 @@ export default function ClassManager({ classes }: { classes: ClassItem[] }) {
           ))}
           {classes.length === 0 && (
             <tr>
-              <td colSpan={4}>ยังไม่มีห้องเรียน</td>
+              <td colSpan={4}>No classes yet · ยังไม่มีห้องเรียน</td>
             </tr>
           )}
         </tbody>
