@@ -1,0 +1,1613 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EduTwin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#fbf3fa;
+    --surface:#ffffff;
+    --surface-2:#f3e5f1;
+    --ink:#241220;
+    --ink-soft:#6b4f66;
+    --ink-muted:#9c8398;
+    --border:rgba(138,73,107,0.14);
+    --border-strong:rgba(138,73,107,0.26);
+    --accent:#9F5F9F;
+    --accent-strong:#8A496B;
+    --accent-contrast:#ffffff;
+    --accent-wash:rgba(159,95,159,0.12);
+    --good:#0ca30c;
+    --good-wash:rgba(12,163,12,0.12);
+    --warning:#fab219;
+    --warning-wash:rgba(250,178,25,0.16);
+    --serious:#ec835a;
+    --serious-wash:rgba(236,131,90,0.14);
+    --critical:#d03b3b;
+    --cat-1:#2a78d6;
+    --cat-2:#eb6834;
+    --cat-3:#1baf7a;
+    --cat-4:#eda100;
+    --cat-5:#e87ba4;
+    --cat-6:#008300;
+    --grid:#ecdcea;
+    --axis:#cbb3c8;
+    --shadow: 0 1px 2px rgba(36,18,32,0.06), 0 8px 24px -12px rgba(36,18,32,0.18);
+    --radius-sm:6px;
+    --radius-md:12px;
+    --radius-lg:20px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+  }
+  h1,h2,h3{
+    font-family:"Fraunces", Georgia, "Times New Roman", serif;
+    font-weight:640;
+    letter-spacing:-0.01em;
+    text-wrap:balance;
+    margin:0;
+    color:var(--ink);
+  }
+  p{margin:0;}
+  button{font-family:inherit;}
+  .mono{font-family:"IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;}
+  .num{font-variant-numeric:tabular-nums;}
+  a{color:var(--accent);}
+  ::selection{background:var(--accent-wash);}
+
+  /* ---------- app shell ---------- */
+  .app{max-width:1180px;margin:0 auto;padding:0 24px 80px;}
+  .topbar{
+    position:sticky;top:0;z-index:40;
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .topbar-inner{
+    max-width:1180px;margin:0 auto;padding:14px 24px;
+    display:flex;align-items:center;gap:20px;
+  }
+  .brand{display:flex;align-items:baseline;gap:8px;flex-shrink:0;}
+  .brand-mark{
+    font-family:"Fraunces", serif;font-weight:640;font-size:1.15rem;letter-spacing:-0.01em;color:var(--ink);
+  }
+  .brand-tag{font-size:0.68rem;color:var(--ink-muted);letter-spacing:0.06em;text-transform:uppercase;}
+  /* Single scrollable row instead of wrapping — on a phone, 8 tabs wrapping
+     into 3-4 rows would eat most of the visible screen before content even
+     starts. A horizontal swipe is the standard mobile tab-bar pattern. */
+  .tabs{
+    display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px;
+    min-width:0;flex:1;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;
+  }
+  .tab{
+    appearance:none;border:none;background:transparent;color:var(--ink-soft);
+    font-size:0.92rem;font-weight:600;padding:10px 18px;border-radius:999px;cursor:pointer;
+    transition:background .15s ease, color .15s ease;white-space:nowrap;flex-shrink:0;
+  }
+  .tab:hover{color:var(--ink);}
+  .tab[aria-selected="true"]{background:var(--accent);color:var(--accent-contrast);}
+  .tab:focus-visible{outline:3px solid var(--accent-strong);outline-offset:2px;}
+  @media (max-width:520px){
+    .app{padding:0 16px 60px;}
+    .topbar-inner{padding:12px 16px;gap:14px;}
+    .screen{padding-top:28px;}
+  }
+
+  .screen{display:none;padding-top:40px;}
+  .screen.active{display:block;animation:fade .35s ease both;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion: reduce){
+    .screen.active{animation:none;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;font-size:0.72rem;letter-spacing:0.10em;text-transform:uppercase;
+    color:var(--accent-strong);font-weight:600;
+  }
+  .lede{color:var(--ink-soft);font-size:1.02rem;max-width:62ch;}
+
+  /* ---------- landing ---------- */
+  .hero{
+    display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;
+    padding:20px 0 64px;
+  }
+  @media (max-width:820px){.hero{grid-template-columns:1fr;}}
+  .hero h1{font-size:clamp(2.1rem, 4.2vw, 3.4rem);line-height:1.06;margin:14px 0 18px;}
+  .hero .same-score{
+    font-family:"Fraunces", serif;font-style:italic;font-weight:500;color:var(--accent-strong);
+    font-size:1.15rem;margin-bottom:26px;display:block;
+  }
+  .cta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .btn{
+    appearance:none;border:1px solid transparent;border-radius:999px;cursor:pointer;
+    font-size:1rem;font-weight:600;padding:14px 26px;transition:transform .15s ease, opacity .15s ease;
+    display:inline-flex;align-items:center;gap:8px;min-height:48px;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--accent);color:var(--accent-contrast);}
+  .btn-primary:hover{opacity:0.92;}
+  .btn-ghost{background:transparent;border-color:var(--border-strong);color:var(--ink);}
+  .btn-ghost:hover{background:var(--surface-2);}
+  .btn:focus-visible{outline:3px solid var(--accent-strong);outline-offset:2px;}
+  .btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+  .helix-wrap{position:relative;aspect-ratio:1/1.05;max-width:360px;margin:0 auto;}
+  .flow-row{
+    display:flex;align-items:center;gap:10px;margin-top:36px;flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace;font-size:0.78rem;letter-spacing:0.04em;
+  }
+  .flow-step{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--ink-soft);}
+  .flow-arrow{color:var(--ink-muted);}
+
+  .value-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-top:8px;}
+  @media (max-width:720px){.value-grid{grid-template-columns:1fr;}}
+  .value-cell{background:var(--surface);padding:24px 22px;}
+  .value-cell h3{font-size:1.02rem;margin-bottom:8px;}
+  .value-cell p{color:var(--ink-soft);font-size:0.89rem;}
+  .value-num{font-family:"IBM Plex Mono",monospace;color:var(--ink-muted);font-size:0.75rem;margin-bottom:10px;display:block;}
+
+  /* ---------- generic sections ---------- */
+  .section-head{margin-bottom:22px;display:flex;flex-direction:column;gap:6px;}
+  .section-head h2{font-size:1.55rem;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);}
+  .stepper{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .step-pill{
+    font-family:"IBM Plex Mono",monospace;font-size:0.72rem;padding:5px 11px;border-radius:999px;
+    border:1px solid var(--border);color:var(--ink-muted);
+  }
+  .step-pill.on{border-color:var(--accent);color:var(--accent-strong);background:var(--accent-wash);font-weight:600;}
+  .step-pill.done{border-color:var(--good);color:var(--good);background:var(--good-wash);}
+  .step-pill.done::before{content:"✓ ";}
+
+  /* ---------- mission screen ---------- */
+  .mission-layout{display:grid;grid-template-columns:1.5fr 1fr;gap:22px;}
+  @media (max-width:900px){.mission-layout{grid-template-columns:1fr;}}
+  .mission-card{padding:28px;}
+  .mission-title{font-size:1.3rem;margin-bottom:10px;}
+  .mission-scenario{color:var(--ink-soft);font-size:0.94rem;margin-bottom:20px;padding-bottom:20px;border-bottom:1px dashed var(--border-strong);}
+  .progress-track{height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin-bottom:8px;border:1px solid var(--border);}
+  .progress-fill{height:100%;background:var(--accent);border-radius:999px;}
+  .progress-label{font-family:"IBM Plex Mono",monospace;font-size:0.72rem;color:var(--ink-muted);margin-bottom:22px;display:block;}
+  .question-text{font-size:1.15rem;font-weight:600;margin-bottom:16px;}
+  .choices{display:grid;gap:12px;}
+  .choice{
+    text-align:left;border:2px solid var(--border-strong);background:var(--surface-2);border-radius:var(--radius-md);
+    padding:16px 18px;cursor:pointer;font-size:1rem;color:var(--ink);display:flex;align-items:center;gap:12px;
+    transition:border-color .15s ease, background .15s ease;min-height:52px;
+  }
+  .choice:hover{border-color:var(--accent-strong);}
+  .choice .letter{
+    font-family:"IBM Plex Mono",monospace;font-size:0.85rem;font-weight:600;width:28px;height:28px;border-radius:7px;
+    background:var(--surface);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .choice.selected{border-color:var(--accent);background:var(--accent-wash);}
+  .choice.selected .letter{background:var(--accent);color:var(--accent-contrast);border-color:var(--accent);}
+  .choice:disabled{opacity:0.6;cursor:not-allowed;}
+  .choice.reveal-correct{border-color:var(--good);background:var(--good-wash);}
+  .choice.reveal-correct .letter{background:var(--good);color:#fff;border-color:var(--good);}
+  .mission-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;}
+  .mission-complete{padding:40px 32px;text-align:center;}
+  .mission-complete h3{font-size:1.4rem;margin-bottom:16px;}
+  .mission-complete-score{font-size:2.6rem;font-weight:600;margin-bottom:14px;}
+  .mission-complete p{color:var(--ink-soft);font-size:0.9rem;margin-bottom:24px;max-width:40ch;margin-left:auto;margin-right:auto;}
+  .mission-complete .mission-actions{justify-content:center;}
+  .feedback{margin-top:18px;padding:14px 16px;border-radius:var(--radius-md);font-size:0.88rem;display:none;}
+  .feedback.show{display:block;animation:fade .3s ease both;}
+  .feedback.ok{background:var(--good-wash);color:var(--ink);border:1px solid var(--good);}
+  .feedback.no{background:var(--serious-wash);color:var(--ink);border:1px solid var(--serious);}
+  .side-note{padding:22px;font-size:0.87rem;color:var(--ink-soft);}
+  .side-note h3{font-size:0.95rem;margin-bottom:10px;color:var(--ink);}
+  .side-note ul{margin:0;padding-left:18px;}
+  .side-note li{margin-bottom:6px;}
+
+  /* ---------- coach screen ---------- */
+  .coach-layout{max-width:640px;margin:0 auto;}
+  .chat{display:flex;flex-direction:column;gap:14px;padding:26px;}
+  .bubble{max-width:80%;padding:12px 15px;border-radius:16px;font-size:0.92rem;line-height:1.5;}
+  .bubble.student{align-self:flex-end;background:var(--accent);color:var(--accent-contrast);border-bottom-right-radius:4px;}
+  .bubble.ai{align-self:flex-start;background:var(--surface-2);border:1px solid var(--border);border-bottom-left-radius:4px;}
+  .who{font-family:"IBM Plex Mono",monospace;font-size:0.66rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-muted);margin-bottom:4px;display:block;}
+  .bubble.student .who{color:rgba(255,255,255,0.7);}
+  .chat{max-height:420px;overflow-y:auto;}
+  .reflect-prompt{
+    margin:18px 26px 0;padding:16px 18px;border-radius:var(--radius-md);background:var(--accent-wash);border:1px solid var(--border);font-size:0.88rem;
+    opacity:0;transform:translateY(6px);transition:opacity .4s ease, transform .4s ease;pointer-events:none;max-height:0;overflow:hidden;
+  }
+  .reflect-prompt.show{opacity:1;transform:none;pointer-events:auto;max-height:200px;margin-top:18px;}
+  .reflect-prompt b{color:var(--accent-strong);}
+  .coach-quick{display:flex;gap:8px;flex-wrap:wrap;padding:16px 26px 0;}
+  .quick-chip{
+    appearance:none;font-size:0.85rem;border:1px solid var(--border-strong);background:var(--surface-2);border-radius:999px;
+    padding:9px 15px;cursor:pointer;color:var(--ink-soft);font-family:inherit;min-height:40px;
+  }
+  .quick-chip:hover{border-color:var(--accent-strong);color:var(--ink);}
+  .quick-chip:focus-visible{outline:3px solid var(--accent-strong);outline-offset:2px;}
+  .coach-input-row{display:flex;gap:10px;padding:16px 26px 26px;}
+  .coach-input{
+    flex:1;border:1px solid var(--border-strong);background:var(--surface-2);border-radius:999px;
+    padding:13px 18px;font-size:1rem;color:var(--ink);font-family:inherit;
+  }
+  .coach-input:focus{outline:3px solid var(--accent-strong);outline-offset:1px;border-color:var(--accent);}
+  .coach-send{flex-shrink:0;}
+  .bubble.typing{display:inline-flex;gap:5px;align-items:center;padding:15px 17px;}
+  .typing-dot{width:6px;height:6px;border-radius:50%;background:var(--ink-muted);animation:typingBounce 1.2s infinite ease-in-out;}
+  .typing-dot:nth-child(2){animation-delay:0.15s;}
+  .typing-dot:nth-child(3){animation-delay:0.3s;}
+  @keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:0.4;}30%{transform:translateY(-4px);opacity:1;}}
+
+  /* ---------- diagnosis / killer demo ---------- */
+  .killer-banner{
+    text-align:center;padding:34px 20px 30px;border-radius:var(--radius-lg);
+    background:var(--surface);border:1px solid var(--border);margin-bottom:28px;
+  }
+  .killer-banner .eyebrow{display:block;margin-bottom:10px;}
+  .killer-banner h2{font-size:1.7rem;margin-bottom:8px;}
+  .killer-banner p{color:var(--ink-soft);max-width:56ch;margin:0 auto;font-size:0.92rem;}
+
+  .score-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;}
+  @media (max-width:760px){.score-row{grid-template-columns:1fr;}}
+  .score-card{padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .score-id{display:flex;align-items:center;gap:12px;}
+  .avatar{
+    width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:0.85rem;color:#fff;flex-shrink:0;
+  }
+  .score-name{font-weight:600;font-size:0.98rem;}
+  .score-sub{font-size:0.78rem;color:var(--ink-muted);}
+  .score-num{font-family:"IBM Plex Mono",monospace;font-size:1.9rem;font-weight:600;}
+  .score-den{color:var(--ink-muted);font-size:1rem;}
+
+  .analyze-bar{display:flex;justify-content:center;margin-bottom:30px;}
+  .scan-status{font-family:"IBM Plex Mono",monospace;font-size:0.8rem;color:var(--ink-muted);margin-top:10px;text-align:center;display:none;}
+  .scan-status.show{display:block;}
+
+  .diag-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;opacity:0;transform:translateY(10px);transition:opacity .5s ease, transform .5s ease;pointer-events:none;}
+  .diag-grid.revealed{opacity:1;transform:none;pointer-events:auto;}
+  @media (max-width:900px){.diag-grid{grid-template-columns:1fr;}}
+  .diag-card{padding:24px;}
+  .diag-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .diag-card-head h3{font-size:1.05rem;}
+  .chip{
+    font-family:"IBM Plex Mono",monospace;font-size:0.68rem;font-weight:600;letter-spacing:0.03em;
+    padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;text-transform:uppercase;
+  }
+  .chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .chip.serious{background:var(--serious-wash);color:var(--serious);}
+  .chip.warning{background:var(--warning-wash);color:#8a5a00;}
+  .chip.good{background:var(--good-wash);color:var(--good);}
+
+  .radar-wrap{display:flex;justify-content:center;margin:14px 0 6px;}
+  .root-cause{font-size:0.86rem;color:var(--ink-soft);padding:12px 0;border-top:1px dashed var(--border-strong);margin-top:6px;}
+  .root-cause b{color:var(--ink);}
+  .mistake-bars{display:flex;flex-direction:column;gap:8px;margin:14px 0;}
+  .mbar-row{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:8px;font-size:0.78rem;}
+  .mbar-label{color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mbar-track{height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden;border:1px solid var(--border);}
+  .mbar-fill{height:100%;border-radius:999px;}
+  .mbar-pct{font-family:"IBM Plex Mono",monospace;text-align:right;color:var(--ink-muted);}
+  .intervention{
+    margin-top:14px;padding:14px 16px;border-radius:var(--radius-md);background:var(--surface-2);
+    border-left:3px solid var(--accent);font-size:0.86rem;
+  }
+  .intervention b{display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-strong);margin-bottom:6px;font-family:"IBM Plex Mono",monospace;}
+
+  .growth-card{padding:26px 28px;margin-top:22px;opacity:0;transform:translateY(10px);transition:opacity .5s ease .1s, transform .5s ease .1s;pointer-events:none;}
+  .growth-card.revealed{opacity:1;transform:none;pointer-events:auto;}
+  .growth-card-head{margin-bottom:6px;}
+  .growth-card-head h3{font-size:1.05rem;}
+  .growth-card-head p{color:var(--ink-soft);font-size:0.86rem;margin-top:4px;}
+  .growth-student{margin-top:24px;padding-top:22px;border-top:1px dashed var(--border-strong);}
+  .growth-student:first-of-type{border-top:none;margin-top:18px;padding-top:0;}
+  .growth-name-row{display:flex;align-items:center;gap:8px;margin-bottom:18px;}
+  .growth-name{font-weight:600;font-size:0.9rem;}
+  .growth-path{display:flex;justify-content:space-between;position:relative;padding-top:4px;}
+  .growth-path::before{content:"";position:absolute;top:9px;left:8%;right:8%;height:2px;background:var(--border-strong);z-index:0;}
+  .growth-node{position:relative;z-index:1;flex:1;text-align:center;padding:0 4px;}
+  .growth-dot{width:11px;height:11px;border-radius:50%;background:var(--surface);border:2px solid currentColor;margin:0 auto 9px;}
+  .growth-step-label{font-size:0.74rem;font-weight:600;color:var(--ink);line-height:1.3;}
+  .growth-step-time{font-size:0.66rem;color:var(--ink-muted);font-family:"IBM Plex Mono",monospace;margin-top:3px;}
+
+  .closing-line{
+    text-align:center;margin-top:34px;padding:30px 20px;border-radius:var(--radius-lg);
+    background:var(--accent);color:var(--accent-contrast);opacity:0;transform:translateY(8px);
+    transition:opacity .6s ease .2s, transform .6s ease .2s;
+  }
+  .closing-line.revealed{opacity:1;transform:none;}
+  .closing-line h2{color:inherit;font-size:1.4rem;font-style:italic;}
+  .closing-line span{display:block;font-family:"IBM Plex Mono",monospace;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;opacity:0.75;margin-top:8px;}
+
+  .mistake-legend{display:flex;flex-wrap:wrap;gap:12px 18px;justify-content:center;margin:22px 0 0;padding-top:18px;border-top:1px solid var(--border);}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:0.76rem;color:var(--ink-soft);}
+  .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+  /* ---------- teacher screen ---------- */
+  .pulse-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px;}
+  @media (max-width:760px){.pulse-row{grid-template-columns:1fr;}}
+  .pulse-card{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-left:4px solid var(--group-color, var(--accent));}
+  .pulse-count{font-family:"IBM Plex Mono",monospace;font-size:1.7rem;font-weight:600;}
+  .pulse-label{font-size:0.8rem;color:var(--ink-soft);margin-top:2px;}
+
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:900px){.board{grid-template-columns:1fr;}}
+  .board-col{display:flex;flex-direction:column;gap:10px;}
+  .board-col-head{display:flex;align-items:center;justify-content:space-between;padding:0 2px 6px;}
+  .board-col-head h3{font-size:0.92rem;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .board-col-head .dot{width:9px;height:9px;border-radius:50%;}
+  .board-count{font-family:"IBM Plex Mono",monospace;font-size:0.75rem;color:var(--ink-muted);}
+  .board-advice{font-size:0.76rem;color:var(--ink-soft);margin:-2px 0 6px;padding-bottom:10px;border-bottom:1px dashed var(--border);}
+  .stu-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:13px 14px;
+    cursor:pointer;transition:border-color .15s ease, transform .15s ease;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    text-align:left;width:100%;appearance:none;
+  }
+  .stu-card:hover{border-color:var(--accent-strong);transform:translateY(-1px);}
+  .stu-card:focus-visible{outline:3px solid var(--accent-strong);outline-offset:2px;}
+  .stu-name{font-size:0.88rem;font-weight:600;}
+  .stu-meta{font-size:0.74rem;color:var(--ink-muted);margin-top:2px;}
+  .stu-score{font-family:"IBM Plex Mono",monospace;font-size:0.95rem;font-weight:600;color:var(--ink-soft);flex-shrink:0;}
+
+  /* ---------- drawer ---------- */
+  .drawer-overlay{
+    position:fixed;inset:0;background:rgba(10,10,10,0.42);z-index:80;display:none;
+    align-items:flex-start;justify-content:flex-end;
+  }
+  .drawer-overlay.open{display:flex;animation:fade .2s ease both;}
+  .drawer{
+    width:min(420px, 100%);height:100%;background:var(--surface);border-left:1px solid var(--border);
+    padding:26px 26px 40px;overflow-y:auto;box-shadow:var(--shadow);
+  }
+  .drawer-close{
+    appearance:none;border:1px solid var(--border-strong);background:var(--surface-2);border-radius:8px;
+    width:30px;height:30px;cursor:pointer;color:var(--ink);font-size:0.95rem;float:right;
+  }
+  .drawer h3{font-size:1.15rem;margin-bottom:2px;}
+  .drawer-sub{font-size:0.8rem;color:var(--ink-muted);margin-bottom:20px;}
+
+  /* ---------- impact ---------- */
+  .sim-banner{
+    display:flex;gap:10px;align-items:flex-start;padding:14px 16px;border-radius:var(--radius-md);
+    background:var(--warning-wash);border:1px solid var(--warning);font-size:0.83rem;color:var(--ink);margin-bottom:26px;
+  }
+  .sim-banner b{color:#8a5a00;}
+  .kpi-group{margin-bottom:30px;}
+  .kpi-group-title{font-family:"IBM Plex Mono",monospace;font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-muted);margin-bottom:12px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media (max-width:1000px){.kpi-grid{grid-template-columns:repeat(3,1fr);}}
+  @media (max-width:820px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.kpi-grid{grid-template-columns:1fr;}}
+  .kpi-tile{padding:20px 20px 18px;}
+  .kpi-label{font-size:0.78rem;color:var(--ink-soft);margin-bottom:10px;}
+  .kpi-value{font-family:"IBM Plex Mono",monospace;font-size:1.7rem;font-weight:600;display:flex;align-items:baseline;gap:6px;}
+  .kpi-delta{font-size:0.85rem;font-weight:600;}
+  .kpi-delta.up{color:var(--good);}
+  .kpi-delta.down{color:var(--good);}
+  .kpi-bar{height:6px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);overflow:hidden;margin-top:12px;}
+  .kpi-bar-fill{height:100%;background:var(--accent);}
+  .kpi-target{font-size:0.7rem;color:var(--ink-muted);margin-top:6px;font-family:"IBM Plex Mono",monospace;}
+
+  .footer-tag{margin-top:60px;padding-top:22px;border-top:1px solid var(--border);font-size:0.76rem;color:var(--ink-muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+
+  /* ---------- business screen ---------- */
+  .bmc-grid{
+    display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:minmax(120px,auto);
+    gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);
+    overflow:hidden;margin-bottom:40px;
+  }
+  .bmc-cell{background:var(--surface);padding:16px 15px;}
+  .bmc-cell h4{
+    font-family:"IBM Plex Mono",monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;
+    color:var(--accent-strong);margin-bottom:8px;font-weight:600;
+  }
+  .bmc-cell ul{margin:0;padding-left:16px;font-size:0.8rem;color:var(--ink-soft);line-height:1.55;}
+  .bmc-cell.value-prop{background:var(--accent-wash);}
+  .bmc-partners{grid-column:1;grid-row:1/3;}
+  .bmc-activities{grid-column:2;grid-row:1;}
+  .bmc-resources{grid-column:2;grid-row:2;}
+  .bmc-value{grid-column:3;grid-row:1/3;}
+  .bmc-relationships{grid-column:4;grid-row:1;}
+  .bmc-channels{grid-column:4;grid-row:2;}
+  .bmc-segments{grid-column:5;grid-row:1/3;}
+  .bmc-cost{grid-column:1/3;grid-row:3;}
+  .bmc-revenue{grid-column:3/6;grid-row:3;}
+  @media (max-width:880px){
+    .bmc-grid{grid-template-columns:1fr;}
+    .bmc-partners,.bmc-activities,.bmc-resources,.bmc-value,.bmc-relationships,.bmc-channels,.bmc-segments,.bmc-cost,.bmc-revenue{
+      grid-column:1;grid-row:auto;
+    }
+  }
+
+  .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px;}
+  @media (max-width:820px){.pricing-grid{grid-template-columns:1fr;}}
+  .price-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);}
+  .price-card.featured{border:2px solid var(--accent);}
+  .price-tier{font-family:"IBM Plex Mono",monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-muted);margin-bottom:8px;}
+  .price-card.featured .price-tier{color:var(--accent-strong);}
+  .price-name{font-size:1.15rem;font-weight:600;margin-bottom:14px;}
+  .price-features{margin:0;padding-left:18px;font-size:0.85rem;color:var(--ink-soft);line-height:1.7;}
+
+  .table-wrap{overflow-x:auto;margin-bottom:40px;border:1px solid var(--border);border-radius:var(--radius-lg);}
+  .compare-table{width:100%;border-collapse:collapse;background:var(--surface);}
+  .compare-table th,.compare-table td{padding:14px 20px;text-align:left;font-size:0.86rem;border-bottom:1px solid var(--border);white-space:nowrap;}
+  .compare-table tr:last-child td{border-bottom:none;}
+  .compare-table th{
+    font-family:"IBM Plex Mono",monospace;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.04em;
+    color:var(--ink-muted);background:var(--surface-2);
+  }
+  .compare-table th.edutwin-col{color:var(--accent-strong);}
+  .compare-table td.edutwin-col{color:var(--ink);font-weight:600;}
+
+  .tech-table{width:100%;border-collapse:collapse;background:var(--surface);}
+  .tech-table th,.tech-table td{padding:12px 18px;text-align:left;font-size:0.85rem;border-bottom:1px solid var(--border);}
+  .tech-table tr:last-child td{border-bottom:none;}
+  .tech-table th{font-family:"IBM Plex Mono",monospace;font-size:0.7rem;text-transform:uppercase;color:var(--ink-muted);background:var(--surface-2);}
+  .tech-table td:first-child{font-weight:600;white-space:nowrap;}
+  .arch-flow{font-family:"IBM Plex Mono",monospace;font-size:0.78rem;color:var(--ink-soft);padding:16px 20px;border-top:1px dashed var(--border-strong);line-height:1.8;}
+
+  .flow-figure{margin:0 0 40px;}
+  .flow-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);padding:8px;}
+  .flow-scroll svg{display:block;min-width:640px;}
+  .flow-caption{font-size:0.82rem;color:var(--ink-soft);margin-top:12px;}
+
+  /* ---------- pitch screen ---------- */
+  .pitch-timeline{border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden;margin-bottom:40px;}
+  .pitch-seg{display:grid;grid-template-columns:96px 1fr;gap:18px;padding:18px 22px;border-bottom:1px solid var(--border);}
+  @media (max-width:520px){.pitch-seg{grid-template-columns:1fr;gap:6px;}}
+  .pitch-seg:last-child{border-bottom:none;}
+  .pitch-time{font-family:"IBM Plex Mono",monospace;font-size:0.74rem;color:var(--accent-strong);font-weight:600;}
+  .pitch-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--ink-muted);margin-bottom:6px;font-family:"IBM Plex Mono",monospace;}
+  .pitch-text{font-size:0.9rem;color:var(--ink-soft);line-height:1.65;}
+
+  .deck-list{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);margin-bottom:12px;}
+  .deck-item{display:flex;gap:16px;padding:13px 20px;border-bottom:1px solid var(--border);align-items:baseline;}
+  .deck-item:last-child{border-bottom:none;}
+  .deck-num{font-family:"IBM Plex Mono",monospace;color:var(--ink-muted);font-size:0.78rem;width:24px;flex-shrink:0;}
+  .deck-title{font-weight:600;font-size:0.87rem;flex-shrink:0;}
+  .deck-desc{color:var(--ink-soft);font-size:0.82rem;}
+  .deck-note{
+    margin-bottom:40px;padding:14px 16px;border-radius:var(--radius-md);
+    background:var(--warning-wash);border:1px solid var(--warning);font-size:0.83rem;color:var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">EduTwin</span>
+      <span class="brand-tag">by MINDMESH</span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="EduTwin prototype screens">
+      <button class="tab" role="tab" data-screen="landing" aria-selected="true">Landing</button>
+      <button class="tab" role="tab" data-screen="mission" aria-selected="false">Student Mission</button>
+      <button class="tab" role="tab" data-screen="coach" aria-selected="false">AI Coach</button>
+      <button class="tab" role="tab" data-screen="diagnosis" aria-selected="false">Diagnosis</button>
+      <button class="tab" role="tab" data-screen="teacher" aria-selected="false">Teacher</button>
+      <button class="tab" role="tab" data-screen="impact" aria-selected="false">Impact</button>
+      <button class="tab" role="tab" data-screen="business" aria-selected="false">Business</button>
+      <button class="tab" role="tab" data-screen="pitch" aria-selected="false">Pitch</button>
+    </nav>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- ============ LANDING ============ -->
+  <section class="screen active" id="screen-landing">
+    <div class="hero">
+      <div>
+        <span class="eyebrow">EduTwin — AI Learning Twin Platform</span>
+        <h1>From Scores to<br>Learning DNA.</h1>
+        <span class="same-score">“Same Score ≠ Same Learning.”</span>
+        <p class="lede">EduTwin สร้าง Digital Learning Twin ของนักเรียนจากพฤติกรรมการเรียนรู้จริง — คำตอบ วิธีคิด การขอ Hint การอธิบายเหตุผล และ Reflection — แล้วเปลี่ยนข้อมูลเหล่านี้เป็น Learning DNA เพื่อช่วยนักเรียนและครูเข้าใจว่า “เรียนรู้อย่างไร” ไม่ใช่แค่ดูคะแนน</p>
+        <div class="cta-row" style="margin-top:26px;">
+          <button class="btn btn-primary" data-goto="mission">Start Learning →</button>
+          <button class="btn btn-ghost" data-goto="diagnosis">ดู Killer Demo</button>
+        </div>
+        <div class="flow-row">
+          <span class="flow-step">LEARN</span><span class="flow-arrow">→</span>
+          <span class="flow-step">DIAGNOSE</span><span class="flow-arrow">→</span>
+          <span class="flow-step">ADAPT</span>
+        </div>
+      </div>
+      <div class="helix-wrap" aria-hidden="true">
+        <svg id="helix-svg" viewBox="0 0 300 320" width="100%" height="100%"></svg>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>Same Score ≠ Same Learning.</h2>
+      <p class="lede">นักเรียนที่ได้คะแนนเท่ากันอาจมี Learning Gap คนละแบบ — ระบบทั่วไปตอบแค่ “ได้กี่คะแนน” แต่ EduTwin อธิบายว่า “ผิดเพราะอะไร”</p>
+    </div>
+    <div class="value-grid">
+      <div class="value-cell">
+        <span class="value-num">01</span>
+        <h3>Learning DNA</h3>
+        <p>Profile รายบุคคล — Concept, Application, Critical Thinking, Problem Solving, Creativity, Collaboration, Confidence</p>
+      </div>
+      <div class="value-cell">
+        <span class="value-num">02</span>
+        <h3>Mistake DNA</h3>
+        <p>จำแนก Root Cause ของความผิดพลาด แล้วเชื่อมไปยัง Intervention ที่ตรงจุด ไม่ใช่การเฉลยซ้ำ</p>
+      </div>
+      <div class="value-cell">
+        <span class="value-num">03</span>
+        <h3>Teacher Copilot</h3>
+        <p>เปลี่ยนข้อมูลนักเรียนทั้งห้องเป็น Action — จัดกลุ่มตาม Learning Gap และแนะนำ Intervention</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISSION ============ -->
+  <section class="screen" id="screen-mission">
+    <div class="section-head">
+      <span class="eyebrow">Student · Adaptive Mission</span>
+      <h2>ภารกิจ: ออกแบบงบประมาณสวนสาธารณะ</h2>
+    </div>
+    <div class="stepper" id="mission-stepper">
+      <span class="step-pill on" data-step="0">Explore</span>
+      <span class="step-pill" data-step="1">Fail</span>
+      <span class="step-pill" data-step="2">Reflect</span>
+      <span class="step-pill" data-step="3">Improve</span>
+    </div>
+    <div class="mission-layout">
+      <div class="card mission-card" id="mission-card">
+        <div class="mission-title">มิชชันที่ 3 · สวนสาธารณะชุมชน</div>
+        <p class="mission-scenario">เทศบาลให้งบประมาณ 50,000 บาท เพื่อสร้างสวนสาธารณะขนาด 200 ตร.ม. โดยกำหนดให้ 60% ของพื้นที่ทั้งหมดใช้ปูหญ้า ส่วนที่เหลือเป็นทางเดินและสนามเด็กเล่น</p>
+        <span class="progress-label mono" id="mission-progress-label">ข้อที่ 1 / 5</span>
+        <div class="progress-track"><div class="progress-fill" id="mission-progress-fill" style="width:0%"></div></div>
+        <p class="question-text" id="mission-question-text"></p>
+        <div class="choices" id="mission-choices"></div>
+        <div class="mission-actions">
+          <button class="btn btn-primary" id="mission-submit">ส่งคำตอบ</button>
+          <button class="btn btn-primary" id="mission-next" style="display:none;">ข้อถัดไป →</button>
+          <button class="btn btn-ghost" data-goto="coach">ขอ Hint จาก AI Coach</button>
+        </div>
+        <div class="feedback" id="mission-feedback"></div>
+      </div>
+      <div class="card mission-complete" id="mission-complete" style="display:none;">
+        <h3>ภารกิจเสร็จสิ้น!</h3>
+        <div class="mission-complete-score mono" id="mission-complete-score">0 / 5</div>
+        <p id="mission-complete-msg"></p>
+        <div class="mission-actions">
+          <button class="btn btn-primary" data-goto="diagnosis">ดู Learning DNA ของคุณ →</button>
+          <button class="btn btn-ghost" id="mission-restart">ทำภารกิจใหม่</button>
+        </div>
+      </div>
+      <div class="card side-note">
+        <h3>EduTwin กำลังสังเกตอะไรอยู่</h3>
+        <ul>
+          <li>เวลาที่ใช้คิดต่อข้อ และรูปแบบการลองผิดลองถูก</li>
+          <li>จำนวนครั้งที่ขอ Hint และประเภทของ Hint ที่ใช้</li>
+          <li>วิธีอธิบายเหตุผลก่อนเลือกคำตอบ</li>
+          <li>Reflection หลังทำภารกิจเสร็จ</li>
+        </ul>
+        <p style="margin-top:14px;">ข้อมูลทั้งหมดนี้จะถูกประมวลผลเป็น <strong>Learning DNA</strong> และ <strong>Mistake DNA</strong> ไม่ใช่แค่ถูก/ผิด</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AI COACH ============ -->
+  <section class="screen" id="screen-coach">
+    <div class="section-head">
+      <span class="eyebrow">AI Learning Coach</span>
+      <h2>Socratic Questioning — ไม่เฉลย ช่วยให้คิดเอง</h2>
+      <p class="lede">แทนที่จะให้คำตอบทันที AI Coach จะถามนำ ให้ตัวอย่าง และชวนสะท้อนคิด — ลองพิมพ์คุยกับ AI Coach ได้เลย เหมือนแชทจริง</p>
+    </div>
+    <div class="coach-layout card">
+      <div class="chat" id="coach-chat"></div>
+      <div class="reflect-prompt" id="reflect-prompt"><b>Reflection Prompt:</b> อะไรทำให้ตอนแรกหนูไม่มั่นใจว่าจะเริ่มตรงไหน?</div>
+      <div class="coach-quick" id="coach-quick">
+        <button class="quick-chip" type="button">หนูไม่รู้จะเริ่มตรงไหนค่ะ</button>
+        <button class="quick-chip" type="button">200 ตร.ม. ค่ะ</button>
+        <button class="quick-chip" type="button">60% ค่ะ</button>
+      </div>
+      <div class="coach-input-row">
+        <input type="text" id="coach-input" class="coach-input" placeholder="พิมพ์ข้อความถึง AI Coach…" autocomplete="off">
+        <button class="btn btn-primary coach-send" id="coach-send">ส่ง</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DIAGNOSIS / KILLER DEMO ============ -->
+  <section class="screen" id="screen-diagnosis">
+    <div class="killer-banner">
+      <span class="eyebrow">Killer Demo</span>
+      <h2>นักเรียนสองคน คะแนนเท่ากัน 6/10</h2>
+      <p>Ploy และ Tan ทำภารกิจ “งบประมาณสวนสาธารณะ” ชุดเดียวกัน ได้คะแนนเท่ากันเป๊ะ — กด Analyze เพื่อดูว่า EduTwin มองเห็นอะไรที่คะแนนมองไม่เห็น</p>
+    </div>
+
+    <div class="score-row">
+      <div class="card score-card">
+        <div class="score-id">
+          <div class="avatar" style="background:var(--cat-1);">PP</div>
+          <div><div class="score-name">Ploy P.</div><div class="score-sub">ป.5 · ห้อง 2</div></div>
+        </div>
+        <div class="score-num mono">6<span class="score-den">/10</span></div>
+      </div>
+      <div class="card score-card">
+        <div class="score-id">
+          <div class="avatar" style="background:var(--cat-2);">TK</div>
+          <div><div class="score-name">Tan K.</div><div class="score-sub">ป.5 · ห้อง 2</div></div>
+        </div>
+        <div class="score-num mono">6<span class="score-den">/10</span></div>
+      </div>
+    </div>
+
+    <div class="analyze-bar">
+      <div style="text-align:center;">
+        <button class="btn btn-primary" id="analyze-btn">วิเคราะห์ด้วย AI · Analyze</button>
+        <div class="scan-status mono" id="scan-status">กำลังวิเคราะห์ Learning Pattern และ Mistake Pattern…</div>
+      </div>
+    </div>
+
+    <div class="diag-grid" id="diag-grid">
+      <div class="card diag-card">
+        <div class="diag-card-head">
+          <h3>Ploy P. — Learning DNA</h3>
+          <span class="chip serious">Concept Gap</span>
+        </div>
+        <div class="radar-wrap" id="radar-ploy"></div>
+        <p class="root-cause"><b>Root Cause:</b> เข้าใจสูตร “เปอร์เซ็นต์ของพื้นที่” คลาดเคลื่อน — ตีความ 60% ผิดเป็นสัดส่วนของเส้นรอบรูปแทนที่จะเป็นพื้นที่ทั้งหมด (Misconception)</p>
+        <div class="mistake-bars" id="mistake-ploy"></div>
+        <div class="intervention"><b>AI Intervention</b>ทบทวน Concept เปอร์เซ็นต์กับพื้นที่ผ่าน Micro-lesson 5 นาที + โจทย์ฝึกแบบ Visual ก่อนกลับไปทำ Mission ต่อ</div>
+      </div>
+      <div class="card diag-card">
+        <div class="diag-card-head">
+          <h3>Tan K. — Learning DNA</h3>
+          <span class="chip warning">Application Gap</span>
+        </div>
+        <div class="radar-wrap" id="radar-tan"></div>
+        <p class="root-cause"><b>Root Cause:</b> เข้าใจเปอร์เซ็นต์ดี แต่สับสนลำดับขั้นตอนเมื่อโจทย์มีหลายเงื่อนไขต่อกัน (งบประมาณ + พื้นที่ + ส่วนที่เหลือ) — Application Gap ไม่ใช่ Concept Gap</p>
+        <div class="mistake-bars" id="mistake-tan"></div>
+        <div class="intervention"><b>AI Intervention</b>เพิ่ม Mission แบบ Multi-step Real-world Problem พร้อม Worked Example ทีละขั้น เพื่อฝึกลำดับการแก้โจทย์ซับซ้อน</div>
+      </div>
+    </div>
+
+    <div class="mistake-legend" id="mistake-legend"></div>
+
+    <div class="card growth-card" id="growth-card">
+      <div class="growth-card-head">
+        <span class="eyebrow">AI Growth Plan</span>
+        <h3>เส้นทางพัฒนาที่ AI แนะนำ — คนละเส้นทาง แม้คะแนนจะเท่ากัน</h3>
+        <p>เมื่อ Root Cause ต่างกัน AI จะออกแบบลำดับ Mission ถัดไปให้ไม่เหมือนกัน ไม่ใช่ให้ทำแบบฝึกหัดชุดเดียวกันซ้ำ</p>
+      </div>
+      <div id="growth-paths"></div>
+    </div>
+
+    <div class="closing-line" id="closing-line">
+      <h2>“Same Score ≠ Same Learning.”</h2>
+      <span>EduTwin — From Scores to Learning DNA</span>
+    </div>
+  </section>
+
+  <!-- ============ TEACHER ============ -->
+  <section class="screen" id="screen-teacher">
+    <div class="section-head">
+      <span class="eyebrow">Teacher Copilot</span>
+      <h2>Class Pulse — ห้อง ป.5/2</h2>
+      <p class="lede">EduTwin จัดกลุ่มนักเรียนทั้งห้องตาม Learning Gap โดยอัตโนมัติ พร้อมแนะนำ Intervention ที่เหมาะกับแต่ละกลุ่ม — คลิกที่นักเรียนเพื่อดู Learning DNA รายบุคคล</p>
+    </div>
+
+    <div class="pulse-row" id="pulse-row"></div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- ============ IMPACT ============ -->
+  <section class="screen" id="screen-impact">
+    <div class="section-head">
+      <span class="eyebrow">Impact Dashboard</span>
+      <h2>เป้าหมายผลลัพธ์การเรียนรู้</h2>
+    </div>
+    <div class="sim-banner">
+      <span>⚠</span>
+      <span><b>Prototype Simulation:</b> ตัวเลขด้านล่างเป็นเป้าหมายจำลองสำหรับสาธิตแนวคิด ยังไม่ใช่ผลการทดลองจริงจากโรงเรียน</span>
+    </div>
+    <div id="kpi-groups"></div>
+
+    <div class="footer-tag">
+      <span>EduTwin — From Scores to Learning DNA.</span>
+      <span>MINDMESH · Hackathon 2026 Prototype</span>
+    </div>
+  </section>
+
+  <!-- ============ BUSINESS ============ -->
+  <section class="screen" id="screen-business">
+    <div class="section-head">
+      <span class="eyebrow">Business Model Canvas</span>
+      <h2>โมเดลธุรกิจของ EduTwin</h2>
+    </div>
+    <div class="bmc-grid">
+      <div class="bmc-cell bmc-partners">
+        <h4>Key Partners</h4>
+        <ul><li>โรงเรียน</li><li>ครู</li><li>EdTech Partner</li><li>ผู้เชี่ยวชาญการศึกษา</li></ul>
+      </div>
+      <div class="bmc-cell bmc-activities">
+        <h4>Key Activities</h4>
+        <ul><li>AI Analysis</li><li>Platform Development</li><li>Content Development</li></ul>
+      </div>
+      <div class="bmc-cell bmc-resources">
+        <h4>Key Resources</h4>
+        <ul><li>AI Model</li><li>Learning Data</li><li>Platform</li><li>Education Content</li></ul>
+      </div>
+      <div class="bmc-cell value-prop bmc-value">
+        <h4>Value Proposition</h4>
+        <ul><li>วิเคราะห์ "วิธีเรียนรู้" ไม่ใช่แค่คะแนน</li><li>Learning DNA + Mistake DNA เฉพาะบุคคล</li><li>Intervention ที่ตรงจุด ไม่ใช่การเฉลยซ้ำ</li></ul>
+      </div>
+      <div class="bmc-cell bmc-relationships">
+        <h4>Customer Relationships</h4>
+        <ul><li>Dashboard</li><li>AI Assistant</li><li>Support</li></ul>
+      </div>
+      <div class="bmc-cell bmc-channels">
+        <h4>Channels</h4>
+        <ul><li>โรงเรียน</li><li>EdTech Partnership</li><li>Demo / Workshop</li></ul>
+      </div>
+      <div class="bmc-cell bmc-segments">
+        <h4>Customer Segments</h4>
+        <ul><li>โรงเรียน</li><li>ครู</li><li>นักเรียน</li><li>หน่วยงานการศึกษา</li></ul>
+      </div>
+      <div class="bmc-cell bmc-cost">
+        <h4>Cost Structure</h4>
+        <ul><li>AI API</li><li>Cloud</li><li>Development</li><li>Maintenance</li></ul>
+      </div>
+      <div class="bmc-cell bmc-revenue">
+        <h4>Revenue Streams</h4>
+        <ul><li>School Subscription</li><li>Premium Analytics</li><li>API</li></ul>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <span class="eyebrow">Revenue Model</span>
+      <h2>แผนราคา 3 ระดับ</h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-tier">Free</div>
+        <div class="price-name">Student Trial</div>
+        <ul class="price-features"><li>Student Learning DNA สำหรับทดลอง</li></ul>
+      </div>
+      <div class="price-card featured">
+        <div class="price-tier">แนะนำ</div>
+        <div class="price-name">School Plan</div>
+        <ul class="price-features">
+          <li>Teacher Dashboard</li>
+          <li>AI Analysis</li>
+          <li>Class Analytics</li>
+          <li>Intervention Recommendation</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">Custom</div>
+        <div class="price-name">Enterprise</div>
+        <ul class="price-features">
+          <li>Advanced Analytics</li>
+          <li>API Access</li>
+          <li>Custom Integration</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <span class="eyebrow">Competitive Positioning</span>
+      <h2>ต่างจากระบบทั่วไปอย่างไร</h2>
+    </div>
+    <div class="table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr><th>ระบบทั่วไป</th><th class="edutwin-col">EduTwin</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>วัดคะแนน</td><td class="edutwin-col">วิเคราะห์กระบวนการเรียนรู้</td></tr>
+          <tr><td>บอกถูก / ผิด</td><td class="edutwin-col">วิเคราะห์ Root Cause</td></tr>
+          <tr><td>เนื้อหาเดียวกัน</td><td class="edutwin-col">Adaptive Learning Path</td></tr>
+          <tr><td>Dashboard รายงาน</td><td class="edutwin-col">Teacher Copilot ที่แนะนำ Action</td></tr>
+          <tr><td>AI ตอบคำถาม</td><td class="edutwin-col">AI Coach ที่กระตุ้นการคิด</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-head">
+      <span class="eyebrow">Product Flow</span>
+      <h2>ข้อมูลนักเรียนไหลไปเป็น Learning DNA ได้อย่างไร</h2>
+    </div>
+    <figure class="flow-figure">
+      <div class="flow-scroll">
+        <svg viewBox="0 0 1020 260" role="img" aria-label="Product flow: Student generates Learning Actions, processed by the Data Engine and AI Learning Analysis into Learning DNA and Mistake DNA, which drive AI Recommendation into Student Coach and Teacher Copilot, producing Better Learning Outcome.">
+          <defs>
+            <marker id="flow-arrow" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto">
+              <polygon points="0,0 8,3.5 0,7" fill="var(--ink-muted)"/>
+            </marker>
+          </defs>
+
+          <!-- row 1 connectors -->
+          <line x1="240" y1="62" x2="266" y2="62" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <line x1="490" y1="62" x2="516" y2="62" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <line x1="740" y1="62" x2="766" y2="62" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <!-- turn down -->
+          <line x1="880" y1="94" x2="880" y2="166" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <!-- row 2 connectors (reverse direction) -->
+          <line x1="770" y1="202" x2="744" y2="202" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <line x1="520" y1="202" x2="494" y2="202" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+          <line x1="270" y1="202" x2="244" y2="202" stroke="var(--ink-muted)" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+          <!-- n1 Student -->
+          <rect x="20" y="30" width="220" height="64" rx="10" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <text x="32" y="46" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-muted)">01</text>
+          <text x="130" y="68" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Student</text>
+
+          <!-- n2 Learning Actions -->
+          <rect x="270" y="30" width="220" height="64" rx="10" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <text x="282" y="46" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-muted)">02</text>
+          <text x="380" y="68" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Learning Actions</text>
+
+          <!-- n3 Data Engine -->
+          <rect x="520" y="30" width="220" height="64" rx="10" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <text x="532" y="46" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-muted)">03</text>
+          <text x="630" y="68" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Data Engine</text>
+
+          <!-- n4 AI Learning Analysis (accent) -->
+          <rect x="770" y="30" width="220" height="64" rx="10" fill="var(--accent-wash)" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="782" y="46" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--accent-strong)">04</text>
+          <text x="880" y="59" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">AI Learning</text>
+          <text x="880" y="76" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Analysis</text>
+
+          <!-- n5 Learning DNA + Mistake DNA (accent) -->
+          <rect x="770" y="170" width="220" height="64" rx="10" fill="var(--accent-wash)" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="782" y="186" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--accent-strong)">05</text>
+          <text x="880" y="199" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Learning DNA +</text>
+          <text x="880" y="216" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Mistake DNA</text>
+
+          <!-- n6 AI Recommendation (accent) -->
+          <rect x="520" y="170" width="220" height="64" rx="10" fill="var(--accent-wash)" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="532" y="186" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--accent-strong)">06</text>
+          <text x="630" y="199" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">AI</text>
+          <text x="630" y="216" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Recommendation</text>
+
+          <!-- n7 Student Coach / Teacher Copilot -->
+          <rect x="270" y="170" width="220" height="64" rx="10" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <text x="282" y="186" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-muted)">07</text>
+          <text x="380" y="199" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Student Coach /</text>
+          <text x="380" y="216" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Teacher Copilot</text>
+
+          <!-- n8 Better Learning Outcome (good) -->
+          <rect x="20" y="170" width="220" height="64" rx="10" fill="var(--good-wash)" stroke="var(--good)" stroke-width="1.5"/>
+          <text x="32" y="186" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--good)">08</text>
+          <text x="130" y="199" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Better Learning</text>
+          <text x="130" y="216" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Outcome</text>
+        </svg>
+      </div>
+      <figcaption class="flow-caption">พฤติกรรมของนักเรียน (คำตอบ, Hint, เหตุผล, Reflection) ไหลผ่าน Data Engine และ AI Learning Analysis กลายเป็น Learning DNA + Mistake DNA จากนั้น AI สร้างคำแนะนำที่ส่งต่อให้ทั้งนักเรียน (ผ่าน Coach) และครู (ผ่าน Copilot) เพื่อผลลัพธ์การเรียนรู้ที่ดีขึ้น</figcaption>
+    </figure>
+
+    <div class="section-head">
+      <span class="eyebrow">Technology & Architecture</span>
+      <h2>สแต็กเทคโนโลยี</h2>
+    </div>
+    <div class="table-wrap">
+      <table class="tech-table">
+        <thead><tr><th>Layer</th><th>Technology / Approach</th></tr></thead>
+        <tbody>
+          <tr><td>Frontend</td><td>Next.js, Tailwind CSS, Recharts / Chart.js</td></tr>
+          <tr><td>Backend</td><td>Python FastAPI, PostgreSQL</td></tr>
+          <tr><td>AI Layer</td><td>LLM API, Prompt Engineering, Structured Output, Embedding / Vector Search</td></tr>
+          <tr><td>Analytics</td><td>Python, Pandas, Scoring Engine, Rule-based + AI Classification</td></tr>
+        </tbody>
+      </table>
+      <div class="arch-flow">Student → Next.js Web App → FastAPI → Learning Data → Analytics Engine → LLM → Learning DNA Engine → Student App / Teacher Dashboard</div>
+    </div>
+  </section>
+
+  <!-- ============ PITCH ============ -->
+  <section class="screen" id="screen-pitch">
+    <div class="section-head">
+      <span class="eyebrow">Pitch Script — 3 Minutes</span>
+      <h2>สคริปต์นำเสนอ</h2>
+    </div>
+    <div class="pitch-timeline">
+      <div class="pitch-seg">
+        <div class="pitch-time">0:00–0:25</div>
+        <div><div class="pitch-label">Hook</div><div class="pitch-text">ถ้านักเรียนสองคนได้คะแนนเท่ากัน 6 เต็ม 10 เราจะสรุปได้ไหมว่าเขาเรียนรู้เหมือนกัน? คำตอบคือไม่ คนหนึ่งอาจจำ Concept ได้แต่ประยุกต์ใช้ไม่ได้ อีกคนอาจ Concept ยังไม่แม่นแต่มีทักษะการคิดวิเคราะห์ที่ดี แต่ในห้องเรียนทั้งสองคนอาจถูกมองว่าเป็นเพียง "เด็กที่ได้ 6 คะแนน" เหมือนกัน</div></div>
+      </div>
+      <div class="pitch-seg">
+        <div class="pitch-time">0:25–0:50</div>
+        <div><div class="pitch-label">Problem</div><div class="pitch-text">ครูในห้องเรียนต้องดูแลนักเรียนจำนวนมาก และข้อมูลที่มีมักบอกเพียงผลลัพธ์ เช่น คะแนนหรือข้อถูกผิด แต่สิ่งที่หายไปคือกระบวนการเรียนรู้ เราจึงตั้งคำถามว่า ถ้าเราไม่ได้แค่รู้ว่าเด็กตอบผิด แต่รู้ว่าเขาผิดเพราะอะไร จะเกิดอะไรขึ้น?</div></div>
+      </div>
+      <div class="pitch-seg">
+        <div class="pitch-time">0:50–1:20</div>
+        <div><div class="pitch-label">Solution</div><div class="pitch-text">นี่คือ EduTwin — AI Learning Twin ระบบที่สร้าง Digital Twin ของการเรียนรู้ของนักเรียน EduTwin วิเคราะห์ทั้งคำตอบ วิธีคิด การขอ Hint การอธิบายเหตุผล และกิจกรรมที่นักเรียนทำ แล้วเปลี่ยนข้อมูลเหล่านี้เป็น Learning DNA เพื่อให้เราเห็นว่าเด็กเก่งอะไร ติดตรงไหน และควรพัฒนาอย่างไร</div></div>
+      </div>
+      <div class="pitch-seg">
+        <div class="pitch-time">1:20–1:50</div>
+        <div><div class="pitch-label">Killer Feature</div><div class="pitch-text">สิ่งที่แตกต่างที่สุดคือ Mistake DNA เพราะ EduTwin ไม่ได้บอกแค่ว่าข้อนี้ผิด แต่บอกว่าผิดเพราะ Concept Gap, อ่านโจทย์ หรือไม่สามารถนำความรู้ไปประยุกต์ใช้ จากนั้น AI จะสร้าง Learning Path ที่เหมาะกับนักเรียนแต่ละคน</div></div>
+      </div>
+      <div class="pitch-seg">
+        <div class="pitch-time">1:50–2:15</div>
+        <div><div class="pitch-label">Teacher</div><div class="pitch-text">สำหรับครู EduTwin เปลี่ยนข้อมูลของนักเรียนเป็น Teacher Copilot ครูเห็นได้ทันทีว่าใครต้องทบทวน ใครต้องฝึกเพิ่ม และใครพร้อมสำหรับ Challenge AI ยังช่วยจัดกลุ่มนักเรียนและแนะนำกิจกรรมที่เหมาะสม</div></div>
+      </div>
+      <div class="pitch-seg">
+        <div class="pitch-time">2:15–2:35</div>
+        <div><div class="pitch-label">Technology & Feasibility</div><div class="pitch-text">เบื้องหลัง EduTwin ใช้ Web Technology, Learning Analytics และ LLM โดยมี AI Analysis Engine ทำหน้าที่วิเคราะห์ Learning Pattern และ Mistake Pattern เราสามารถเริ่มจากหนึ่งวิชา หนึ่งบทเรียน และหนึ่งห้องเรียนก่อนขยายไปยังหลายวิชาและหลายโรงเรียน</div></div>
+      </div>
+      <div class="pitch-seg">
+        <div class="pitch-time">2:35–2:50</div>
+        <div><div class="pitch-label">Impact</div><div class="pitch-text">เราต้องการเปลี่ยนการศึกษา จากการถามว่า "เด็กได้กี่คะแนน?" ไปสู่คำถามว่า "เด็กกำลังเรียนรู้อย่างไร และเราจะช่วยเขาได้อย่างไร?"</div></div>
+      </div>
+      <div class="pitch-seg">
+        <div class="pitch-time">2:50–3:00</div>
+        <div><div class="pitch-label">Closing</div><div class="pitch-text">EduTwin — From Scores to Learning DNA เพราะเราเชื่อว่า Same Score ≠ Same Learning และเด็กทุกคนควรมีเส้นทางการเรียนรู้ที่เป็นของตัวเอง</div></div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <span class="eyebrow">Pitch Deck Structure</span>
+      <h2>โครงสไลด์ 10 หน้า</h2>
+    </div>
+    <div class="deck-list">
+      <div class="deck-item"><span class="deck-num">01</span><span class="deck-title">Cover</span><span class="deck-desc">— MINDMESH × EduTwin</span></div>
+      <div class="deck-item"><span class="deck-num">02</span><span class="deck-title">Problem</span><span class="deck-desc">— Same Score ≠ Same Learning</span></div>
+      <div class="deck-item"><span class="deck-num">03</span><span class="deck-title">Why Now?</span><span class="deck-desc">— AI + Learning Analytics + Digital Education</span></div>
+      <div class="deck-item"><span class="deck-num">04</span><span class="deck-title">Solution</span><span class="deck-desc">— EduTwin</span></div>
+      <div class="deck-item"><span class="deck-num">05</span><span class="deck-title">How It Works</span><span class="deck-desc">— Flowchart</span></div>
+      <div class="deck-item"><span class="deck-num">06</span><span class="deck-title">Product Demo</span><span class="deck-desc">— Learning DNA + Mistake DNA</span></div>
+      <div class="deck-item"><span class="deck-num">07</span><span class="deck-title">Teacher Copilot</span><span class="deck-desc">— Data → Action</span></div>
+      <div class="deck-item"><span class="deck-num">08</span><span class="deck-title">Impact</span><span class="deck-desc">— Student + Teacher + School</span></div>
+      <div class="deck-item"><span class="deck-num">09</span><span class="deck-title">Business Model Canvas</span><span class="deck-desc"></span></div>
+      <div class="deck-item"><span class="deck-num">10</span><span class="deck-title">Roadmap + Closing</span><span class="deck-desc"></span></div>
+    </div>
+    <div class="deck-note">⚠ นี่คือโครงร่างสไลด์เท่านั้น ยังไม่ใช่ไฟล์ .pptx จริงที่แก้ไขได้ — ถ้าต้องการไฟล์สไลด์จริงสำหรับพรีเซนต์ บอกได้เลย จะสร้างเป็นไฟล์ต่างหากให้</div>
+
+    <div class="closing-line">
+      <h2>EduTwin</h2>
+      <span>From Scores to Learning DNA · Same Score ≠ Same Learning</span>
+    </div>
+  </section>
+
+</div>
+
+<div class="drawer-overlay" id="drawer-overlay">
+  <div class="drawer">
+    <button class="drawer-close" id="drawer-close">✕</button>
+    <div id="drawer-content"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- navigation ---------------- */
+  var tabs = document.querySelectorAll(".tab");
+  var screens = document.querySelectorAll(".screen");
+  function goto(name){
+    tabs.forEach(function(t){ t.setAttribute("aria-selected", t.dataset.screen === name ? "true" : "false"); });
+    screens.forEach(function(s){ s.classList.toggle("active", s.id === "screen-" + name); });
+    window.scrollTo({top:0, behavior:"instant"});
+    // The tab bar scrolls horizontally on narrow screens, so a screen change
+    // triggered from elsewhere on the page (e.g. a landing CTA) needs to bring
+    // the newly active tab into view — otherwise the user has no visual cue
+    // of where they are in a bar that's mostly scrolled off-screen.
+    var activeTab = document.querySelector('.tab[data-screen="' + name + '"]');
+    if(activeTab) activeTab.scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
+  }
+  tabs.forEach(function(t){ t.addEventListener("click", function(){ goto(t.dataset.screen); }); });
+  document.querySelectorAll("[data-goto]").forEach(function(el){
+    el.addEventListener("click", function(){ goto(el.dataset.goto); });
+  });
+
+  /* ---------------- mission interaction (real one-at-a-time flow) ---------------- */
+  var MISSION_QUESTIONS = [
+    { q:"พื้นที่ที่ต้องปูหญ้า (60% ของพื้นที่ทั้งหมด) คิดเป็นกี่ตารางเมตร?",
+      choices:[{t:"80 ตร.ม.",c:false},{t:"120 ตร.ม.",c:true},{t:"140 ตร.ม.",c:false},{t:"160 ตร.ม.",c:false}] },
+    { q:"พื้นที่ที่เหลือสำหรับทางเดินและสนามเด็กเล่นมีกี่ตารางเมตร?",
+      choices:[{t:"60 ตร.ม.",c:false},{t:"70 ตร.ม.",c:false},{t:"80 ตร.ม.",c:true},{t:"90 ตร.ม.",c:false}] },
+    { q:"ถ้าทางเดินใช้พื้นที่ 30 ตร.ม. สนามเด็กเล่นจะเหลือพื้นที่กี่ตารางเมตร?",
+      choices:[{t:"40 ตร.ม.",c:false},{t:"50 ตร.ม.",c:true},{t:"55 ตร.ม.",c:false},{t:"60 ตร.ม.",c:false}] },
+    { q:"งบประมาณสำหรับปูหญ้าคือ 40% ของงบทั้งหมด 50,000 บาท เป็นเงินเท่าไหร่?",
+      choices:[{t:"15,000 บาท",c:false},{t:"18,000 บาท",c:false},{t:"20,000 บาท",c:true},{t:"25,000 บาท",c:false}] },
+    { q:"งบประมาณที่เหลือสำหรับทางเดินและสนามเด็กเล่นเป็นเงินเท่าไหร่?",
+      choices:[{t:"25,000 บาท",c:false},{t:"28,000 บาท",c:false},{t:"30,000 บาท",c:true},{t:"32,000 บาท",c:false}] }
+  ];
+  var missionIndex = 0;
+  var missionScore = 0;
+  var missionAttempts = 0;
+  var LETTERS = ["A","B","C","D"];
+
+  function setMissionStep(idx){
+    document.querySelectorAll("#mission-stepper .step-pill").forEach(function(p){
+      var i = Number(p.dataset.step);
+      p.classList.toggle("done", i < idx);
+      p.classList.toggle("on", i === idx);
+    });
+  }
+
+  function bindChoiceClick(btn, choicesEl){
+    btn.addEventListener("click", function(){
+      if(btn.disabled) return;
+      choicesEl.querySelectorAll(".choice").forEach(function(x){ x.classList.remove("selected"); });
+      btn.classList.add("selected");
+    });
+  }
+
+  function renderMissionQuestion(){
+    var q = MISSION_QUESTIONS[missionIndex];
+    document.getElementById("mission-progress-label").textContent = "ข้อที่ " + (missionIndex + 1) + " / " + MISSION_QUESTIONS.length;
+    document.getElementById("mission-progress-fill").style.width = Math.round((missionIndex / MISSION_QUESTIONS.length) * 100) + "%";
+    document.getElementById("mission-question-text").textContent = q.q;
+    var choicesEl = document.getElementById("mission-choices");
+    choicesEl.innerHTML = "";
+    q.choices.forEach(function(ch, i){
+      var btn = document.createElement("button");
+      btn.className = "choice";
+      btn.dataset.correct = ch.c ? "true" : "false";
+      btn.innerHTML = '<span class="letter">' + LETTERS[i] + '</span> ' + ch.t;
+      bindChoiceClick(btn, choicesEl);
+      choicesEl.appendChild(btn);
+    });
+    missionAttempts = 0;
+    setMissionStep(0);
+    var fb = document.getElementById("mission-feedback");
+    fb.className = "feedback";
+    fb.textContent = "";
+    document.getElementById("mission-submit").style.display = "";
+    document.getElementById("mission-next").style.display = "none";
+  }
+
+  function lockMissionChoices(){
+    document.querySelectorAll("#mission-choices .choice").forEach(function(b){ b.disabled = true; });
+  }
+
+  function showMissionNext(isLast){
+    document.getElementById("mission-submit").style.display = "none";
+    var nextBtn = document.getElementById("mission-next");
+    nextBtn.style.display = "";
+    nextBtn.textContent = isLast ? "ดูสรุปผล →" : "ข้อถัดไป →";
+  }
+
+  function showMissionComplete(){
+    document.getElementById("mission-card").style.display = "none";
+    document.getElementById("mission-complete").style.display = "block";
+    document.getElementById("mission-complete-score").textContent = missionScore + " / " + MISSION_QUESTIONS.length;
+    var msg = missionScore >= 4
+      ? "เก่งมาก! หนูเข้าใจเรื่องนี้ดีมากเลย"
+      : missionScore >= 2
+      ? "ทำได้ดี แต่ลองทบทวนอีกนิดกับ AI Coach นะ"
+      : "ไม่เป็นไร ลองทบทวน Concept กับ AI Coach ก่อนแล้วค่อยลองใหม่";
+    document.getElementById("mission-complete-msg").textContent = msg;
+  }
+
+  document.getElementById("mission-submit").addEventListener("click", function(){
+    var choicesEl = document.getElementById("mission-choices");
+    var selected = choicesEl.querySelector(".choice.selected");
+    var fb = document.getElementById("mission-feedback");
+    if(!selected){
+      fb.className = "feedback show no";
+      fb.textContent = "เลือกคำตอบก่อนนะ แล้วค่อยส่งคำตอบ";
+      return;
+    }
+    var correct = selected.dataset.correct === "true";
+    missionAttempts++;
+    var isLast = missionIndex === MISSION_QUESTIONS.length - 1;
+    fb.className = "feedback show " + (correct ? "ok" : "no");
+    if(correct){
+      missionScore++;
+      setMissionStep(3);
+      fb.textContent = "ถูกต้อง! บันทึกวิธีคิดของหนูไว้ใน Learning DNA แล้ว" + (isLast ? " — ทำครบทุกข้อแล้ว" : " — ไปข้อถัดไปกันเลย");
+      lockMissionChoices();
+      showMissionNext(isLast);
+    } else if(missionAttempts === 1){
+      setMissionStep(1);
+      fb.textContent = "ยังไม่ถูกค่ะ — EduTwin บันทึกไว้แล้วว่าข้อนี้พลาดตรงไหน ลองใช้ AI Coach ช่วยไล่ทีละขั้นตอน หรือลองใหม่อีกครั้งได้เลย";
+    } else {
+      setMissionStep(2);
+      fb.textContent = "ลองอีกครั้งก็ยังไม่ตรงค่ะ — ไม่เป็นไร ไปข้อถัดไปก่อน แล้วค่อยกลับมาสะท้อนคิดทีหลัง";
+      var correctBtn = choicesEl.querySelector('.choice[data-correct="true"]');
+      if(correctBtn) correctBtn.classList.add("reveal-correct");
+      lockMissionChoices();
+      showMissionNext(isLast);
+    }
+  });
+
+  document.getElementById("mission-next").addEventListener("click", function(){
+    missionIndex++;
+    if(missionIndex < MISSION_QUESTIONS.length){
+      renderMissionQuestion();
+    } else {
+      showMissionComplete();
+    }
+  });
+
+  document.getElementById("mission-restart").addEventListener("click", function(){
+    missionIndex = 0;
+    missionScore = 0;
+    document.getElementById("mission-complete").style.display = "none";
+    document.getElementById("mission-card").style.display = "";
+    renderMissionQuestion();
+  });
+
+  renderMissionQuestion();
+
+  /* ---------------- AI coach (live chat) ---------------- */
+  var COACH_SCRIPT = [
+    "ลองเริ่มจากสิ่งที่รู้ก่อนนะคะ — พื้นที่สวนทั้งหมดมีกี่ตารางเมตร?",
+    "ดีมาก แล้วโจทย์บอกว่าใช้ปูหญ้ากี่เปอร์เซ็นต์ของพื้นที่ทั้งหมด? ลองเขียนเป็นสมการดูสิคะ",
+    "เกือบแล้วค่ะ ลองคำนวณ 200 × 0.6 ดูอีกครั้ง แล้วเทียบกับตัวเลือกที่มีให้ว่าตรงข้อไหน",
+    "เยี่ยมมาก! พอได้คำตอบแล้ว ลองกลับไปกดเลือกในหน้า Mission ได้เลยค่ะ"
+  ];
+  var coachChat = document.getElementById("coach-chat");
+  var coachStep = 0;
+  var coachBusy = false;
+
+  function coachScrollToBottom(){
+    coachChat.scrollTop = coachChat.scrollHeight;
+  }
+
+  function appendCoachBubble(who, text){
+    var div = document.createElement("div");
+    div.className = "bubble " + who;
+    var whoLabel = who === "student" ? "นักเรียน" : "AI Coach";
+    div.innerHTML = '<span class="who">' + whoLabel + '</span>';
+    div.appendChild(document.createTextNode(text));
+    coachChat.appendChild(div);
+    coachScrollToBottom();
+    return div;
+  }
+
+  function showCoachTyping(){
+    var div = document.createElement("div");
+    div.className = "bubble ai typing";
+    div.id = "coach-typing";
+    div.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+    coachChat.appendChild(div);
+    coachScrollToBottom();
+  }
+
+  function hideCoachTyping(){
+    var t = document.getElementById("coach-typing");
+    if(t) t.remove();
+  }
+
+  function sendCoachMessage(text){
+    text = (text || "").trim();
+    if(!text || coachBusy) return;
+    appendCoachBubble("student", text);
+    document.getElementById("coach-input").value = "";
+    coachBusy = true;
+    showCoachTyping();
+    setTimeout(function(){
+      hideCoachTyping();
+      if(coachStep < COACH_SCRIPT.length){
+        appendCoachBubble("ai", COACH_SCRIPT[coachStep]);
+        coachStep++;
+        if(coachStep === COACH_SCRIPT.length){
+          setTimeout(function(){
+            document.getElementById("reflect-prompt").classList.add("show");
+          }, 500);
+        }
+      } else {
+        appendCoachBubble("ai", "เยี่ยมมากค่ะ ลองกลับไปทำภารกิจต่อได้เลยนะคะ 🙌");
+      }
+      coachBusy = false;
+    }, 700 + Math.random() * 500);
+  }
+
+  document.getElementById("coach-send").addEventListener("click", function(){
+    sendCoachMessage(document.getElementById("coach-input").value);
+  });
+  document.getElementById("coach-input").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      sendCoachMessage(this.value);
+    }
+  });
+  document.querySelectorAll("#coach-quick .quick-chip").forEach(function(chip){
+    chip.addEventListener("click", function(){ sendCoachMessage(chip.textContent); });
+  });
+
+  appendCoachBubble("ai", "สวัสดีค่ะ ติดตรงไหนบอกครูได้เลยนะคะ 😊 พิมพ์เล่าให้ฟังหน่อยว่าหนูคิดถึงไหนแล้ว");
+
+  /* ---------------- mistake categories (shared) ---------------- */
+  var MISTAKE_TYPES = [
+    {name:"Misconception", color:"var(--cat-1)"},
+    {name:"Logic Gap", color:"var(--cat-2)"},
+    {name:"Calculation Error", color:"var(--cat-3)"},
+    {name:"Misread Question", color:"var(--cat-4)"},
+    {name:"Wrong Concept Recall", color:"var(--cat-5)"},
+    {name:"Guessing", color:"var(--cat-6)"}
+  ];
+  function colorFor(name){
+    var m = MISTAKE_TYPES.filter(function(t){return t.name===name;})[0];
+    return m ? m.color : "var(--ink-muted)";
+  }
+  function renderMistakeBars(el, mistakes){
+    el.innerHTML = "";
+    mistakes.forEach(function(m){
+      var row = document.createElement("div");
+      row.className = "mbar-row";
+      row.innerHTML =
+        '<span class="mbar-label">' + m.cat + '</span>' +
+        '<span class="mbar-track"><span class="mbar-fill" style="width:' + m.pct + '%;background:' + colorFor(m.cat) + '"></span></span>' +
+        '<span class="mbar-pct mono">' + m.pct + '%</span>';
+      el.appendChild(row);
+    });
+  }
+  var legendEl = document.getElementById("mistake-legend");
+  MISTAKE_TYPES.forEach(function(t){
+    var item = document.createElement("span");
+    item.className = "legend-item";
+    item.innerHTML = '<span class="legend-dot" style="background:' + t.color + '"></span>' + t.name;
+    legendEl.appendChild(item);
+  });
+
+  /* ---------------- radar chart ---------------- */
+  var AXES = ["Concept","Application","Think","Solve","Create","Collab","Confidence"];
+  function radarSVG(values, color, size){
+    size = size || 240;
+    var cx = size/2, cy = size/2 - 6, r = size*0.32;
+    var n = AXES.length;
+    function pt(i, frac){
+      var ang = -Math.PI/2 + i * (2*Math.PI/n);
+      return [cx + r*frac*Math.cos(ang), cy + r*frac*Math.sin(ang)];
+    }
+    var svg = '<svg viewBox="0 0 ' + size + ' ' + (size) + '" width="' + size + '" height="' + size + '" style="overflow:visible">';
+    [0.25,0.5,0.75,1].forEach(function(f){
+      var pts = [];
+      for(var i=0;i<n;i++){ pts.push(pt(i,f).join(",")); }
+      svg += '<polygon points="' + pts.join(" ") + '" fill="none" stroke="var(--grid)" stroke-width="1"/>';
+    });
+    for(var i=0;i<n;i++){
+      var p = pt(i,1);
+      svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0] + '" y2="' + p[1] + '" stroke="var(--axis)" stroke-width="1"/>';
+    }
+    var dataPts = values.map(function(v,i){ return pt(i, v/100); });
+    svg += '<polygon points="' + dataPts.map(function(p){return p.join(",");}).join(" ") + '" fill="' + color + '" fill-opacity="0.20" stroke="' + color + '" stroke-width="2" stroke-linejoin="round"/>';
+    dataPts.forEach(function(p){
+      svg += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.4" fill="' + color + '" stroke="var(--surface)" stroke-width="1.5"/>';
+    });
+    for(var i=0;i<n;i++){
+      var lp = pt(i, 1.24);
+      var ang = -Math.PI/2 + i * (2*Math.PI/n);
+      var cos = Math.cos(ang);
+      var anchor = cos > 0.25 ? "start" : (cos < -0.25 ? "end" : "middle");
+      svg += '<text x="' + lp[0] + '" y="' + lp[1] + '" text-anchor="' + anchor + '" dominant-baseline="middle" font-size="10" font-family="IBM Plex Sans, sans-serif" fill="var(--ink-muted)">' + AXES[i] + '</text>';
+    }
+    svg += '</svg>';
+    return svg;
+  }
+
+  /* ---------------- killer demo data + interaction ---------------- */
+  var PLOY_DNA = [35,70,55,60,65,72,50];
+  var TAN_DNA  = [78,40,58,45,60,55,62];
+  var PLOY_MISTAKES = [
+    {cat:"Misconception", pct:45},
+    {cat:"Wrong Concept Recall", pct:25},
+    {cat:"Calculation Error", pct:15},
+    {cat:"Logic Gap", pct:10},
+    {cat:"Misread Question", pct:5}
+  ];
+  var TAN_MISTAKES = [
+    {cat:"Logic Gap", pct:40},
+    {cat:"Calculation Error", pct:30},
+    {cat:"Misread Question", pct:20},
+    {cat:"Misconception", pct:10}
+  ];
+
+  /* ---------------- AI growth plan ---------------- */
+  var GROWTH_PATHS = [
+    {name:"Ploy P.", color:"var(--cat-1)", steps:[
+      {label:"Micro-lesson: เปอร์เซ็นต์คือ...", time:"10 นาที"},
+      {label:"ฝึกจับคู่ % กับพื้นที่ (Visual)", time:"15 นาที"},
+      {label:"ลองมิชชันสวนสาธารณะอีกครั้ง", time:"1 มิชชัน"},
+      {label:"ปลดล็อกมิชชันที่ 4", time:"ถัดไป"}
+    ]},
+    {name:"Tan K.", color:"var(--cat-2)", steps:[
+      {label:"Worked Example: โจทย์หลายขั้นตอน", time:"10 นาที"},
+      {label:"ฝึก Multi-step Budget Problem", time:"20 นาที"},
+      {label:"ใช้ Checklist ลำดับคิดระหว่างทำ", time:"1 มิชชัน"},
+      {label:"ปลดล็อกมิชชันที่ 4", time:"ถัดไป"}
+    ]}
+  ];
+  function renderGrowthPaths(){
+    var el = document.getElementById("growth-paths");
+    el.innerHTML = "";
+    GROWTH_PATHS.forEach(function(g){
+      var wrap = document.createElement("div");
+      wrap.className = "growth-student";
+      var nodes = g.steps.map(function(s){
+        return '<div class="growth-node">' +
+          '<div class="growth-dot"></div>' +
+          '<div class="growth-step-label">' + s.label + '</div>' +
+          '<div class="growth-step-time">' + s.time + '</div>' +
+          '</div>';
+      }).join("");
+      wrap.innerHTML =
+        '<div class="growth-name-row"><span class="growth-name">' + g.name + '</span></div>' +
+        '<div class="growth-path" style="color:' + g.color + '">' + nodes + '</div>';
+      el.appendChild(wrap);
+    });
+  }
+
+  var analyzed = false;
+  document.getElementById("analyze-btn").addEventListener("click", function(){
+    if(analyzed) return;
+    analyzed = true;
+    var btn = this;
+    var status = document.getElementById("scan-status");
+    btn.disabled = true;
+    btn.textContent = "กำลังวิเคราะห์…";
+    status.classList.add("show");
+    setTimeout(function(){
+      document.getElementById("radar-ploy").innerHTML = radarSVG(PLOY_DNA, "var(--cat-1)");
+      document.getElementById("radar-tan").innerHTML = radarSVG(TAN_DNA, "var(--cat-2)");
+      renderMistakeBars(document.getElementById("mistake-ploy"), PLOY_MISTAKES);
+      renderMistakeBars(document.getElementById("mistake-tan"), TAN_MISTAKES);
+      document.getElementById("diag-grid").classList.add("revealed");
+      renderGrowthPaths();
+      document.getElementById("growth-card").classList.add("revealed");
+      status.textContent = "วิเคราะห์เสร็จสิ้น — พบ Learning Gap คนละแบบ";
+      btn.textContent = "วิเคราะห์เสร็จแล้ว ✓";
+      document.getElementById("closing-line").classList.add("revealed");
+    }, 1100);
+  });
+
+  /* ---------------- helix decoration (landing) ---------------- */
+  (function(){
+    var svg = document.getElementById("helix-svg");
+    var w = 300, h = 320, turns = 3, steps = 60;
+    var pathA = [], pathB = [];
+    for(var i=0;i<=steps;i++){
+      var t = i/steps;
+      var y = 20 + t*(h-40);
+      var x1 = w/2 + Math.sin(t*turns*2*Math.PI) * 62;
+      var x2 = w/2 - Math.sin(t*turns*2*Math.PI) * 62;
+      pathA.push([x1,y]); pathB.push([x2,y]);
+    }
+    function toPath(pts){
+      return "M " + pts.map(function(p){return p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" L ");
+    }
+    var rungs = "";
+    for(var i=4;i<pathA.length;i+=6){
+      rungs += '<line x1="'+pathA[i][0].toFixed(1)+'" y1="'+pathA[i][1].toFixed(1)+'" x2="'+pathB[i][0].toFixed(1)+'" y2="'+pathB[i][1].toFixed(1)+'" stroke="var(--border-strong)" stroke-width="1.5"/>';
+    }
+    svg.innerHTML =
+      rungs +
+      '<path d="' + toPath(pathA) + '" fill="none" stroke="var(--cat-1)" stroke-width="3" stroke-linecap="round" opacity="0.85"/>' +
+      '<path d="' + toPath(pathB) + '" fill="none" stroke="var(--cat-2)" stroke-width="3" stroke-linecap="round" opacity="0.85"/>';
+  })();
+
+  /* ---------------- teacher data ---------------- */
+  var GROUPS = {
+    concept:{label:"Concept Gap", color:"var(--serious)", advice:"แนะนำ: Micro-lesson ทบทวน Concept ก่อนกลับไปทำ Mission ต่อ"},
+    application:{label:"Application Gap", color:"var(--warning)", advice:"แนะนำ: Multi-step Practice + Worked Example ทีละขั้น"},
+    mastery:{label:"Mastery", color:"var(--good)", advice:"แนะนำ: ปลดล็อก Challenge Mission ระดับสูงขึ้น"}
+  };
+  var STUDENTS = [
+    {id:"ploy", name:"Ploy P.", score:6, group:"concept", topMistake:"Misconception",
+      dna:[35,70,55,60,65,72,50], mistakes:PLOY_MISTAKES,
+      rootCause:"เข้าใจสูตรเปอร์เซ็นต์ของพื้นที่คลาดเคลื่อน (Misconception)",
+      intervention:"Micro-lesson ทบทวนเปอร์เซ็นต์กับพื้นที่ + โจทย์ฝึกแบบ Visual"},
+    {id:"tan", name:"Tan K.", score:6, group:"application", topMistake:"Logic Gap",
+      dna:[78,40,58,45,60,55,62], mistakes:TAN_MISTAKES,
+      rootCause:"สับสนลำดับขั้นตอนในโจทย์หลายเงื่อนไข (Application Gap)",
+      intervention:"Multi-step Real-world Problem พร้อม Worked Example"},
+    {id:"min", name:"Min S.", score:5, group:"concept", topMistake:"Misconception",
+      dna:[30,55,48,52,58,66,44], mistakes:[{cat:"Misconception",pct:50},{cat:"Wrong Concept Recall",pct:30},{cat:"Logic Gap",pct:20}],
+      rootCause:"ยังสับสนความหมายของ % กับสัดส่วนโดยตรง",
+      intervention:"ทบทวน Concept พื้นฐานเรื่องอัตราส่วนและร้อยละ"},
+    {id:"ohm", name:"Ohm C.", score:6, group:"concept", topMistake:"Wrong Concept Recall",
+      dna:[40,62,50,58,60,70,52], mistakes:[{cat:"Wrong Concept Recall",pct:40},{cat:"Misconception",pct:35},{cat:"Calculation Error",pct:25}],
+      rootCause:"จำสูตรพื้นที่สับกับสูตรเส้นรอบรูป",
+      intervention:"การ์ดสรุปสูตร + แบบฝึกจับคู่สูตรกับสถานการณ์"},
+    {id:"bee", name:"Bee A.", score:4, group:"concept", topMistake:"Misconception",
+      dna:[28,48,40,45,55,60,38], mistakes:[{cat:"Misconception",pct:55},{cat:"Calculation Error",pct:25},{cat:"Guessing",pct:20}],
+      rootCause:"ยังไม่เข้าใจความสัมพันธ์ระหว่างร้อยละกับพื้นที่จริง",
+      intervention:"เริ่มจาก Concept พื้นฐานใหม่ พร้อม 1:1 Coaching"},
+    {id:"gift", name:"Gift W.", score:7, group:"application", topMistake:"Logic Gap",
+      dna:[75,48,60,50,62,58,64], mistakes:[{cat:"Logic Gap",pct:45},{cat:"Misread Question",pct:30},{cat:"Calculation Error",pct:25}],
+      rootCause:"เข้าใจ Concept ดี แต่วางลำดับขั้นตอนแก้โจทย์สับสน",
+      intervention:"ฝึก Multi-step Problem พร้อม Checklist ลำดับคิด"},
+    {id:"copter", name:"Copter L.", score:6, group:"application", topMistake:"Calculation Error",
+      dna:[70,42,55,48,58,52,60], mistakes:[{cat:"Calculation Error",pct:50},{cat:"Logic Gap",pct:30},{cat:"Misread Question",pct:20}],
+      rootCause:"เข้าใจวิธีคิดถูก แต่คำนวณเลขผิดพลาดบ่อย",
+      intervention:"ฝึกความละเอียดในการคำนวณ + เครื่องมือ Self-check"},
+    {id:"fah", name:"Fah R.", score:9, group:"mastery", topMistake:"—",
+      dna:[88,85,80,82,78,84,86], mistakes:[{cat:"Calculation Error",pct:100}],
+      rootCause:"ผิดพลาดเล็กน้อยจากความไม่ระมัดระวัง ไม่ใช่ Gap เชิงความเข้าใจ",
+      intervention:"เพิ่ม Challenge Mission ระดับสูงขึ้นเพื่อขยายศักยภาพ"},
+    {id:"boss", name:"Boss N.", score:8, group:"mastery", topMistake:"—",
+      dna:[82,80,78,80,75,88,80], mistakes:[{cat:"Misread Question",pct:100}],
+      rootCause:"อ่านโจทย์เร็วเกินไปในบางข้อ",
+      intervention:"ฝึก Reflection ก่อนส่งคำตอบ + Peer Teaching"},
+    {id:"ice", name:"Ice T.", score:9, group:"mastery", topMistake:"—",
+      dna:[90,88,84,86,80,82,90], mistakes:[{cat:"Guessing",pct:100}],
+      rootCause:"เดาในข้อที่หมดเวลา ไม่ใช่ปัญหาความเข้าใจ",
+      intervention:"เพิ่ม Advanced Mission และบทบาท Peer Mentor"},
+    {id:"prim", name:"Prim S.", score:5, group:"concept", topMistake:"Misconception",
+      dna:[32,58,50,54,60,68,46], mistakes:[{cat:"Misconception",pct:48},{cat:"Wrong Concept Recall",pct:28},{cat:"Calculation Error",pct:24}],
+      rootCause:"สับสนสูตรพื้นฐานของบทเรียนก่อนหน้า",
+      intervention:"ทบทวน Concept พื้นฐาน + แบบฝึกทีละขั้น"},
+    {id:"nan", name:"Nan T.", score:6, group:"concept", topMistake:"Wrong Concept Recall",
+      dna:[38,60,52,56,58,70,50], mistakes:[{cat:"Wrong Concept Recall",pct:45},{cat:"Misconception",pct:30},{cat:"Logic Gap",pct:25}],
+      rootCause:"จำสูตรผิดตัวเมื่อโจทย์เปลี่ยนบริบท",
+      intervention:"การ์ดสรุปสูตร + แบบฝึกจับคู่สูตรกับสถานการณ์"},
+    {id:"kade", name:"Kade P.", score:4, group:"concept", topMistake:"Misconception",
+      dna:[26,46,38,44,54,58,36], mistakes:[{cat:"Misconception",pct:55},{cat:"Guessing",pct:25},{cat:"Calculation Error",pct:20}],
+      rootCause:"ยังไม่เข้าใจความสัมพันธ์ระหว่างตัวแปรในโจทย์",
+      intervention:"เริ่มจาก Concept พื้นฐานใหม่ พร้อม 1:1 Coaching"},
+    {id:"time", name:"Time W.", score:7, group:"application", topMistake:"Logic Gap",
+      dna:[74,46,58,48,60,56,62], mistakes:[{cat:"Logic Gap",pct:42},{cat:"Calculation Error",pct:32},{cat:"Misread Question",pct:26}],
+      rootCause:"เข้าใจ Concept ดี แต่วางลำดับขั้นตอนแก้โจทย์สับสน",
+      intervention:"ฝึก Multi-step Problem พร้อม Checklist ลำดับคิด"},
+    {id:"beam", name:"Beam K.", score:6, group:"application", topMistake:"Calculation Error",
+      dna:[72,44,56,46,58,54,60], mistakes:[{cat:"Calculation Error",pct:48},{cat:"Logic Gap",pct:32},{cat:"Misread Question",pct:20}],
+      rootCause:"เข้าใจวิธีคิดถูก แต่คำนวณเลขผิดพลาดบ่อย",
+      intervention:"ฝึกความละเอียดในการคำนวณ + เครื่องมือ Self-check"},
+    {id:"non", name:"Non R.", score:7, group:"application", topMistake:"Misread Question",
+      dna:[76,50,60,52,62,58,64], mistakes:[{cat:"Misread Question",pct:44},{cat:"Logic Gap",pct:30},{cat:"Calculation Error",pct:26}],
+      rootCause:"อ่านโจทย์เร็วเกินไป มองข้ามเงื่อนไขสำคัญ",
+      intervention:"ฝึก Reflection ก่อนส่งคำตอบ + Highlight เงื่อนไขโจทย์"},
+    {id:"ying", name:"Ying A.", score:5, group:"concept", topMistake:"Misconception",
+      dna:[30,52,44,48,56,62,40], mistakes:[{cat:"Misconception",pct:50},{cat:"Wrong Concept Recall",pct:28},{cat:"Calculation Error",pct:22}],
+      rootCause:"ยังไม่แม่นความหมายของหน่วยวัดในโจทย์",
+      intervention:"Micro-lesson เรื่องหน่วยวัด + โจทย์ฝึกแบบ Visual"},
+    {id:"two", name:"Two C.", score:6, group:"application", topMistake:"Logic Gap",
+      dna:[70,48,58,50,60,55,58], mistakes:[{cat:"Logic Gap",pct:46},{cat:"Misread Question",pct:28},{cat:"Calculation Error",pct:26}],
+      rootCause:"สับสนลำดับขั้นตอนเมื่อโจทย์มีเงื่อนไขซ้อนกัน",
+      intervention:"ฝึก Multi-step Problem พร้อม Worked Example"},
+    {id:"fon", name:"Fon N.", score:8, group:"mastery", topMistake:"—",
+      dna:[86,84,80,82,76,86,84], mistakes:[{cat:"Calculation Error",pct:100}],
+      rootCause:"ผิดพลาดเล็กน้อยจากความไม่ระมัดระวัง ไม่ใช่ Gap เชิงความเข้าใจ",
+      intervention:"เพิ่ม Challenge Mission ระดับสูงขึ้น"},
+    {id:"golf", name:"Golf D.", score:9, group:"mastery", topMistake:"—",
+      dna:[90,86,82,84,80,84,88], mistakes:[{cat:"Misread Question",pct:100}],
+      rootCause:"อ่านโจทย์เร็วเกินไปในบางข้อ",
+      intervention:"ฝึก Reflection ก่อนส่งคำตอบ + Peer Teaching"},
+    {id:"nice", name:"Nice L.", score:8, group:"mastery", topMistake:"—",
+      dna:[84,82,78,80,78,90,82], mistakes:[{cat:"Guessing",pct:100}],
+      rootCause:"เดาในข้อที่หมดเวลา ไม่ใช่ปัญหาความเข้าใจ",
+      intervention:"เพิ่ม Advanced Mission และบทบาท Peer Mentor"},
+    {id:"aom", name:"Aom P.", score:6, group:"concept", topMistake:"Wrong Concept Recall",
+      dna:[36,56,48,52,58,64,44], mistakes:[{cat:"Wrong Concept Recall",pct:42},{cat:"Misconception",pct:32},{cat:"Logic Gap",pct:26}],
+      rootCause:"จำสูตรสลับกับบทเรียนอื่นที่คล้ายกัน",
+      intervention:"การ์ดสรุปสูตรเปรียบเทียบ + แบบฝึกแยกแยะ"},
+    {id:"guy", name:"Guy S.", score:7, group:"application", topMistake:"Calculation Error",
+      dna:[73,45,57,47,59,53,59], mistakes:[{cat:"Calculation Error",pct:44},{cat:"Logic Gap",pct:34},{cat:"Misread Question",pct:22}],
+      rootCause:"เข้าใจ Concept ดี แต่คำนวณหลายขั้นตอนแล้วพลาด",
+      intervention:"ฝึกคำนวณละเอียด + เครื่องมือ Self-check"},
+    {id:"mild", name:"Mild T.", score:9, group:"mastery", topMistake:"—",
+      dna:[88,87,83,85,79,85,89], mistakes:[{cat:"Calculation Error",pct:100}],
+      rootCause:"ผิดพลาดเล็กน้อยจากความเร่งรีบ",
+      intervention:"เพิ่ม Challenge Mission ระดับสูงขึ้น"},
+    {id:"jane", name:"Jane W.", score:5, group:"concept", topMistake:"Misconception",
+      dna:[29,50,42,46,55,60,38], mistakes:[{cat:"Misconception",pct:52},{cat:"Calculation Error",pct:26},{cat:"Guessing",pct:22}],
+      rootCause:"ยังไม่เข้าใจความสัมพันธ์เชิงเหตุผลของโจทย์พื้นฐาน",
+      intervention:"เริ่มจาก Concept พื้นฐานใหม่ พร้อม 1:1 Coaching"},
+    {id:"build", name:"Build K.", score:8, group:"mastery", topMistake:"—",
+      dna:[85,83,79,81,77,87,83], mistakes:[{cat:"Misread Question",pct:100}],
+      rootCause:"อ่านโจทย์เร็วเกินไปในบางข้อ",
+      intervention:"ฝึก Reflection ก่อนส่งคำตอบ"}
+  ];
+
+  function renderPulse(){
+    var el = document.getElementById("pulse-row");
+    el.innerHTML = "";
+    Object.keys(GROUPS).forEach(function(key){
+      var g = GROUPS[key];
+      var count = STUDENTS.filter(function(s){return s.group===key;}).length;
+      var div = document.createElement("div");
+      div.className = "card pulse-card";
+      div.style.setProperty("--group-color", g.color);
+      div.innerHTML =
+        '<div><div class="pulse-count">' + count + '</div><div class="pulse-label">' + g.label + '</div></div>' +
+        '<span class="chip ' + (key==="concept"?"serious":key==="application"?"warning":"good") + '">' + g.label + '</span>';
+      el.appendChild(div);
+    });
+  }
+
+  function renderBoard(){
+    var el = document.getElementById("board");
+    el.innerHTML = "";
+    Object.keys(GROUPS).forEach(function(key){
+      var g = GROUPS[key];
+      var list = STUDENTS.filter(function(s){return s.group===key;});
+      var col = document.createElement("div");
+      col.className = "board-col";
+      var head = document.createElement("div");
+      head.className = "board-col-head";
+      head.innerHTML = '<h3><span class="dot" style="background:' + g.color + '"></span>' + g.label + '</h3><span class="board-count mono">' + list.length + '</span>';
+      col.appendChild(head);
+      var advice = document.createElement("p");
+      advice.className = "board-advice";
+      advice.textContent = g.advice;
+      col.appendChild(advice);
+      list.forEach(function(s){
+        var card = document.createElement("button");
+        card.className = "stu-card";
+        card.innerHTML =
+          '<span><span class="stu-name">' + s.name + '</span><span class="stu-meta">' + s.topMistake + '</span></span>' +
+          '<span class="stu-score mono">' + s.score + '/10</span>';
+        card.addEventListener("click", function(){ openDrawer(s); });
+        col.appendChild(card);
+      });
+      el.appendChild(col);
+    });
+  }
+
+  var overlay = document.getElementById("drawer-overlay");
+  var drawerContent = document.getElementById("drawer-content");
+  function openDrawer(s){
+    var g = GROUPS[s.group];
+    drawerContent.innerHTML =
+      '<h3>' + s.name + '</h3>' +
+      '<div class="drawer-sub">คะแนน ' + s.score + '/10 · <span class="chip ' + (s.group==="concept"?"serious":s.group==="application"?"warning":"good") + '">' + g.label + '</span></div>' +
+      '<div class="radar-wrap">' + radarSVG(s.dna, g.color, 190) + '</div>' +
+      '<p class="root-cause"><b>Root Cause:</b> ' + s.rootCause + '</p>' +
+      '<div class="mistake-bars" id="drawer-mistakes"></div>' +
+      '<div class="intervention"><b>AI Intervention</b>' + s.intervention + '</div>';
+    renderMistakeBars(document.getElementById("drawer-mistakes"), s.mistakes);
+    overlay.classList.add("open");
+  }
+  document.getElementById("drawer-close").addEventListener("click", function(){ overlay.classList.remove("open"); });
+  overlay.addEventListener("click", function(e){ if(e.target === overlay) overlay.classList.remove("open"); });
+
+  renderPulse();
+  renderBoard();
+
+  /* ---------------- impact KPIs ---------------- */
+  var KPI_GROUPS = [
+    {key:"student", title:"Student", items:[
+      {label:"Student Learning Gap", value:"-32%", pct:68, target:"Target: ลดลง 30–40% ภายใน 1 ภาคเรียน"},
+      {label:"Completion Rate", value:"87%", pct:87, target:"Target: มากกว่า 85%"},
+      {label:"Active Learning Participation", value:"+26%", pct:63, target:"Target: เพิ่มขึ้นจาก Baseline"},
+      {label:"Reflection Quality Index", value:"+41%", pct:55, target:"Target: เพิ่มขึ้นจาก Baseline"}
+    ]},
+    {key:"teacher", title:"Teacher", items:[
+      {label:"Teacher Analysis Time", value:"-58%", pct:58, target:"Target: ลดเวลาวิเคราะห์รายบุคคล"},
+      {label:"Learning Gap Identification Accuracy", value:"88%", pct:88, target:"Target: > 85% เทียบกับการประเมินของครู"},
+      {label:"Interventions Issued / เดือน", value:"54", pct:68, target:"Target: เพิ่มขึ้นจาก Baseline (ครูออกแบบเอง)"}
+    ]},
+    {key:"system", title:"System", items:[
+      {label:"AI Diagnosis Accuracy", value:"91%", pct:91, target:"Target: > 90% (Prototype Eval)"},
+      {label:"Recommendation Acceptance Rate", value:"76%", pct:76, target:"Target: > 70% ครูตอบรับคำแนะนำของ AI"},
+      {label:"Student Retention", value:"92%", pct:92, target:"Target: มากกว่า 90% ระหว่าง Pilot"}
+    ]}
+  ];
+  var kpiGroupsEl = document.getElementById("kpi-groups");
+  KPI_GROUPS.forEach(function(group){
+    var section = document.createElement("div");
+    section.className = "kpi-group";
+    var title = document.createElement("div");
+    title.className = "kpi-group-title";
+    title.textContent = group.title;
+    section.appendChild(title);
+    var grid = document.createElement("div");
+    grid.className = "kpi-grid";
+    group.items.forEach(function(k){
+      var div = document.createElement("div");
+      div.className = "card kpi-tile";
+      div.innerHTML =
+        '<div class="kpi-label">' + k.label + '</div>' +
+        '<div class="kpi-value">' + k.value + '</div>' +
+        '<div class="kpi-bar"><div class="kpi-bar-fill" style="width:' + k.pct + '%"></div></div>' +
+        '<div class="kpi-target">' + k.target + '</div>';
+      grid.appendChild(div);
+    });
+    section.appendChild(grid);
+    kpiGroupsEl.appendChild(section);
+  });
+
+})();
+</script>
+</body>
+</html>
