@@ -2,8 +2,9 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { query } from "@/lib/db";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
-import AddStudentForm from "./AddStudentForm";
+import AddStudentPanel from "./AddStudentPanel";
 import LogoutButton from "./LogoutButton";
+import StudentRow from "./StudentRow";
 
 interface ClassRow {
   id: string;
@@ -11,7 +12,7 @@ interface ClassRow {
   subject: string;
 }
 
-interface StudentRow {
+interface StudentRowData {
   id: string;
   student_number: string;
   first_name: string;
@@ -30,7 +31,7 @@ export default async function AdminPage() {
     [session.teacherId]
   );
 
-  const students = await query<StudentRow>(
+  const students = await query<StudentRowData>(
     `select s.id, s.student_number, s.first_name, s.last_name, s.nickname, c.name as class_name
        from students s
        join classes c on c.id = s.class_id
@@ -41,12 +42,16 @@ export default async function AdminPage() {
 
   return (
     <div className="wrap">
+      <span className="brand-mark">EduTwin</span>
       <div className="card">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h1>รายชื่อนักเรียน</h1>
+        <div className="card-head">
+          <div>
+            <span className="eyebrow">Teacher Copilot</span>
+            <h1>รายชื่อนักเรียน</h1>
+            <p className="lede">เข้าสู่ระบบในนาม {session.email}</p>
+          </div>
           <LogoutButton />
         </div>
-        <p>เข้าสู่ระบบในนาม {session.email}</p>
 
         <table>
           <thead>
@@ -55,31 +60,26 @@ export default async function AdminPage() {
               <th>ชื่อ-สกุล</th>
               <th>ชื่อเล่น</th>
               <th>ห้อง</th>
+              <th>จัดการ</th>
             </tr>
           </thead>
           <tbody>
             {students.map((s) => (
-              <tr key={s.id}>
-                <td>{s.student_number}</td>
-                <td>
-                  {s.first_name} {s.last_name}
-                </td>
-                <td>{s.nickname || "—"}</td>
-                <td>{s.class_name}</td>
-              </tr>
+              <StudentRow key={s.id} student={s} />
             ))}
             {students.length === 0 && (
               <tr>
-                <td colSpan={4}>ยังไม่มีนักเรียนในระบบ</td>
+                <td colSpan={5}>ยังไม่มีนักเรียนในระบบ</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
 
-      <div className="card" style={{ marginTop: 16 }}>
-        <h2>เพิ่มนักเรียน</h2>
-        <AddStudentForm classes={classes} />
+      <div className="card">
+        <span className="eyebrow">Roster</span>
+        <h2 style={{ marginBottom: 16 }}>เพิ่มนักเรียน</h2>
+        <AddStudentPanel classes={classes} />
       </div>
     </div>
   );

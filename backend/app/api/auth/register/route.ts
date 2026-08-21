@@ -1,0 +1,78 @@
+import { NextRequest, NextResponse } from "next/server";
+import { query, withTransaction } from "@/lib/db";
+import { hashPassword } from "@/lib/auth";
+import { createSessionToken, SESSION_COOKIE } from "@/lib/session";
+
+export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => null);
+  const schoolName = typeof body?.schoolName === "string" ? body.schoolName.trim() : "";
+  const fullName = typeof body?.fullName === "string" ? body.fullName.trim() : "";
+  const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
+  const password = typeof body?.password === "string" ? body.password : "";
+  const className = typeof body?.className === "string" ? body.className.trim() : "";
+  const subject = typeof body?.subject === "string" ? body.subject.trim() : "";
+
+  if (!schoolName || !fullName || !email || !password || !className || !subject) {
+    return NextResponse.json({ error: "กรุณากรอกข้อมูลให้ครบ" }, { status: 400 });
+  }
+  if (password.length < 8) {
+    return NextResponse.json({ error: "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร" }, { status: 400 });
+  }
+
+  const existing = await query<{ id: string }>("select id from teachers where email = $1", [email]);
+  if (existing.length > 0) {
+    return NextResponse.json({ error: "อีเมลนี้มีบัญชีอยู่แล้ว" }, { status: 409 });
+  }
+
+  const passwordHash = await hashPassword(password);
+
+  let teacher: { id: string; school_id: string; email: string };
+  try {
+    teacher = await withTransaction(async (client) => {
+      const schoolRes = await client.query<{ id: string }>(
+        "insert into schools (name) values ($1) returning id",
+        [schoolName]
+      );
+      const schoolId = schoolRes.rows[0].id;
+
+      const teacherRes = await client.query<{ id: string; school_id: string; email: string }>(
+        `insert into teachers (school_id, full_name, email, password_hash)
+         values ($1, $2, $3, $4)
+         returning id, school_id, email`,
+        [schoolId, fullName, email, passwordHash]
+      );
+      const teacherRow = teacherRes.rows[0];
+
+      await client.query(
+        "insert into classes (school_id, teacher_id, name, subject) values ($1, $2, $3, $4)",
+        [schoolId, teacherRow.id, className, subject]
+      );
+
+      return teacherRow;
+    });
+  } catch (err) {
+    // Two concurrent registrations with the same email: the earlier
+    // `select` check above can't catch this, only the unique constraint can.
+    const pgErr = err as { code?: string };
+    if (pgErr.code === "23505") {
+      return NextResponse.json({ error: "อีเมลนี้มีบัญชีอยู่แล้ว" }, { status: 409 });
+    }
+    throw err;
+  }
+
+  const token = await createSessionToken({
+    teacherId: teacher.id,
+    schoolId: teacher.school_id,
+    email: teacher.email,
+  });
+
+  const res = NextResponse.json({ ok: true }, { status: 201 });
+  res.cookies.set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 8,
+  });
+  return res;
+}

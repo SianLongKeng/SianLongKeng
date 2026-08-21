@@ -72,7 +72,7 @@ export default function AddStudentForm({ classes }: { classes: ClassOption[] }) 
       <input id="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
 
       {error && <p className="error">{error}</p>}
-      <button type="submit" disabled={busy}>
+      <button className="btn btn-primary" type="submit" disabled={busy} style={{ marginTop: 12 }}>
         {busy ? "กำลังบันทึก..." : "เพิ่มนักเรียน"}
       </button>
     </form>

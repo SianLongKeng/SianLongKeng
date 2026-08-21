@@ -27,3 +27,22 @@ export async function query<T = unknown>(text: string, params: unknown[] = []) {
   const result = await pool.query(text, params);
   return result.rows as T[];
 }
+
+// Runs fn with a single checked-out client wrapped in BEGIN/COMMIT, rolling
+// back on any error — for bulk inserts where partial success would leave
+// the roster in a confusing half-imported state.
+export async function withTransaction<T>(fn: (client: import("pg").PoolClient) => Promise<T>): Promise<T> {
+  const pool = getPool();
+  const client = await pool.connect();
+  try {
+    await client.query("begin");
+    const result = await fn(client);
+    await client.query("commit");
+    return result;
+  } catch (err) {
+    await client.query("rollback");
+    throw err;
+  } finally {
+    client.release();
+  }
+}

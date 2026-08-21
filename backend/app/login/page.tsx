@@ -35,8 +35,10 @@ function LoginForm() {
 
   return (
     <div className="wrap">
+      <span className="brand-mark">EduTwin</span>
       <div className="card">
-        <h1>EduTwin — เข้าสู่ระบบครู</h1>
+        <span className="eyebrow">Teacher Copilot</span>
+        <h1>เข้าสู่ระบบครู</h1>
         <form onSubmit={onSubmit}>
           <label htmlFor="email">อีเมล</label>
           <input
@@ -57,10 +59,13 @@ function LoginForm() {
             autoComplete="current-password"
           />
           {error && <p className="error">{error}</p>}
-          <button type="submit" disabled={busy}>
+          <button className="btn btn-primary" type="submit" disabled={busy} style={{ width: "100%", marginTop: 20 }}>
             {busy ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
           </button>
         </form>
+        <p className="auth-link">
+          ยังไม่มีบัญชี? <a href="/register">สมัครใช้งาน</a>
+        </p>
       </div>
     </div>
   );
