@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface Student {
   id: string;
@@ -107,6 +108,15 @@ export default function StudentRow({ student }: { student: Student }) {
       <td>{student.class_name}</td>
       <td>
         <div className="row-actions">
+          <Link className="btn btn-ghost btn-small" href={`/admin/students/${student.id}/mission`}>
+            Mission · เริ่มภารกิจ
+          </Link>
+          <Link className="btn btn-ghost btn-small" href={`/admin/students/${student.id}/diagnosis`}>
+            Diagnosis · ผลวิเคราะห์
+          </Link>
+          <Link className="btn btn-ghost btn-small" href={`/admin/students/${student.id}/coach`}>
+            AI Coach
+          </Link>
           <button className="btn btn-ghost btn-small" type="button" onClick={() => setEditing(true)}>
             Edit · แก้ไข
           </button>
