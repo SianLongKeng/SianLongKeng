@@ -29,6 +29,8 @@
   --radius-md: 12px;
   --radius-lg: 20px;
   --shadow: 0 1px 2px rgba(36, 18, 32, 0.06), 0 8px 24px -12px rgba(36, 18, 32, 0.18);
+  --shadow-lift: 0 2px 4px rgba(36, 18, 32, 0.08), 0 20px 40px -14px rgba(159, 95, 159, 0.35);
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -166,22 +168,26 @@ textarea {
   font-size: 0.92rem;
   font-weight: 600;
   padding: 12px 22px;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease),
+    background 0.2s var(--ease);
   font-family: inherit;
   min-height: 44px;
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .btn-primary {
   background: var(--accent);
   color: var(--accent-contrast);
+  box-shadow: 0 4px 14px -4px var(--accent-wash);
 }
 
 .btn-primary:hover {
   opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px -6px rgba(159, 95, 159, 0.55);
 }
 
 .btn-ghost {
@@ -192,6 +198,7 @@ textarea {
 
 .btn-ghost:hover {
   background: var(--surface-2);
+  transform: translateY(-1px);
 }
 
 .btn-small {
@@ -432,13 +439,16 @@ tr:last-child td {
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease), transform 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
   min-height: 52px;
   font-family: inherit;
 }
 
-.choice:hover {
+.choice:hover:not(:disabled) {
   border-color: var(--accent-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -8px rgba(36, 18, 32, 0.25);
 }
 
 .choice .letter {
@@ -847,6 +857,17 @@ tr:last-child td {
   margin-top: 8px;
 }
 
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .role-pick-card {
   display: flex;
   flex-direction: column;
@@ -858,13 +879,24 @@ tr:last-child td {
   background: var(--surface-2);
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  transition: border-color 0.25s var(--ease), transform 0.25s var(--ease), background 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
+  animation: rise-in 0.5s var(--ease) both;
+}
+
+.role-pick-card:nth-child(2) {
+  animation-delay: 0.08s;
 }
 
 .role-pick-card:hover {
   border-color: var(--accent);
   background: var(--surface-3, var(--surface-2));
-  transform: translateY(-2px);
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: var(--shadow-lift);
+}
+
+.role-pick-card:active {
+  transform: translateY(-1px) scale(0.99);
 }
 
 .role-pick-title {
@@ -898,12 +930,19 @@ tr:last-child td {
   text-align: left;
   font-family: inherit;
   color: inherit;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease), transform 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
 }
 
-.join-name-btn:hover {
+.join-name-btn:hover:not(:disabled) {
   border-color: var(--accent);
   background: var(--surface-3, var(--surface-2));
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px -10px rgba(36, 18, 32, 0.3);
+}
+
+.join-name-btn:active:not(:disabled) {
+  transform: translateY(-1px);
 }
 
 .join-name-btn:disabled {
