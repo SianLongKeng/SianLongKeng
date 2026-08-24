@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
-import { verifyPassword } from "@/lib/auth";
+import { query } from "@/lib/server";
+import { verifyPassword } from "@/lib/server";
 import { createSessionToken, SESSION_COOKIE } from "@/lib/session";
 
 interface TeacherRow {

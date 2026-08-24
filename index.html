@@ -78,11 +78,11 @@
     max-width:1180px;margin:0 auto;padding:14px 24px;
     display:flex;align-items:center;gap:20px;
   }
-  .brand{display:flex;align-items:baseline;gap:8px;flex-shrink:0;}
+  .brand{display:flex;align-items:baseline;gap:10px;flex-shrink:0;}
   .brand-mark{
-    font-family:"Fraunces", serif;font-weight:640;font-size:1.15rem;letter-spacing:-0.01em;color:var(--ink);
+    font-family:"Fraunces", serif;font-weight:680;font-size:1.85rem;letter-spacing:-0.01em;color:var(--ink);
   }
-  .brand-tag{font-size:0.68rem;color:var(--ink-muted);letter-spacing:0.06em;text-transform:uppercase;}
+  .brand-tag{font-size:0.74rem;color:var(--ink-muted);letter-spacing:0.06em;text-transform:uppercase;}
   /* Single scrollable row instead of wrapping — on a phone, 8 tabs wrapping
      into 3-4 rows would eat most of the visible screen before content even
      starts. A horizontal swipe is the standard mobile tab-bar pattern. */
@@ -514,7 +514,7 @@
         <p class="lede">EduTwin สร้าง Digital Learning Twin ของนักเรียนจากพฤติกรรมการเรียนรู้จริง — คำตอบ วิธีคิด การขอ Hint การอธิบายเหตุผล และ Reflection — แล้วเปลี่ยนข้อมูลเหล่านี้เป็น Learning DNA เพื่อช่วยนักเรียนและครูเข้าใจว่า “เรียนรู้อย่างไร” ไม่ใช่แค่ดูคะแนน</p>
         <div class="cta-row" style="margin-top:26px;">
           <button class="btn btn-primary" data-goto="mission">Start Learning →</button>
-          <button class="btn btn-ghost" data-goto="diagnosis">ดู Killer Demo</button>
+          <button class="btn btn-ghost" data-goto="diagnosis">View Killer Demo · ดู Killer Demo</button>
         </div>
         <div class="flow-row">
           <span class="flow-step">LEARN</span><span class="flow-arrow">→</span>
@@ -554,7 +554,7 @@
   <section class="screen" id="screen-mission">
     <div class="section-head">
       <span class="eyebrow">Student · Adaptive Mission</span>
-      <h2>ภารกิจ: ออกแบบงบประมาณสวนสาธารณะ</h2>
+      <h2>Mission: Design a Public Park Budget · ภารกิจ: ออกแบบงบประมาณสวนสาธารณะ</h2>
     </div>
     <div class="stepper" id="mission-stepper">
       <span class="step-pill on" data-step="0">Explore</span>
@@ -571,23 +571,23 @@
         <p class="question-text" id="mission-question-text"></p>
         <div class="choices" id="mission-choices"></div>
         <div class="mission-actions">
-          <button class="btn btn-primary" id="mission-submit">ส่งคำตอบ</button>
-          <button class="btn btn-primary" id="mission-next" style="display:none;">ข้อถัดไป →</button>
-          <button class="btn btn-ghost" data-goto="coach">ขอ Hint จาก AI Coach</button>
+          <button class="btn btn-primary" id="mission-submit">Submit Answer · ส่งคำตอบ</button>
+          <button class="btn btn-primary" id="mission-next" style="display:none;">Next Question → · ข้อถัดไป →</button>
+          <button class="btn btn-ghost" data-goto="coach">Ask AI Coach for a Hint · ขอ Hint จาก AI Coach</button>
         </div>
         <div class="feedback" id="mission-feedback"></div>
       </div>
       <div class="card mission-complete" id="mission-complete" style="display:none;">
-        <h3>ภารกิจเสร็จสิ้น!</h3>
+        <h3>Mission Complete! · ภารกิจเสร็จสิ้น!</h3>
         <div class="mission-complete-score mono" id="mission-complete-score">0 / 5</div>
         <p id="mission-complete-msg"></p>
         <div class="mission-actions">
-          <button class="btn btn-primary" data-goto="diagnosis">ดู Learning DNA ของคุณ →</button>
-          <button class="btn btn-ghost" id="mission-restart">ทำภารกิจใหม่</button>
+          <button class="btn btn-primary" data-goto="diagnosis">View Your Learning DNA → · ดู Learning DNA ของคุณ →</button>
+          <button class="btn btn-ghost" id="mission-restart">Retry Mission · ทำภารกิจใหม่</button>
         </div>
       </div>
       <div class="card side-note">
-        <h3>EduTwin กำลังสังเกตอะไรอยู่</h3>
+        <h3>What EduTwin Is Observing · EduTwin กำลังสังเกตอะไรอยู่</h3>
         <ul>
           <li>เวลาที่ใช้คิดต่อข้อ และรูปแบบการลองผิดลองถูก</li>
           <li>จำนวนครั้งที่ขอ Hint และประเภทของ Hint ที่ใช้</li>
@@ -616,7 +616,7 @@
       </div>
       <div class="coach-input-row">
         <input type="text" id="coach-input" class="coach-input" placeholder="พิมพ์ข้อความถึง AI Coach…" autocomplete="off">
-        <button class="btn btn-primary coach-send" id="coach-send">ส่ง</button>
+        <button class="btn btn-primary coach-send" id="coach-send">Send · ส่ง</button>
       </div>
     </div>
   </section>
@@ -625,7 +625,7 @@
   <section class="screen" id="screen-diagnosis">
     <div class="killer-banner">
       <span class="eyebrow">Killer Demo</span>
-      <h2>นักเรียนสองคน คะแนนเท่ากัน 6/10</h2>
+      <h2>Two Students, Same Score: 6/10 · นักเรียนสองคน คะแนนเท่ากัน 6/10</h2>
       <p>Ploy และ Tan ทำภารกิจ “งบประมาณสวนสาธารณะ” ชุดเดียวกัน ได้คะแนนเท่ากันเป๊ะ — กด Analyze เพื่อดูว่า EduTwin มองเห็นอะไรที่คะแนนมองไม่เห็น</p>
     </div>
 
@@ -648,8 +648,8 @@
 
     <div class="analyze-bar">
       <div style="text-align:center;">
-        <button class="btn btn-primary" id="analyze-btn">วิเคราะห์ด้วย AI · Analyze</button>
-        <div class="scan-status mono" id="scan-status">กำลังวิเคราะห์ Learning Pattern และ Mistake Pattern…</div>
+        <button class="btn btn-primary" id="analyze-btn">Analyze · วิเคราะห์ด้วย AI</button>
+        <div class="scan-status mono" id="scan-status">Analyzing Learning Pattern &amp; Mistake Pattern… · กำลังวิเคราะห์ Learning Pattern และ Mistake Pattern…</div>
       </div>
     </div>
 
@@ -660,9 +660,9 @@
           <span class="chip serious">Concept Gap</span>
         </div>
         <div class="radar-wrap" id="radar-ploy"></div>
-        <p class="root-cause"><b>Root Cause:</b> เข้าใจสูตร “เปอร์เซ็นต์ของพื้นที่” คลาดเคลื่อน — ตีความ 60% ผิดเป็นสัดส่วนของเส้นรอบรูปแทนที่จะเป็นพื้นที่ทั้งหมด (Misconception)</p>
+        <p class="root-cause" id="root-cause-ploy"><b>Root Cause:</b> เข้าใจสูตร “เปอร์เซ็นต์ของพื้นที่” คลาดเคลื่อน — ตีความ 60% ผิดเป็นสัดส่วนของเส้นรอบรูปแทนที่จะเป็นพื้นที่ทั้งหมด (Misconception)</p>
         <div class="mistake-bars" id="mistake-ploy"></div>
-        <div class="intervention"><b>AI Intervention</b>ทบทวน Concept เปอร์เซ็นต์กับพื้นที่ผ่าน Micro-lesson 5 นาที + โจทย์ฝึกแบบ Visual ก่อนกลับไปทำ Mission ต่อ</div>
+        <div class="intervention" id="intervention-ploy"><b>AI Intervention</b>ทบทวน Concept เปอร์เซ็นต์กับพื้นที่ผ่าน Micro-lesson 5 นาที + โจทย์ฝึกแบบ Visual ก่อนกลับไปทำ Mission ต่อ</div>
       </div>
       <div class="card diag-card">
         <div class="diag-card-head">
@@ -670,9 +670,9 @@
           <span class="chip warning">Application Gap</span>
         </div>
         <div class="radar-wrap" id="radar-tan"></div>
-        <p class="root-cause"><b>Root Cause:</b> เข้าใจเปอร์เซ็นต์ดี แต่สับสนลำดับขั้นตอนเมื่อโจทย์มีหลายเงื่อนไขต่อกัน (งบประมาณ + พื้นที่ + ส่วนที่เหลือ) — Application Gap ไม่ใช่ Concept Gap</p>
+        <p class="root-cause" id="root-cause-tan"><b>Root Cause:</b> เข้าใจเปอร์เซ็นต์ดี แต่สับสนลำดับขั้นตอนเมื่อโจทย์มีหลายเงื่อนไขต่อกัน (งบประมาณ + พื้นที่ + ส่วนที่เหลือ) — Application Gap ไม่ใช่ Concept Gap</p>
         <div class="mistake-bars" id="mistake-tan"></div>
-        <div class="intervention"><b>AI Intervention</b>เพิ่ม Mission แบบ Multi-step Real-world Problem พร้อม Worked Example ทีละขั้น เพื่อฝึกลำดับการแก้โจทย์ซับซ้อน</div>
+        <div class="intervention" id="intervention-tan"><b>AI Intervention</b>เพิ่ม Mission แบบ Multi-step Real-world Problem พร้อม Worked Example ทีละขั้น เพื่อฝึกลำดับการแก้โจทย์ซับซ้อน</div>
       </div>
     </div>
 
@@ -681,7 +681,7 @@
     <div class="card growth-card" id="growth-card">
       <div class="growth-card-head">
         <span class="eyebrow">AI Growth Plan</span>
-        <h3>เส้นทางพัฒนาที่ AI แนะนำ — คนละเส้นทาง แม้คะแนนจะเท่ากัน</h3>
+        <h3>AI-Recommended Growth Path — Different Paths, Even With the Same Score · เส้นทางพัฒนาที่ AI แนะนำ — คนละเส้นทาง แม้คะแนนจะเท่ากัน</h3>
         <p>เมื่อ Root Cause ต่างกัน AI จะออกแบบลำดับ Mission ถัดไปให้ไม่เหมือนกัน ไม่ใช่ให้ทำแบบฝึกหัดชุดเดียวกันซ้ำ</p>
       </div>
       <div id="growth-paths"></div>
@@ -709,7 +709,7 @@
   <section class="screen" id="screen-impact">
     <div class="section-head">
       <span class="eyebrow">Impact Dashboard</span>
-      <h2>เป้าหมายผลลัพธ์การเรียนรู้</h2>
+      <h2>Learning Outcome Goals · เป้าหมายผลลัพธ์การเรียนรู้</h2>
     </div>
     <div class="sim-banner">
       <span>⚠</span>
@@ -727,7 +727,7 @@
   <section class="screen" id="screen-business">
     <div class="section-head">
       <span class="eyebrow">Business Model Canvas</span>
-      <h2>โมเดลธุรกิจของ EduTwin</h2>
+      <h2>EduTwin's Business Model · โมเดลธุรกิจของ EduTwin</h2>
     </div>
     <div class="bmc-grid">
       <div class="bmc-cell bmc-partners">
@@ -770,7 +770,7 @@
 
     <div class="section-head">
       <span class="eyebrow">Revenue Model</span>
-      <h2>แผนราคา 3 ระดับ</h2>
+      <h2>3-Tier Pricing Plan · แผนราคา 3 ระดับ</h2>
     </div>
     <div class="pricing-grid">
       <div class="price-card">
@@ -800,13 +800,29 @@
     </div>
 
     <div class="section-head">
+      <span class="eyebrow">Implementation Roadmap</span>
+      <h2>4-Phase Rollout Plan · แผนดำเนินงาน 4 ระยะ</h2>
+    </div>
+    <div class="table-wrap">
+      <table class="tech-table">
+        <thead><tr><th>Phase</th><th>Timeframe</th><th>Goal</th></tr></thead>
+        <tbody>
+          <tr><td>Phase 1 — Prototype</td><td>เดือน 1</td><td>Student App, Mission, Learning DNA, Mistake DNA; Prototype End-to-End</td></tr>
+          <tr><td>Phase 2 — Pilot</td><td>เดือน 2–3</td><td>ทดลองกับ 1 โรงเรียน 1–2 ห้องเรียน 1 วิชา และเก็บ Feedback</td></tr>
+          <tr><td>Phase 3 — Improve</td><td>เดือน 4–6</td><td>Teacher Copilot, Adaptive Mission, Learning Analytics</td></tr>
+          <tr><td>Phase 4 — Scale</td><td>เดือน 7–12</td><td>ขยายหลายวิชา หลายระดับชั้น และหลายโรงเรียน</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-head">
       <span class="eyebrow">Competitive Positioning</span>
-      <h2>ต่างจากระบบทั่วไปอย่างไร</h2>
+      <h2>How Is This Different From Typical Systems? · ต่างจากระบบทั่วไปอย่างไร</h2>
     </div>
     <div class="table-wrap">
       <table class="compare-table">
         <thead>
-          <tr><th>ระบบทั่วไป</th><th class="edutwin-col">EduTwin</th></tr>
+          <tr><th>Typical System · ระบบทั่วไป</th><th class="edutwin-col">EduTwin</th></tr>
         </thead>
         <tbody>
           <tr><td>วัดคะแนน</td><td class="edutwin-col">วิเคราะห์กระบวนการเรียนรู้</td></tr>
@@ -820,7 +836,7 @@
 
     <div class="section-head">
       <span class="eyebrow">Product Flow</span>
-      <h2>ข้อมูลนักเรียนไหลไปเป็น Learning DNA ได้อย่างไร</h2>
+      <h2>How Student Data Becomes Learning DNA · ข้อมูลนักเรียนไหลไปเป็น Learning DNA ได้อย่างไร</h2>
     </div>
     <figure class="flow-figure">
       <div class="flow-scroll">
@@ -893,7 +909,7 @@
 
     <div class="section-head">
       <span class="eyebrow">Technology & Architecture</span>
-      <h2>สแต็กเทคโนโลยี</h2>
+      <h2>Technology Stack · สแต็กเทคโนโลยี</h2>
     </div>
     <div class="table-wrap">
       <table class="tech-table">
@@ -913,7 +929,7 @@
   <section class="screen" id="screen-pitch">
     <div class="section-head">
       <span class="eyebrow">Pitch Script — 3 Minutes</span>
-      <h2>สคริปต์นำเสนอ</h2>
+      <h2>Pitch Script · สคริปต์นำเสนอ</h2>
     </div>
     <div class="pitch-timeline">
       <div class="pitch-seg">
@@ -952,7 +968,7 @@
 
     <div class="section-head">
       <span class="eyebrow">Pitch Deck Structure</span>
-      <h2>โครงสไลด์ 10 หน้า</h2>
+      <h2>10-Slide Deck Outline · โครงสไลด์ 10 หน้า</h2>
     </div>
     <div class="deck-list">
       <div class="deck-item"><span class="deck-num">01</span><span class="deck-title">Cover</span><span class="deck-desc">— MINDMESH × EduTwin</span></div>
@@ -1138,16 +1154,12 @@
 
   renderMissionQuestion();
 
-  /* ---------------- AI coach (live chat) ---------------- */
-  var COACH_SCRIPT = [
-    "ลองเริ่มจากสิ่งที่รู้ก่อนนะคะ — พื้นที่สวนทั้งหมดมีกี่ตารางเมตร?",
-    "ดีมาก แล้วโจทย์บอกว่าใช้ปูหญ้ากี่เปอร์เซ็นต์ของพื้นที่ทั้งหมด? ลองเขียนเป็นสมการดูสิคะ",
-    "เกือบแล้วค่ะ ลองคำนวณ 200 × 0.6 ดูอีกครั้ง แล้วเทียบกับตัวเลือกที่มีให้ว่าตรงข้อไหน",
-    "เยี่ยมมาก! พอได้คำตอบแล้ว ลองกลับไปกดเลือกในหน้า Mission ได้เลยค่ะ"
-  ];
+  /* ---------------- AI coach (live chat, real LLM) ---------------- */
+  var COACH_API = "https://edutwin-admin.vercel.app/api/coach";
   var coachChat = document.getElementById("coach-chat");
-  var coachStep = 0;
+  var coachHistory = [];
   var coachBusy = false;
+  var reflectShown = false;
 
   function coachScrollToBottom(){
     coachChat.scrollTop = coachChat.scrollHeight;
@@ -1182,24 +1194,35 @@
     text = (text || "").trim();
     if(!text || coachBusy) return;
     appendCoachBubble("student", text);
+    coachHistory.push({who:"student", text:text});
     document.getElementById("coach-input").value = "";
     coachBusy = true;
     showCoachTyping();
-    setTimeout(function(){
-      hideCoachTyping();
-      if(coachStep < COACH_SCRIPT.length){
-        appendCoachBubble("ai", COACH_SCRIPT[coachStep]);
-        coachStep++;
-        if(coachStep === COACH_SCRIPT.length){
+    fetch(COACH_API, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({messages: coachHistory})
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        hideCoachTyping();
+        var reply = data && data.reply ? data.reply : "ขอโทษค่ะ ลองพิมพ์อีกครั้งนะคะ";
+        appendCoachBubble("ai", reply);
+        coachHistory.push({who:"ai", text:reply});
+        var studentTurns = coachHistory.filter(function(m){ return m.who === "student"; }).length;
+        if(!reflectShown && studentTurns >= 3){
+          reflectShown = true;
           setTimeout(function(){
             document.getElementById("reflect-prompt").classList.add("show");
           }, 500);
         }
-      } else {
-        appendCoachBubble("ai", "เยี่ยมมากค่ะ ลองกลับไปทำภารกิจต่อได้เลยนะคะ 🙌");
-      }
-      coachBusy = false;
-    }, 700 + Math.random() * 500);
+        coachBusy = false;
+      })
+      .catch(function(){
+        hideCoachTyping();
+        appendCoachBubble("ai", "ขอโทษค่ะ ระบบขัดข้องชั่วคราว ลองใหม่อีกครั้งนะคะ");
+        coachBusy = false;
+      });
   }
 
   document.getElementById("coach-send").addEventListener("click", function(){
@@ -1338,6 +1361,28 @@
     });
   }
 
+  var MISTAKE_DNA_API = "https://edutwin-admin.vercel.app/api/mistake-dna";
+
+  function fetchMistakeAnalysis(studentLabel, mistakes, dna){
+    return fetch(MISTAKE_DNA_API, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({studentLabel:studentLabel, mistakes:mistakes, dna:dna})
+    }).then(function(res){ return res.json(); });
+  }
+
+  function applyAnalysis(prefix, fallbackLabel, data){
+    var rc = document.getElementById("root-cause-" + prefix);
+    var iv = document.getElementById("intervention-" + prefix);
+    if(data && data.rootCause){
+      rc.innerHTML = "<b>Root Cause:</b> " + data.rootCause;
+    }
+    if(data && data.intervention){
+      iv.innerHTML = "<b>AI Intervention</b>" + data.intervention;
+    }
+    // On fetch failure, the pre-written fallback text already in the DOM stays as-is.
+  }
+
   var analyzed = false;
   document.getElementById("analyze-btn").addEventListener("click", function(){
     if(analyzed) return;
@@ -1345,20 +1390,25 @@
     var btn = this;
     var status = document.getElementById("scan-status");
     btn.disabled = true;
-    btn.textContent = "กำลังวิเคราะห์…";
+    btn.textContent = "Analyzing… · กำลังวิเคราะห์…";
     status.classList.add("show");
-    setTimeout(function(){
-      document.getElementById("radar-ploy").innerHTML = radarSVG(PLOY_DNA, "var(--cat-1)");
-      document.getElementById("radar-tan").innerHTML = radarSVG(TAN_DNA, "var(--cat-2)");
-      renderMistakeBars(document.getElementById("mistake-ploy"), PLOY_MISTAKES);
-      renderMistakeBars(document.getElementById("mistake-tan"), TAN_MISTAKES);
+
+    document.getElementById("radar-ploy").innerHTML = radarSVG(PLOY_DNA, "var(--cat-1)");
+    document.getElementById("radar-tan").innerHTML = radarSVG(TAN_DNA, "var(--cat-2)");
+    renderMistakeBars(document.getElementById("mistake-ploy"), PLOY_MISTAKES);
+    renderMistakeBars(document.getElementById("mistake-tan"), TAN_MISTAKES);
+
+    Promise.all([
+      fetchMistakeAnalysis("Ploy P.", PLOY_MISTAKES, PLOY_DNA).then(function(d){ applyAnalysis("ploy", "Ploy P.", d); }).catch(function(){}),
+      fetchMistakeAnalysis("Tan K.", TAN_MISTAKES, TAN_DNA).then(function(d){ applyAnalysis("tan", "Tan K.", d); }).catch(function(){})
+    ]).then(function(){
       document.getElementById("diag-grid").classList.add("revealed");
       renderGrowthPaths();
       document.getElementById("growth-card").classList.add("revealed");
-      status.textContent = "วิเคราะห์เสร็จสิ้น — พบ Learning Gap คนละแบบ";
-      btn.textContent = "วิเคราะห์เสร็จแล้ว ✓";
+      status.textContent = "Analysis complete — different Learning Gaps found · วิเคราะห์เสร็จสิ้น — พบ Learning Gap คนละแบบ";
+      btn.textContent = "Analyzed ✓ · วิเคราะห์เสร็จแล้ว ✓";
       document.getElementById("closing-line").classList.add("revealed");
-    }, 1100);
+    });
   });
 
   /* ---------------- helix decoration (landing) ---------------- */

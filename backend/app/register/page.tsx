@@ -43,18 +43,18 @@ export default function RegisterPage() {
         <div className="card-head">
           <div>
             <span className="eyebrow">Get started</span>
-            <h1>สมัครใช้งานสำหรับครู</h1>
+            <h1>Sign Up as a Teacher · สมัครใช้งานสำหรับครู</h1>
           </div>
         </div>
         <p className="lede">สร้างบัญชีโรงเรียน + ห้องเรียนแรกของคุณ ใช้เวลาไม่ถึงนาที</p>
         <form onSubmit={onSubmit}>
-          <label htmlFor="schoolName">ชื่อโรงเรียน</label>
+          <label htmlFor="schoolName">School Name · ชื่อโรงเรียน</label>
           <input id="schoolName" required value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
 
-          <label htmlFor="fullName">ชื่อ-นามสกุลครู</label>
+          <label htmlFor="fullName">Teacher's Full Name · ชื่อ-นามสกุลครู</label>
           <input id="fullName" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
 
-          <label htmlFor="email">อีเมล</label>
+          <label htmlFor="email">Email · อีเมล</label>
           <input
             id="email"
             type="email"
@@ -64,7 +64,7 @@ export default function RegisterPage() {
             autoComplete="username"
           />
 
-          <label htmlFor="password">รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)</label>
+          <label htmlFor="password">Password (min. 8 characters) · รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)</label>
           <input
             id="password"
             type="password"
@@ -75,7 +75,7 @@ export default function RegisterPage() {
             autoComplete="new-password"
           />
 
-          <label htmlFor="className">ห้องเรียนแรก</label>
+          <label htmlFor="className">First Class · ห้องเรียนแรก</label>
           <input
             id="className"
             required
@@ -84,7 +84,7 @@ export default function RegisterPage() {
             onChange={(e) => setClassName(e.target.value)}
           />
 
-          <label htmlFor="subject">วิชา</label>
+          <label htmlFor="subject">Subject · วิชา</label>
           <input
             id="subject"
             required
@@ -95,11 +95,11 @@ export default function RegisterPage() {
 
           {error && <p className="error">{error}</p>}
           <button className="btn btn-primary" type="submit" disabled={busy} style={{ width: "100%", marginTop: 20 }}>
-            {busy ? "กำลังสมัคร..." : "สร้างบัญชี"}
+            {busy ? "Signing up... · กำลังสมัคร..." : "Create Account · สร้างบัญชี"}
           </button>
         </form>
         <p className="auth-link">
-          มีบัญชีอยู่แล้ว? <a href="/login">เข้าสู่ระบบ</a>
+          Already have an account? · มีบัญชีอยู่แล้ว? <a href="/login">Log In · เข้าสู่ระบบ</a>
         </p>
       </div>
     </div>

@@ -1,16 +1,14 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { query } from "@/lib/db";
+import { query } from "@/lib/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
-import AddStudentPanel from "./AddStudentPanel";
-import ClassManager from "./ClassManager";
-import LogoutButton from "./LogoutButton";
-import RosterTable from "./RosterTable";
+import { AddStudentPanel, ClassManager, LogoutButton, RosterTable } from "./components";
 
 interface ClassRow {
   id: string;
   name: string;
   subject: string;
+  join_code: string;
   student_count: number;
 }
 
@@ -30,7 +28,7 @@ export default async function AdminPage() {
   if (!session) redirect("/login");
 
   const classes = await query<ClassRow>(
-    `select c.id, c.name, c.subject,
+    `select c.id, c.name, c.subject, c.join_code,
             (select count(*)::int from students s where s.class_id = c.id) as student_count
        from classes c
       where c.teacher_id = $1
@@ -55,7 +53,7 @@ export default async function AdminPage() {
         <div className="card-head">
           <div>
             <span className="eyebrow">Teacher Copilot</span>
-            <h1>รายชื่อนักเรียน</h1>
+            <h1>Student Roster · รายชื่อนักเรียน</h1>
             <p className="lede">เข้าสู่ระบบในนาม {session.email}</p>
           </div>
           <LogoutButton />
@@ -68,7 +66,7 @@ export default async function AdminPage() {
 
       <div className="card">
         <span className="eyebrow">Roster</span>
-        <h2 style={{ marginBottom: 16 }}>เพิ่มนักเรียน</h2>
+        <h2 style={{ marginBottom: 16 }}>Add Students · เพิ่มนักเรียน</h2>
         <AddStudentPanel classes={classes} />
       </div>
     </div>
