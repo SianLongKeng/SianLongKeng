@@ -352,51 +352,62 @@ export default function MissionRunner({
             ข้อมูลทั้งหมดนี้จะถูกประมวลผลเป็น <strong>Learning DNA</strong> และ <strong>Mistake DNA</strong> ไม่ใช่แค่ถูก/ผิด
           </p>
         </div>
+      </div>
 
-        <div className="card coach-card">
-          <button type="button" className="coach-toggle" onClick={() => setCoachOpen((o) => !o)}>
-            <span>💬 AI Coach · ถามครูเอไอ</span>
-            <span className="coach-toggle-arrow">{coachOpen ? "▲" : "▼"}</span>
-          </button>
-          {coachOpen && (
-            <div className="coach-panel">
-              <div className="coach-messages" ref={coachScrollRef}>
-                {coachMessages.length === 0 && !coachSending && (
-                  <p className="coach-empty">
-                    ติดตรงไหนของโจทย์ ถามได้เลยค่ะ — AI Coach จะช่วยตั้งคำถามนำให้คิดเอง ไม่เฉลยตรงๆ
-                  </p>
-                )}
-                {coachMessages.map((m, i) => (
-                  <div key={i} className={`coach-msg ${m.who}`}>
-                    {m.text}
-                  </div>
-                ))}
-                {coachSending && <div className="coach-msg ai coach-typing">กำลังพิมพ์…</div>}
-              </div>
-              {coachError && <p className="error">{coachError}</p>}
-              <div className="coach-input-row">
-                <input
-                  className="coach-input"
-                  placeholder="พิมพ์คำถามที่นี่..."
-                  value={coachInput}
-                  onChange={(e) => setCoachInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") sendCoachMessage();
-                  }}
-                  disabled={coachSending}
-                />
-                <button
-                  type="button"
-                  className="btn btn-primary btn-small"
-                  onClick={sendCoachMessage}
-                  disabled={coachSending || !coachInput.trim()}
-                >
-                  ส่ง
-                </button>
-              </div>
+      <div className="coach-widget">
+        {coachOpen ? (
+          <div className="card coach-panel-float">
+            <div className="coach-panel-head">
+              <span>💬 AI Coach · ถามครูเอไอ</span>
+              <button type="button" className="coach-close" onClick={() => setCoachOpen(false)} aria-label="Close">
+                ✕
+              </button>
             </div>
-          )}
-        </div>
+            <div className="coach-messages" ref={coachScrollRef}>
+              {coachMessages.length === 0 && !coachSending && (
+                <p className="coach-empty">
+                  ติดตรงไหนของโจทย์ ถามได้เลยค่ะ — AI Coach จะช่วยตั้งคำถามนำให้คิดเอง ไม่เฉลยตรงๆ
+                </p>
+              )}
+              {coachMessages.map((m, i) => (
+                <div key={i} className={`coach-msg ${m.who}`}>
+                  {m.text}
+                </div>
+              ))}
+              {coachSending && <div className="coach-msg ai coach-typing">กำลังพิมพ์…</div>}
+            </div>
+            {coachError && (
+              <p className="error" style={{ margin: "0 16px 8px" }}>
+                {coachError}
+              </p>
+            )}
+            <div className="coach-input-row">
+              <input
+                className="coach-input"
+                placeholder="พิมพ์คำถามที่นี่..."
+                value={coachInput}
+                onChange={(e) => setCoachInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") sendCoachMessage();
+                }}
+                disabled={coachSending}
+                autoFocus
+              />
+              <button
+                type="button"
+                className="btn btn-primary btn-small"
+                onClick={sendCoachMessage}
+                disabled={coachSending || !coachInput.trim()}
+              >
+                ส่ง
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button type="button" className="coach-fab" onClick={() => setCoachOpen(true)} aria-label="Open AI Coach">
+            💬
+          </button>
+        )}
       </div>
     </>
   );
