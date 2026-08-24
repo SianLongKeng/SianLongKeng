@@ -232,7 +232,7 @@ export default function MissionRunner({
           </div>
         )}
         <div className="mission-actions">
-          <a className="btn btn-primary" href={`/admin/students/${studentId}/diagnosis`}>
+          <a className="btn btn-primary" href={`/students/${studentId}/diagnosis`}>
             View Diagnosis · ดูผลวิเคราะห์
           </a>
         </div>

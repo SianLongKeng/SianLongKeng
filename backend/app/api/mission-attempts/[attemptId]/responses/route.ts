@@ -1,32 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { query } from "@/lib/db";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
-
-async function requireSession() {
-  const token = cookies().get(SESSION_COOKIE)?.value;
-  const session = token ? await verifySessionToken(token) : null;
-  return session;
-}
-
-// Confirms the attempt belongs to a student in a class owned by this
-// teacher — same ownership-check pattern as the students routes.
-async function attemptBelongsToTeacher(attemptId: string, teacherId: string) {
-  const rows = await query<{ id: string }>(
-    `select a.id from mission_attempts a
-       join students s on s.id = a.student_id
-       join classes c on c.id = s.class_id
-      where a.id = $1 and c.teacher_id = $2`,
-    [attemptId, teacherId]
-  );
-  return rows.length > 0;
-}
+import { canAccessAttempt } from "@/lib/missionAccess";
 
 export async function POST(req: NextRequest, { params }: { params: { attemptId: string } }) {
-  const session = await requireSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  if (!(await attemptBelongsToTeacher(params.attemptId, session.teacherId))) {
+  if (!(await canAccessAttempt(params.attemptId))) {
     return NextResponse.json({ error: "Attempt not found" }, { status: 404 });
   }
 

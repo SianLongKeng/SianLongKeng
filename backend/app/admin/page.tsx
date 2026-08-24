@@ -11,6 +11,7 @@ interface ClassRow {
   id: string;
   name: string;
   subject: string;
+  join_code: string;
   student_count: number;
 }
 
@@ -30,7 +31,7 @@ export default async function AdminPage() {
   if (!session) redirect("/login");
 
   const classes = await query<ClassRow>(
-    `select c.id, c.name, c.subject,
+    `select c.id, c.name, c.subject, c.join_code,
             (select count(*)::int from students s where s.class_id = c.id) as student_count
        from classes c
       where c.teacher_id = $1

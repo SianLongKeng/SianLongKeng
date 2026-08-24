@@ -1,36 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { z } from "zod";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { query, withTransaction } from "@/lib/db";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
+import { canAccessAttempt } from "@/lib/missionAccess";
 import { getAnthropicClient } from "@/lib/anthropic";
-
-async function requireSession() {
-  const token = cookies().get(SESSION_COOKIE)?.value;
-  const session = token ? await verifySessionToken(token) : null;
-  return session;
-}
-
-interface AttemptRow {
-  id: string;
-  student_id: string;
-  mission_id: string;
-}
-
-// Confirms the attempt belongs to a student in a class owned by this
-// teacher, and returns the attempt's student_id/mission_id for use below.
-async function attemptOwnedByTeacher(attemptId: string, teacherId: string): Promise<AttemptRow | null> {
-  const rows = await query<AttemptRow>(
-    `select a.id, a.student_id, a.mission_id
-       from mission_attempts a
-       join students s on s.id = a.student_id
-       join classes c on c.id = s.class_id
-      where a.id = $1 and c.teacher_id = $2`,
-    [attemptId, teacherId]
-  );
-  return rows[0] ?? null;
-}
 
 interface ResponseRow {
   order_index: number;
@@ -60,13 +33,8 @@ const GradeSchema = z.object({
       "only include categories that actually apply given the transcript; if the student got everything right on the first try, return a single entry with the dominant strength area at low/zero pct or an empty-ish breakdown — use judgement"
     ),
   dna: z.object({
-    concept: z.number(),
-    application: z.number(),
-    criticalThinking: z.number(),
-    problemSolving: z.number(),
-    creativity: z.number(),
-    collaboration: z.number(),
-    confidence: z.number(),
+    concept: z.number(), application: z.number(), criticalThinking: z.number(),
+    problemSolving: z.number(), creativity: z.number(), collaboration: z.number(), confidence: z.number(),
   }).describe("each 0-100, the student's Learning DNA axis scores inferred from this transcript"),
   rootCause: z.string().describe("1-2 Thai sentences, the real underlying cause of any mistakes, or a positive note if none"),
   intervention: z.string().describe("1 Thai sentence, a concrete actionable next step for the teacher"),
@@ -81,17 +49,23 @@ const SYSTEM_PROMPT = `คุณคือ AI Learning Analyst ของแพล
 const SOURCE_MODEL = "claude-opus-5";
 
 export async function POST(_req: NextRequest, { params }: { params: { attemptId: string } }) {
-  const session = await requireSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const studentId = await canAccessAttempt(params.attemptId);
+  if (!studentId) {
+    return NextResponse.json({ error: "Attempt not found" }, { status: 404 });
+  }
 
-  const attempt = await attemptOwnedByTeacher(params.attemptId, session.teacherId);
-  if (!attempt) {
+  const missionRows = await query<{ mission_id: string }>(
+    "select mission_id from mission_attempts where id = $1",
+    [params.attemptId]
+  );
+  const missionId = missionRows[0]?.mission_id;
+  if (!missionId) {
     return NextResponse.json({ error: "Attempt not found" }, { status: 404 });
   }
 
   const totalRows = await query<{ count: number }>(
     "select count(*)::int as count from mission_questions where mission_id = $1",
-    [attempt.mission_id]
+    [missionId]
   );
   const total = totalRows[0]?.count ?? 0;
 
@@ -187,7 +161,7 @@ export async function POST(_req: NextRequest, { params }: { params: { attemptId:
           creativity_score, collaboration_score, confidence_score, source_model, source_attempt_id)
        values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       [
-        attempt.student_id,
+        studentId,
         graded.dna.concept,
         graded.dna.application,
         graded.dna.criticalThinking,
@@ -204,14 +178,14 @@ export async function POST(_req: NextRequest, { params }: { params: { attemptId:
       `insert into root_cause_analyses (student_id, attempt_id, summary_text, source_model)
        values ($1, $2, $3, $4)
        returning id`,
-      [attempt.student_id, params.attemptId, graded.rootCause, SOURCE_MODEL]
+      [studentId, params.attemptId, graded.rootCause, SOURCE_MODEL]
     );
     const rootCauseId = rootCauseRows.rows[0].id;
 
     await client.query(
       `insert into interventions (student_id, root_cause_id, title, description)
        values ($1, $2, $3, $4)`,
-      [attempt.student_id, rootCauseId, "AI แนะนำ", graded.intervention]
+      [studentId, rootCauseId, "AI แนะนำ", graded.intervention]
     );
   });
 

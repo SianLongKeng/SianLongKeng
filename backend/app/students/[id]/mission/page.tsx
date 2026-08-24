@@ -1,13 +1,10 @@
-import { cookies } from "next/headers";
-import { redirect, notFound } from "next/navigation";
 import { query } from "@/lib/db";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
+import { notFound } from "next/navigation";
+import { canAccessStudent } from "@/lib/missionAccess";
 import MissionRunner from "./MissionRunner";
 
 export const dynamic = "force-dynamic";
 
-// The single hackathon demo mission (public-park budget), pinned to a fixed
-// id — see db/migration_002_missions.sql.
 const MISSION_ID = "00000000-0000-0000-0000-000000000001";
 
 interface StudentRow {
@@ -37,16 +34,11 @@ interface ChoiceRow {
 }
 
 export default async function MissionPage({ params }: { params: { id: string } }) {
-  const token = cookies().get(SESSION_COOKIE)?.value;
-  const session = token ? await verifySessionToken(token) : null;
-  if (!session) redirect("/login");
+  if (!(await canAccessStudent(params.id))) notFound();
 
   const studentRows = await query<StudentRow>(
-    `select s.id, s.first_name, s.last_name, s.nickname
-       from students s
-       join classes c on c.id = s.class_id
-      where s.id = $1 and c.teacher_id = $2`,
-    [params.id, session.teacherId]
+    "select id, first_name, last_name, nickname from students where id = $1",
+    [params.id]
   );
   const student = studentRows[0];
   if (!student) notFound();
@@ -58,9 +50,6 @@ export default async function MissionPage({ params }: { params: { id: string } }
   const mission = missionRows[0];
   if (!mission) notFound();
 
-  // is_correct is deliberately never selected here — this query result is
-  // passed straight into a client component, so leaking it would ship the
-  // answer key to the browser.
   const questionRows = await query<QuestionRow>(
     "select id, order_index, question_text from mission_questions where mission_id = $1 order by order_index",
     [mission.id]
@@ -88,13 +77,11 @@ export default async function MissionPage({ params }: { params: { id: string } }
   return (
     <div className="wrap">
       <span className="brand-mark">EduTwin</span>
-
       <div className="section-head" style={{ margin: "0 0 22px" }}>
         <span className="eyebrow">Student · Adaptive Mission</span>
         <h1>Mission: Design a Public Park Budget · ภารกิจ: ออกแบบงบประมาณสวนสาธารณะ</h1>
         <p className="lede">นักเรียน: {studentName}</p>
       </div>
-
       <MissionRunner
         studentId={student.id}
         mission={{ title: mission.title, scenarioText: mission.scenario_text }}

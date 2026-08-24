@@ -3,6 +3,18 @@ import { query, withTransaction } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
 import { createSessionToken, SESSION_COOKIE } from "@/lib/session";
 
+// Excludes visually ambiguous characters (0/O, 1/I/L) so a code read off a
+// whiteboard is never misheard between students typing it in on /join.
+const JOIN_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+
+function generateJoinCode(): string {
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += JOIN_CODE_ALPHABET[Math.floor(Math.random() * JOIN_CODE_ALPHABET.length)];
+  }
+  return code;
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const schoolName = typeof body?.schoolName === "string" ? body.schoolName.trim() : "";
@@ -43,10 +55,22 @@ export async function POST(req: NextRequest) {
       );
       const teacherRow = teacherRes.rows[0];
 
-      await client.query(
-        "insert into classes (school_id, teacher_id, name, subject) values ($1, $2, $3, $4)",
-        [schoolId, teacherRow.id, className, subject]
-      );
+      // A join_code collision would throw the same 23505 code as a duplicate
+      // email — vanishingly unlikely (1-in-~10^9), but retry a couple of
+      // times here specifically so it can't be misreported as "email taken".
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          await client.query(
+            "insert into classes (school_id, teacher_id, name, subject, join_code) values ($1, $2, $3, $4, $5)",
+            [schoolId, teacherRow.id, className, subject, generateJoinCode()]
+          );
+          break;
+        } catch (classErr) {
+          const pgErr = classErr as { code?: string; constraint?: string };
+          if (pgErr.code === "23505" && pgErr.constraint?.includes("join_code") && attempt < 2) continue;
+          throw classErr;
+        }
+      }
 
       return teacherRow;
     });

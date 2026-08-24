@@ -1,7 +1,6 @@
-import { cookies } from "next/headers";
-import { redirect, notFound } from "next/navigation";
 import { query } from "@/lib/db";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
+import { notFound } from "next/navigation";
+import { canAccessStudent } from "@/lib/missionAccess";
 
 export const dynamic = "force-dynamic";
 
@@ -66,16 +65,11 @@ const DNA_AXES: { key: keyof DnaRow; label: string }[] = [
 ];
 
 export default async function DiagnosisPage({ params }: { params: { id: string } }) {
-  const token = cookies().get(SESSION_COOKIE)?.value;
-  const session = token ? await verifySessionToken(token) : null;
-  if (!session) redirect("/login");
+  if (!(await canAccessStudent(params.id))) notFound();
 
   const studentRows = await query<StudentRow>(
-    `select s.id, s.first_name, s.last_name, s.nickname
-       from students s
-       join classes c on c.id = s.class_id
-      where s.id = $1 and c.teacher_id = $2`,
-    [params.id, session.teacherId]
+    "select id, first_name, last_name, nickname from students where id = $1",
+    [params.id]
   );
   const student = studentRows[0];
   if (!student) notFound();
@@ -102,7 +96,7 @@ export default async function DiagnosisPage({ params }: { params: { id: string }
           <p className="lede" style={{ margin: "0 auto 20px" }}>
             {studentName} ยังไม่ได้ทำมิชชันจนจบ ลองให้นักเรียนทำมิชชันให้เสร็จก่อนนะคะ
           </p>
-          <a className="btn btn-primary" href={`/admin/students/${student.id}/mission`}>
+          <a className="btn btn-primary" href={`/students/${student.id}/mission`}>
             Go to Mission · ไปทำมิชชัน
           </a>
         </div>
@@ -265,12 +259,8 @@ export default async function DiagnosisPage({ params }: { params: { id: string }
       )}
 
       <div style={{ marginTop: 24 }}>
-        <a className="btn btn-ghost" href={`/admin/students/${student.id}/mission`}>
+        <a className="btn btn-ghost" href={`/students/${student.id}/mission`}>
           Retry Mission · ทำภารกิจใหม่
-        </a>
-        {" "}
-        <a className="btn btn-ghost" href="/admin">
-          Back to Roster · กลับไปหน้ารายชื่อ
         </a>
       </div>
     </div>

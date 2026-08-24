@@ -8,6 +8,7 @@ interface ClassItem {
   name: string;
   subject: string;
   student_count: number;
+  join_code: string;
 }
 
 function ClassRow({ cls }: { cls: ClassItem }) {
@@ -68,6 +69,9 @@ function ClassRow({ cls }: { cls: ClassItem }) {
         <td>
           <input value={subject} onChange={(e) => setSubject(e.target.value)} style={{ margin: 0 }} />
         </td>
+        <td>
+          <span className="join-code-badge mono">{cls.join_code}</span>
+        </td>
         <td>{cls.student_count}</td>
         <td>
           <div className="row-actions">
@@ -97,6 +101,9 @@ function ClassRow({ cls }: { cls: ClassItem }) {
     <tr>
       <td>{cls.name}</td>
       <td>{cls.subject}</td>
+      <td>
+        <span className="join-code-badge mono">{cls.join_code}</span>
+      </td>
       <td>{cls.student_count}</td>
       <td>
         <div className="row-actions">
@@ -173,7 +180,8 @@ export default function ClassManager({ classes }: { classes: ClassItem[] }) {
       <span className="eyebrow">Classes</span>
       <h2 style={{ marginBottom: 4 }}>Classes You Teach · ห้องเรียนที่สอน</h2>
       <p className="lede" style={{ marginBottom: 12 }}>
-        อาจารย์หนึ่งคนสอนได้หลายห้อง หลายวิชา — เพิ่มห้องใหม่ได้ตลอดเวลา
+        อาจารย์หนึ่งคนสอนได้หลายห้อง หลายวิชา — เพิ่มห้องใหม่ได้ตลอดเวลา แจก Join Code ให้นักเรียนกรอกที่หน้า{" "}
+        <a href="/join">/join</a> เพื่อเข้าทำมิชชันเองได้เลย ไม่ต้องมีรหัสผ่าน
       </p>
 
       <table>
@@ -181,6 +189,7 @@ export default function ClassManager({ classes }: { classes: ClassItem[] }) {
           <tr>
             <th>Class · ห้องเรียน</th>
             <th>Subject · วิชา</th>
+            <th>Join Code · รหัสห้องเรียน</th>
             <th>Students · จำนวนนักเรียน</th>
             <th>Actions · จัดการ</th>
           </tr>
@@ -191,7 +200,7 @@ export default function ClassManager({ classes }: { classes: ClassItem[] }) {
           ))}
           {classes.length === 0 && (
             <tr>
-              <td colSpan={4}>No classes yet · ยังไม่มีห้องเรียน</td>
+              <td colSpan={5}>No classes yet · ยังไม่มีห้องเรียน</td>
             </tr>
           )}
         </tbody>
