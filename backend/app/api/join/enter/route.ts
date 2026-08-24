@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
-import { createStudentSessionToken, STUDENT_SESSION_COOKIE } from "@/lib/studentSession";
+import { query } from "@/lib/server";
+import { createStudentSessionToken, STUDENT_SESSION_COOKIE } from "@/lib/server";
 
 interface StudentRow {
   id: string;

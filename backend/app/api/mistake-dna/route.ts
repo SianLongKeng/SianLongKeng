@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
-import { getAnthropicClient, CORS_HEADERS } from "@/lib/anthropic";
+import { getAnthropicClient, CORS_HEADERS } from "@/lib/server";
 
 const AXES = ["Concept", "Application", "Think", "Solve", "Create", "Collab", "Confidence"];
 

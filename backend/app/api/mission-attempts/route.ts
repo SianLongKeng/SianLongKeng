@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
-import { canAccessStudent } from "@/lib/missionAccess";
+import { query } from "@/lib/server";
+import { canAccessStudent } from "@/lib/server";
 
 // The single hackathon demo mission (public-park budget), pinned to a fixed
 // id — see db/migration_002_missions.sql.

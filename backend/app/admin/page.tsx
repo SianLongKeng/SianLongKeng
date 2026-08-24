@@ -1,11 +1,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { query } from "@/lib/db";
+import { query } from "@/lib/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
-import AddStudentPanel from "./AddStudentPanel";
-import ClassManager from "./ClassManager";
-import LogoutButton from "./LogoutButton";
-import RosterTable from "./RosterTable";
+import { AddStudentPanel, ClassManager, LogoutButton, RosterTable } from "./components";
 
 interface ClassRow {
   id: string;

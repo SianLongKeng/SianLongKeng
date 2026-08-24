@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query, withTransaction } from "@/lib/db";
-import { hashPassword } from "@/lib/auth";
+import { query, withTransaction } from "@/lib/server";
+import { hashPassword } from "@/lib/server";
 import { createSessionToken, SESSION_COOKIE } from "@/lib/session";
 
 // Excludes visually ambiguous characters (0/O, 1/I/L) so a code read off a

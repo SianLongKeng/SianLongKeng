@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
-import { query, withTransaction } from "@/lib/db";
-import { canAccessAttempt } from "@/lib/missionAccess";
-import { getAnthropicClient } from "@/lib/anthropic";
+import { query, withTransaction } from "@/lib/server";
+import { canAccessAttempt } from "@/lib/server";
+import { getAnthropicClient } from "@/lib/server";
 
 interface ResponseRow {
   order_index: number;

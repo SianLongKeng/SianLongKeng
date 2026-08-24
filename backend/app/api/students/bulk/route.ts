@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { query, withTransaction } from "@/lib/db";
+import { query, withTransaction } from "@/lib/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 
 async function requireSession() {

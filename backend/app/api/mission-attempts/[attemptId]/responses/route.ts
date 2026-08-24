@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
-import { canAccessAttempt } from "@/lib/missionAccess";
+import { query } from "@/lib/server";
+import { canAccessAttempt } from "@/lib/server";
 
 export async function POST(req: NextRequest, { params }: { params: { attemptId: string } }) {
   if (!(await canAccessAttempt(params.attemptId))) {

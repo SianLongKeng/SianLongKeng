@@ -1,6 +1,6 @@
-import { query } from "@/lib/db";
+import { query } from "@/lib/server";
 import { notFound } from "next/navigation";
-import { canAccessStudent } from "@/lib/missionAccess";
+import { canAccessStudent } from "@/lib/server";
 
 export const dynamic = "force-dynamic";
 
