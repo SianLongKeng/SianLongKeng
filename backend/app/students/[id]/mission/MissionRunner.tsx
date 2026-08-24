@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
+interface CoachMessage {
+  who: "student" | "ai";
+  text: string;
+}
+
 interface Choice {
   id: string;
   orderIndex: number;
@@ -55,6 +60,13 @@ export default function MissionRunner({
   const [completeResult, setCompleteResult] = useState<{ score: number; total: number } | null>(null);
   const [completeError, setCompleteError] = useState<string | null>(null);
   const questionStartRef = useRef<number>(Date.now());
+
+  const [coachOpen, setCoachOpen] = useState(false);
+  const [coachMessages, setCoachMessages] = useState<CoachMessage[]>([]);
+  const [coachInput, setCoachInput] = useState("");
+  const [coachSending, setCoachSending] = useState(false);
+  const [coachError, setCoachError] = useState<string | null>(null);
+  const coachScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -195,6 +207,37 @@ export default function MissionRunner({
     }
   }
 
+  useEffect(() => {
+    coachScrollRef.current?.scrollTo({ top: coachScrollRef.current.scrollHeight });
+  }, [coachMessages, coachSending]);
+
+  async function sendCoachMessage() {
+    const text = coachInput.trim();
+    if (!text || coachSending) return;
+    const nextMessages: CoachMessage[] = [...coachMessages, { who: "student", text }];
+    setCoachMessages(nextMessages);
+    setCoachInput("");
+    setCoachError(null);
+    setCoachSending(true);
+    try {
+      const res = await fetch("/api/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: nextMessages, studentId, attemptId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || typeof data.reply !== "string") {
+        setCoachError(data.error || "AI Coach ไม่พร้อมใช้งานตอนนี้ ลองใหม่อีกครั้งค่ะ");
+        return;
+      }
+      setCoachMessages((prev) => [...prev, { who: "ai", text: data.reply }]);
+    } catch {
+      setCoachError("AI Coach ไม่พร้อมใช้งานตอนนี้ ลองใหม่อีกครั้งค่ะ");
+    } finally {
+      setCoachSending(false);
+    }
+  }
+
   if (phase === "starting") {
     return (
       <div className="card mission-card">
@@ -308,6 +351,51 @@ export default function MissionRunner({
           <p style={{ marginTop: 14 }}>
             ข้อมูลทั้งหมดนี้จะถูกประมวลผลเป็น <strong>Learning DNA</strong> และ <strong>Mistake DNA</strong> ไม่ใช่แค่ถูก/ผิด
           </p>
+        </div>
+
+        <div className="card coach-card">
+          <button type="button" className="coach-toggle" onClick={() => setCoachOpen((o) => !o)}>
+            <span>💬 AI Coach · ถามครูเอไอ</span>
+            <span className="coach-toggle-arrow">{coachOpen ? "▲" : "▼"}</span>
+          </button>
+          {coachOpen && (
+            <div className="coach-panel">
+              <div className="coach-messages" ref={coachScrollRef}>
+                {coachMessages.length === 0 && !coachSending && (
+                  <p className="coach-empty">
+                    ติดตรงไหนของโจทย์ ถามได้เลยค่ะ — AI Coach จะช่วยตั้งคำถามนำให้คิดเอง ไม่เฉลยตรงๆ
+                  </p>
+                )}
+                {coachMessages.map((m, i) => (
+                  <div key={i} className={`coach-msg ${m.who}`}>
+                    {m.text}
+                  </div>
+                ))}
+                {coachSending && <div className="coach-msg ai coach-typing">กำลังพิมพ์…</div>}
+              </div>
+              {coachError && <p className="error">{coachError}</p>}
+              <div className="coach-input-row">
+                <input
+                  className="coach-input"
+                  placeholder="พิมพ์คำถามที่นี่..."
+                  value={coachInput}
+                  onChange={(e) => setCoachInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") sendCoachMessage();
+                  }}
+                  disabled={coachSending}
+                />
+                <button
+                  type="button"
+                  className="btn btn-primary btn-small"
+                  onClick={sendCoachMessage}
+                  disabled={coachSending || !coachInput.trim()}
+                >
+                  ส่ง
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
