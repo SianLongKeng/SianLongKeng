@@ -36,7 +36,10 @@ export default function Home() {
             <br />
             <span style={{ color: "var(--accent-2)" }}>EduTwin</span> today?
           </h1>
-          <p style={{ margin: "22px auto 44px", maxWidth: 520, fontSize: "1.05rem", lineHeight: 1.75, color: "var(--ink-soft)" }}>
+          <p className="mono" style={{ margin: "18px 0 0", fontSize: "0.82rem", letterSpacing: "0.06em", color: "var(--accent-2)" }}>
+            From Scores to Learning DNA.
+          </p>
+          <p style={{ margin: "10px auto 44px", maxWidth: 520, fontSize: "1.05rem", lineHeight: 1.75, color: "var(--ink-soft)" }}>
             วันนี้ใครจะเข้าใช้งาน — เลือกบทบาทของคุณเพื่อเริ่มต้น
           </p>
           <div className="role-pill-row">
@@ -55,6 +58,9 @@ export default function Home() {
               <span className="role-pill-badge">→</span>
             </Link>
           </div>
+          <p className="mono" style={{ marginTop: 40, fontSize: "0.76rem", letterSpacing: "0.04em", color: "var(--ink-muted)" }}>
+            Same Score ≠ Same Learning.
+          </p>
         </div>
       </div>
     </div>

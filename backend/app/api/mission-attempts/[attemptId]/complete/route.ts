@@ -42,7 +42,7 @@ const GradeSchema = z.object({
 
 const SYSTEM_PROMPT = `คุณคือ AI Learning Analyst ของแพลตฟอร์ม EduTwin กำลังวิเคราะห์ transcript การทำมิชชันจริงของนักเรียนคนหนึ่ง เรื่องงบประมาณสวนสาธารณะ (เปอร์เซ็นต์ของพื้นที่/งบประมาณ) มี 5 ข้อเรียงลำดับ แต่ละข้ออาจถูกตั้งแต่ครั้งแรก, ตอบผิดครั้งแรกแล้วถูกครั้งที่สอง, หรือตอบผิดทั้งสองครั้ง
 
-หน้าที่ของคุณ: วิเคราะห์ pattern ของคำตอบถูก/ผิดจริง และตัวเลือกที่ผิดที่นักเรียนเลือกจริง เพื่ออนุมาน Mistake DNA และ Learning DNA ที่แท้จริง — ไม่ใช่แค่นับจำนวนข้อถูก/ผิด ตัวอย่างเช่น การเลือกตัวเลือกที่สะท้อนการลืมลบพื้นที่ที่ใช้ไปแล้ว กับการเลือกตัวเลือกที่เป็นแค่การคำนวณเลขผิด บ่งบอกถึงประเภทข้อผิดพลาดคนละแบบ
+หน้าที่ของคุณ: วิเคราะห์ pattern ของคำตอบถูก/ผิดจริง และตัวเลือกที่ผิดที่นักเรียนเลือกจริง เพื่ออนุมาน Mistake DNA และ Learning DNA ที่แท้จริง — ไม่ใช่แค่นับจำนวนข้อถูก/ผิด ตัวอย่างเช่น การเลือกตัวเลือกที่สะท้อนการลืมลบพื้นที่ที่ใช้ไปแล้ว กับการเลือกตัวเลือกที่เป็นแค่การคำนวณเลขผิด บ่งบอกถึงประเภทข้อผิดพลาดคนละแบบ ถ้าข้อไหนมีการขอคำใบ้ ให้ถือเป็นสัญญาณว่านักเรียนไม่มั่นใจในข้อนั้น — นำไปพิจารณาประกอบตอนให้ค่า confidence score ด้วย
 
 ตอบกระชับ ไม่ใช้ markdown ฟิลด์ข้อความ (rootCause, intervention) ใช้ภาษาไทยเท่านั้น`;
 
@@ -93,6 +93,16 @@ export async function POST(_req: NextRequest, { params }: { params: { attemptId:
     [params.attemptId]
   );
 
+  const hintRows = await query<{ order_index: number; hint_count: string }>(
+    `select mq.order_index, count(*)::text as hint_count
+       from hint_requests hr
+       join mission_questions mq on mq.id = hr.question_id
+      where hr.attempt_id = $1
+      group by mq.order_index`,
+    [params.attemptId]
+  );
+  const hintCountByQuestion = new Map(hintRows.map((r) => [r.order_index, Number(r.hint_count)]));
+
   const byQuestion = new Map<number, { questionText: string; rows: ResponseRow[] }>();
   for (const row of responseRows) {
     const entry = byQuestion.get(row.order_index) ?? { questionText: row.question_text, rows: [] };
@@ -116,6 +126,8 @@ export async function POST(_req: NextRequest, { params }: { params: { attemptId:
         .map((w) => w.picked_choice_text)
         .join('", "')}" ทั้งที่คำตอบถูกคือ "${wrongPicks[0]?.correct_choice_text}")`;
     }
+    const hintCount = hintCountByQuestion.get(orderIndex);
+    if (hintCount) line += ` — ขอคำใบ้ ${hintCount} ครั้งระหว่างทำข้อนี้`;
     transcriptLines.push(line);
   }
 

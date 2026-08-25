@@ -68,6 +68,13 @@ export default function MissionRunner({
   const [coachError, setCoachError] = useState<string | null>(null);
   const coachScrollRef = useRef<HTMLDivElement>(null);
 
+  const [reflectionText, setReflectionText] = useState("");
+  const [reflectionSubmitting, setReflectionSubmitting] = useState(false);
+  const [reflectionSubmitted, setReflectionSubmitted] = useState(false);
+  const [reflectionError, setReflectionError] = useState<string | null>(null);
+
+  const REFLECTION_PROMPT = "มิชชันนี้ยากง่ายแค่ไหน หนูเรียนรู้อะไรบ้าง";
+
   useEffect(() => {
     let cancelled = false;
     fetch("/api/mission-attempts", {
@@ -211,8 +218,8 @@ export default function MissionRunner({
     coachScrollRef.current?.scrollTo({ top: coachScrollRef.current.scrollHeight });
   }, [coachMessages, coachSending]);
 
-  async function sendCoachMessage() {
-    const text = coachInput.trim();
+  async function sendCoachMessage(overrideText?: string) {
+    const text = (overrideText ?? coachInput).trim();
     if (!text || coachSending) return;
     const nextMessages: CoachMessage[] = [...coachMessages, { who: "student", text }];
     setCoachMessages(nextMessages);
@@ -235,6 +242,41 @@ export default function MissionRunner({
       setCoachError("AI Coach ไม่พร้อมใช้งานตอนนี้ ลองใหม่อีกครั้งค่ะ");
     } finally {
       setCoachSending(false);
+    }
+  }
+
+  async function requestHint() {
+    if (attemptId) {
+      fetch(`/api/mission-attempts/${attemptId}/hints`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ questionId: question.id }),
+      }).catch(() => {});
+    }
+    setCoachOpen(true);
+    sendCoachMessage("ขอคำใบ้ข้อนี้หน่อยค่ะ");
+  }
+
+  async function submitReflection() {
+    if (!attemptId || !reflectionText.trim() || reflectionSubmitting) return;
+    setReflectionSubmitting(true);
+    setReflectionError(null);
+    try {
+      const res = await fetch(`/api/mission-attempts/${attemptId}/reflections`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ promptText: REFLECTION_PROMPT, responseText: reflectionText.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setReflectionError(data.error || "ส่งไม่สำเร็จ ลองอีกครั้งนะคะ");
+        return;
+      }
+      setReflectionSubmitted(true);
+    } catch {
+      setReflectionError("ส่งไม่สำเร็จ ลองอีกครั้งนะคะ");
+    } finally {
+      setReflectionSubmitting(false);
     }
   }
 
@@ -285,6 +327,38 @@ export default function MissionRunner({
             Retry Mission · ทำใหม่
           </a>
         </div>
+
+        {!completeError && (
+          <div style={{ marginTop: 26, paddingTop: 22, borderTop: "1px dashed rgba(255,255,255,0.14)", textAlign: "left" }}>
+            <h3 style={{ fontSize: "1rem", marginBottom: 10 }}>Reflection · สะท้อนความคิด</h3>
+            {reflectionSubmitted ? (
+              <p className="success">ขอบคุณที่แบ่งปันนะคะ บันทึกไว้แล้ว ✓</p>
+            ) : (
+              <>
+                <label htmlFor="reflection" style={{ marginTop: 0 }}>
+                  {REFLECTION_PROMPT}
+                </label>
+                <textarea
+                  id="reflection"
+                  value={reflectionText}
+                  onChange={(e) => setReflectionText(e.target.value)}
+                  placeholder="พิมพ์สั้นๆ ก็ได้ค่ะ..."
+                  style={{ minHeight: 80 }}
+                />
+                {reflectionError && <p className="error">{reflectionError}</p>}
+                <button
+                  className="btn btn-ghost btn-small"
+                  type="button"
+                  onClick={submitReflection}
+                  disabled={reflectionSubmitting || !reflectionText.trim()}
+                  style={{ marginTop: 10 }}
+                >
+                  {reflectionSubmitting ? "กำลังส่ง..." : "ส่ง Reflection"}
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
     );
   }
@@ -342,6 +416,9 @@ export default function MissionRunner({
                 {isLast ? "View Results → · ดูสรุปผล →" : "Next Question → · ข้อถัดไป →"}
               </button>
             )}
+            <button className="btn btn-ghost" type="button" onClick={requestHint}>
+              💡 ขอคำใบ้ · Hint
+            </button>
           </div>
           {submitError && <p className="error">{submitError}</p>}
           <div className={`feedback${feedback.show ? " show" : ""} ${feedback.ok ? "ok" : "no"}`}>{feedback.text}</div>
@@ -402,7 +479,7 @@ export default function MissionRunner({
               <button
                 type="button"
                 className="btn btn-primary btn-small"
-                onClick={sendCoachMessage}
+                onClick={() => sendCoachMessage()}
                 disabled={coachSending || !coachInput.trim()}
               >
                 ส่ง

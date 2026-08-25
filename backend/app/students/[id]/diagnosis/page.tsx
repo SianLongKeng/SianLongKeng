@@ -282,6 +282,9 @@ export default async function DiagnosisPage({ params }: { params: { id: string }
         <a className="btn btn-soft" href={`/students/${student.id}/mission`}>
           Retry Mission · ทำภารกิจใหม่ →
         </a>
+        <a className="btn btn-ghost" href={`/students/${student.id}/growth-plan`}>
+          แผนพัฒนา · Growth Plan
+        </a>
         <a className="btn btn-ghost" href={`/students/${student.id}/progress`}>
           ดูพัฒนาการ · Progress
         </a>

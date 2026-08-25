@@ -16,6 +16,7 @@ function studentLinks(id: string) {
     { href: `/students/${id}`, label: "Home" },
     { href: `/students/${id}/mission`, label: "Mission" },
     { href: `/students/${id}/diagnosis`, label: "Diagnosis" },
+    { href: `/students/${id}/growth-plan`, label: "Growth Plan" },
     { href: `/students/${id}/progress`, label: "Progress" },
   ];
 }

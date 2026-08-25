@@ -25,6 +25,14 @@ interface KpiCountRow {
   missions_completed: string;
 }
 
+interface EngagementRow {
+  attempts_started: string;
+  attempts_completed: string;
+  students_with_attempt: string;
+  students_retained: string;
+  reflections_count: string;
+}
+
 const GAP_COLORS: Record<string, string> = {
   concept_gap: "var(--accent)",
   application_gap: "#eb6834",
@@ -42,7 +50,7 @@ export default async function SchoolAnalyticsPage() {
   const session = token ? await verifySessionToken(token) : null;
   if (!session) redirect("/login");
 
-  const [gapRows, interventionRows, kpiRows] = await Promise.all([
+  const [gapRows, interventionRows, kpiRows, engagementRows] = await Promise.all([
     query<StudentGapRow>(
       `select s.id as student_id, c.id as class_id, c.name as class_name, att.completed_at,
               mt.code as top_mistake_code, mr.pct::text as top_mistake_pct
@@ -76,6 +84,24 @@ export default async function SchoolAnalyticsPage() {
            where c.teacher_id = $1 and att.completed_at is not null)::text as missions_completed`,
       [session.teacherId]
     ),
+    query<EngagementRow>(
+      `select
+         (select count(*) from mission_attempts att join students s on s.id = att.student_id join classes c on c.id = s.class_id
+           where c.teacher_id = $1)::text as attempts_started,
+         (select count(*) from mission_attempts att join students s on s.id = att.student_id join classes c on c.id = s.class_id
+           where c.teacher_id = $1 and att.completed_at is not null)::text as attempts_completed,
+         (select count(distinct att.student_id) from mission_attempts att join students s on s.id = att.student_id join classes c on c.id = s.class_id
+           where c.teacher_id = $1)::text as students_with_attempt,
+         (select count(*) from (
+            select att.student_id from mission_attempts att join students s on s.id = att.student_id join classes c on c.id = s.class_id
+             where c.teacher_id = $1 and att.completed_at is not null
+             group by att.student_id having count(*) >= 2
+          ) t)::text as students_retained,
+         (select count(*) from reflections r join mission_attempts att on att.id = r.attempt_id
+           join students s on s.id = att.student_id join classes c on c.id = s.class_id
+           where c.teacher_id = $1)::text as reflections_count`,
+      [session.teacherId]
+    ),
   ]);
 
   const buckets = gapRows.map((r) => ({ ...r, bucket: bucketFor(r) }));
@@ -104,6 +130,25 @@ export default async function SchoolAnalyticsPage() {
   });
 
   const kpi = kpiRows[0];
+  const engagement = engagementRows[0];
+
+  const studentsActive = Number(kpi?.students_active ?? 0);
+  const attemptsStarted = Number(engagement?.attempts_started ?? 0);
+  const attemptsCompleted = Number(engagement?.attempts_completed ?? 0);
+  const studentsWithAttempt = Number(engagement?.students_with_attempt ?? 0);
+  const studentsRetained = Number(engagement?.students_retained ?? 0);
+  const reflectionsCount = Number(engagement?.reflections_count ?? 0);
+
+  const completionRatePct = attemptsStarted > 0 ? Math.round((attemptsCompleted / attemptsStarted) * 100) : 0;
+  const activeParticipationPct = studentsActive > 0 ? Math.round((studentsWithAttempt / studentsActive) * 100) : 0;
+  const reflectionRatePct =
+    attemptsCompleted > 0 ? Math.min(100, Math.round((reflectionsCount / attemptsCompleted) * 100)) : 0;
+  const retentionPct = studentsActive > 0 ? Math.round((studentsRetained / studentsActive) * 100) : 0;
+
+  const acceptedCount = interventionRows
+    .filter((r) => r.status === "assigned" || r.status === "completed")
+    .reduce((sum, r) => sum + Number(r.n), 0);
+  const acceptanceRatePct = interventionTotal > 0 ? Math.round((acceptedCount / interventionTotal) * 100) : 0;
 
   return (
     <div className="screen" style={{ padding: "52px 48px 80px" }}>
@@ -130,26 +175,81 @@ export default async function SchoolAnalyticsPage() {
           </a>
         </div>
 
-        <div className="kpi-grid" style={{ marginBottom: 28 }}>
+        <span className="kpi-section-title">Student · ผลลัพธ์นักเรียน</span>
+        <div className="kpi-grid" style={{ marginBottom: 10 }}>
           <div className="kpi-card accent">
             <span className="kpi-label mono">STUDENTS · นักเรียน</span>
-            <div className="kpi-value mono">{kpi?.students_active ?? 0}</div>
+            <div className="kpi-value mono">{studentsActive}</div>
             <div className="kpi-sub">รวมทุกห้องที่คุณสอน</div>
           </div>
+          <div className="kpi-card">
+            <span className="kpi-label mono">AVG MASTERY</span>
+            <div className="kpi-value mono">{avgMastery}%</div>
+            <div className="kpi-sub">นักเรียนที่อยู่กลุ่ม Mastery (Learning Gap ต่ำ)</div>
+          </div>
+          <div className="kpi-card">
+            <span className="kpi-label mono">COMPLETION RATE</span>
+            <div className="kpi-value mono">{completionRatePct}%</div>
+            <div className="kpi-sub">อัตราทำมิชชันจนจบ (จบ / เริ่มทำ)</div>
+          </div>
+          <div className="kpi-card">
+            <span className="kpi-label mono">ACTIVE PARTICIPATION</span>
+            <div className="kpi-value mono">{activeParticipationPct}%</div>
+            <div className="kpi-sub">% นักเรียนที่เข้าร่วมทำมิชชันอย่างน้อย 1 ครั้ง</div>
+          </div>
+          <div className="kpi-card">
+            <span className="kpi-label mono">REFLECTION RATE</span>
+            <div className="kpi-value mono">{reflectionRatePct}%</div>
+            <div className="kpi-sub">% มิชชันที่จบแล้วมีการเขียนสะท้อนความคิด</div>
+          </div>
+        </div>
+
+        <span className="kpi-section-title">Teacher · ประสิทธิภาพครู</span>
+        <div className="kpi-grid" style={{ marginBottom: 10 }}>
           <div className="kpi-card">
             <span className="kpi-label mono">MISSIONS COMPLETED</span>
             <div className="kpi-value mono">{kpi?.missions_completed ?? 0}</div>
             <div className="kpi-sub">มิชชันที่ทำเสร็จแล้ว</div>
           </div>
           <div className="kpi-card">
-            <span className="kpi-label mono">AVG MASTERY</span>
-            <div className="kpi-value mono">{avgMastery}%</div>
-            <div className="kpi-sub">นักเรียนที่อยู่กลุ่ม Mastery</div>
-          </div>
-          <div className="kpi-card">
             <span className="kpi-label mono">INTERVENTIONS CLOSED</span>
             <div className="kpi-value mono">{interventionsClosedPct}%</div>
             <div className="kpi-sub">แผนช่วยเหลือที่ปิดงานแล้ว</div>
+          </div>
+          <div className="kpi-card target">
+            <span className="kpi-label mono">
+              ANALYSIS TIME <span className="kpi-target-badge">Target KPI</span>
+            </span>
+            <div className="kpi-value mono">—</div>
+            <div className="kpi-sub">เป้าหมาย: ลดเวลาที่ครูใช้วิเคราะห์ Mistake DNA ต่อคนด้วย AI — ยังไม่ได้วัดผลจริงในระบบ</div>
+          </div>
+          <div className="kpi-card target">
+            <span className="kpi-label mono">
+              GAP ID ACCURACY <span className="kpi-target-badge">Target KPI</span>
+            </span>
+            <div className="kpi-value mono">—</div>
+            <div className="kpi-sub">เป้าหมาย: เทียบผลระบุ Learning Gap ของ AI กับการประเมินของครู — ยังไม่ได้วัดผลจริง</div>
+          </div>
+        </div>
+
+        <span className="kpi-section-title">System · ประสิทธิภาพ AI</span>
+        <div className="kpi-grid" style={{ marginBottom: 28 }}>
+          <div className="kpi-card target">
+            <span className="kpi-label mono">
+              AI DIAGNOSIS ACCURACY <span className="kpi-target-badge">Target KPI</span>
+            </span>
+            <div className="kpi-value mono">—</div>
+            <div className="kpi-sub">เป้าหมาย: เทียบผลวิเคราะห์ของ AI กับผลประเมินจริง (ground truth) — ยังไม่ได้วัดผลจริง</div>
+          </div>
+          <div className="kpi-card">
+            <span className="kpi-label mono">RECOMMENDATION ACCEPTANCE</span>
+            <div className="kpi-value mono">{acceptanceRatePct}%</div>
+            <div className="kpi-sub">ครูนำคำแนะนำของ AI ไปใช้ (assigned/completed ต่อทั้งหมด)</div>
+          </div>
+          <div className="kpi-card">
+            <span className="kpi-label mono">STUDENT RETENTION</span>
+            <div className="kpi-value mono">{retentionPct}%</div>
+            <div className="kpi-sub">% นักเรียนที่ทำมิชชันสำเร็จตั้งแต่ 2 ครั้งขึ้นไป (proxy)</div>
           </div>
         </div>
 
