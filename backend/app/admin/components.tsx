@@ -121,6 +121,9 @@ function ClassRow({ cls }: { cls: ClassItem }) {
       <td>{cls.student_count}</td>
       <td>
         <div className="row-actions">
+          <Link className="btn btn-ghost btn-small" href={`/admin/classes/${cls.id}/insights`}>
+            Insights · ภาพรวม AI
+          </Link>
           <button className="btn btn-ghost btn-small" type="button" onClick={() => setEditing(true)}>
             Edit · แก้ไข
           </button>

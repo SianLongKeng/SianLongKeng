@@ -1109,3 +1109,48 @@ tr:last-child td {
   color: var(--ink);
   font-family: inherit;
 }
+
+/* ---------- Teacher Copilot / AI Grouping (class insights) ---------- */
+.insight-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.insight-group {
+  padding: 20px;
+}
+
+.insight-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.insight-student-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.insight-student-list li {
+  font-size: 0.86rem;
+  padding: 8px 10px;
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+}
+
+.insight-student-list a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.insight-student-list a:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
