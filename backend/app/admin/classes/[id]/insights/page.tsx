@@ -152,84 +152,107 @@ export default async function ClassInsightsPage({ params }: { params: { id: stri
     `${s.nickname || s.first_name} ${s.nickname ? `(${s.first_name})` : ""}`.trim();
 
   return (
-    <div className="wrap" style={{ maxWidth: 960 }}>
-      <span className="brand-mark">EduTwin</span>
-      <div className="section-head" style={{ margin: "0 0 22px" }}>
-        <span className="eyebrow">Teacher Copilot · AI Grouping</span>
-        <h1>
-          {cls.name} · {cls.subject}
-        </h1>
-        <p className="lede">
-          ภาพรวมทั้งห้อง — จัดกลุ่มนักเรียนตาม Learning Gap จริง (ไม่ใช่แค่คะแนน) พร้อมคำแนะนำต่อกลุ่ม
-        </p>
-      </div>
+    <div style={{ position: "relative", overflow: "hidden", padding: "52px 48px 80px" }}>
+      <div
+        className="bg-glow"
+        style={{
+          top: -240,
+          right: -180,
+          width: 760,
+          height: 760,
+          background: "radial-gradient(circle, rgba(124,58,237,0.20) 0%, rgba(10,8,16,0) 66%)",
+        }}
+      />
+      <div className="page-content" style={{ maxWidth: 1160, margin: "0 auto" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            paddingBottom: 20,
+            borderBottom: "1px solid var(--border-strong)",
+            marginBottom: 30,
+            flexWrap: "wrap",
+            gap: 12,
+          }}
+        >
+          <div>
+            <span className="eyebrow" style={{ fontSize: "0.72rem" }}>09 / TEACHER COPILOT · AI GROUPING</span>
+            <h2 style={{ marginTop: 12, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>
+              {cls.name} · {cls.subject}
+            </h2>
+            <p className="lede" style={{ marginTop: 10, maxWidth: 660 }}>
+              ภาพรวมทั้งห้อง — จัดกลุ่มนักเรียนตาม Learning Gap จริง (ไม่ใช่แค่คะแนน) พร้อมคำแนะนำต่อกลุ่ม
+            </p>
+          </div>
+          <span className="mono" style={{ fontSize: "0.72rem", color: "var(--ink-muted)" }}>
+            CLASS PULSE · {students.length} STUDENTS
+          </span>
+        </div>
 
-      <div className="card" style={{ marginBottom: 20 }}>
-        <span className="eyebrow">Class Pulse</span>
-        <h3 style={{ marginTop: 6, marginBottom: 12 }}>ค่าเฉลี่ย Learning DNA ทั้งห้อง</h3>
         {hasDnaData ? (
-          <div className="mistake-bars">
+          <div className="pulse-grid">
             {DNA_AXES.map((axis) => {
               const value = dnaAvg[axis.key] ?? 0;
               return (
-                <div className="mbar-row" key={axis.key}>
-                  <span className="mbar-label">{axis.label}</span>
-                  <span className="mbar-track">
-                    <span className="mbar-fill" style={{ width: `${value}%`, background: "var(--accent)" }} />
+                <div className="pulse-cell" key={axis.key}>
+                  <span className="pulse-cell-label">{axis.label}</span>
+                  <span className="pulse-cell-value">{value}%</span>
+                  <span className="pulse-cell-track">
+                    <span className="pulse-cell-fill" style={{ width: `${value}%` }} />
                   </span>
-                  <span className="mbar-pct mono">{value}%</span>
                 </div>
               );
             })}
           </div>
         ) : (
-          <p className="lede">ยังไม่มีนักเรียนทำมิชชันเสร็จในห้องนี้เลย</p>
+          <p className="lede" style={{ marginBottom: 26 }}>ยังไม่มีนักเรียนทำมิชชันเสร็จในห้องนี้เลย</p>
         )}
-      </div>
 
-      <div className="insight-groups">
-        {BUCKET_ORDER.filter((b) => groups[b].length > 0).map((bucket) => {
-          const meta = GROUP_META[bucket];
-          const list = groups[bucket];
-          return (
-            <div className="card insight-group" key={bucket}>
-              <div className="insight-group-head">
-                <span className={`chip ${bucket === "mastery" ? "good" : bucket === "pending" ? "" : "warning"}`}>
-                  {meta.title}
-                </span>
-                <span className="mono" style={{ color: "var(--ink-muted)", fontSize: "0.8rem" }}>
-                  {list.length} คน
-                </span>
+        <div className="insight-groups">
+          {BUCKET_ORDER.filter((b) => groups[b].length > 0).map((bucket) => {
+            const meta = GROUP_META[bucket];
+            const list = groups[bucket];
+            return (
+              <div className={`card insight-group${bucket === "concept_gap" ? " accent" : ""}`} key={bucket}>
+                <div className="insight-group-head">
+                  <span className={`chip ${bucket === "mastery" ? "good" : bucket === "pending" ? "" : "warning"}`}>
+                    {meta.title}
+                  </span>
+                  <span className="mono" style={{ fontSize: "0.76rem" }}>
+                    {list.length} คน
+                  </span>
+                </div>
+                <p className="lede" style={{ marginBottom: 12 }}>
+                  {meta.titleTh}
+                </p>
+                <ul className="insight-student-list">
+                  {list.map((s) => (
+                    <li key={s.id}>
+                      <a href={`/students/${s.id}/diagnosis`}>{studentName(s)}</a>
+                      {s.completed_at && s.top_mistake_label && (
+                        <span className="mono" style={{ fontSize: "0.76rem", opacity: 0.7 }}>
+                          {" "}
+                          · {s.top_mistake_label} {Math.round(Number(s.top_mistake_pct))}%
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                <div className="intervention" style={{ marginTop: 14 }}>
+                  <b>AI แนะนำ</b>
+                  {meta.suggestion}
+                </div>
               </div>
-              <p className="lede" style={{ marginBottom: 12 }}>
-                {meta.titleTh}
-              </p>
-              <ul className="insight-student-list">
-                {list.map((s) => (
-                  <li key={s.id}>
-                    <a href={`/students/${s.id}/diagnosis`}>{studentName(s)}</a>
-                    {s.completed_at && s.top_mistake_label && (
-                      <span className="mono" style={{ color: "var(--ink-muted)", fontSize: "0.76rem" }}>
-                        {" "}
-                        · {s.top_mistake_label} {Math.round(Number(s.top_mistake_pct))}%
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-              <div className="intervention" style={{ marginTop: 14 }}>
-                <b>AI แนะนำ</b>
-                {meta.suggestion}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
 
-      <div style={{ marginTop: 24 }}>
-        <a className="btn btn-ghost" href="/admin">
-          ← กลับไปหน้า Dashboard
-        </a>
+        <div style={{ marginTop: 26 }}>
+          <a className="btn btn-ghost" href="/admin">
+            ← กลับไปหน้า Dashboard
+          </a>
+        </div>
       </div>
     </div>
   );

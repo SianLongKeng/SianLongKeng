@@ -12,6 +12,7 @@ interface StudentRow {
   first_name: string;
   last_name: string;
   nickname: string | null;
+  class_name: string;
 }
 
 interface MissionRow {
@@ -37,7 +38,10 @@ export default async function MissionPage({ params }: { params: { id: string } }
   if (!(await canAccessStudent(params.id))) notFound();
 
   const studentRows = await query<StudentRow>(
-    "select id, first_name, last_name, nickname from students where id = $1",
+    `select s.id, s.first_name, s.last_name, s.nickname, c.name as class_name
+       from students s
+       join classes c on c.id = s.class_id
+      where s.id = $1`,
     [params.id]
   );
   const student = studentRows[0];
@@ -73,20 +77,38 @@ export default async function MissionPage({ params }: { params: { id: string } }
   }));
 
   const studentName = `${student.first_name} ${student.last_name}${student.nickname ? ` (${student.nickname})` : ""}`;
+  const studentShort = student.nickname || student.first_name;
 
   return (
-    <div className="wrap">
-      <span className="brand-mark">EduTwin</span>
-      <div className="section-head" style={{ margin: "0 0 22px" }}>
-        <span className="eyebrow">Student · Adaptive Mission</span>
-        <h1>Mission: Design a Public Park Budget · ภารกิจ: ออกแบบงบประมาณสวนสาธารณะ</h1>
-        <p className="lede">นักเรียน: {studentName}</p>
+    <div style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(255,255,255,0.08)", padding: "52px 48px 80px" }}>
+      <div className="bg-dotgrid" style={{ opacity: 0.35 }} />
+      <div className="page-content" style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div
+          className="mono"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 22,
+            fontSize: "0.72rem",
+            letterSpacing: "0.16em",
+            color: "var(--ink-soft)",
+          }}
+        >
+          <span>10 / STUDENT · ADAPTIVE MISSION</span>
+          <span style={{ color: "var(--accent-2)" }}>
+            {studentShort} · {student.class_name}
+          </span>
+        </div>
+        <p className="lede" style={{ marginBottom: 18 }}>
+          Mission: Design a Public Park Budget · ภารกิจ: ออกแบบงบประมาณสวนสาธารณะ — นักเรียน: {studentName}
+        </p>
+        <MissionRunner
+          studentId={student.id}
+          mission={{ title: mission.title, scenarioText: mission.scenario_text }}
+          questions={questions}
+        />
       </div>
-      <MissionRunner
-        studentId={student.id}
-        mission={{ title: mission.title, scenarioText: mission.scenario_text }}
-        questions={questions}
-      />
     </div>
   );
 }

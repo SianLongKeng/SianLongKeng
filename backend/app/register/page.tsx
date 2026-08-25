@@ -37,70 +37,85 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="wrap">
-      <span className="brand-mark">EduTwin</span>
-      <div className="card">
-        <div className="card-head">
-          <div>
-            <span className="eyebrow">Get started</span>
-            <h1>Sign Up as a Teacher · สมัครใช้งานสำหรับครู</h1>
-          </div>
-        </div>
-        <p className="lede">สร้างบัญชีโรงเรียน + ห้องเรียนแรกของคุณ ใช้เวลาไม่ถึงนาที</p>
-        <form onSubmit={onSubmit}>
-          <label htmlFor="schoolName">School Name · ชื่อโรงเรียน</label>
-          <input id="schoolName" required value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
-
-          <label htmlFor="fullName">Teacher's Full Name · ชื่อ-นามสกุลครู</label>
-          <input id="fullName" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
-
-          <label htmlFor="email">Email · อีเมล</label>
-          <input
-            id="email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="username"
-          />
-
-          <label htmlFor="password">Password (min. 8 characters) · รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)</label>
-          <input
-            id="password"
-            type="password"
-            required
-            minLength={8}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
-          />
-
-          <label htmlFor="className">First Class · ห้องเรียนแรก</label>
-          <input
-            id="className"
-            required
-            placeholder="เช่น ป.5/2"
-            value={className}
-            onChange={(e) => setClassName(e.target.value)}
-          />
-
-          <label htmlFor="subject">Subject · วิชา</label>
-          <input
-            id="subject"
-            required
-            placeholder="เช่น คณิตศาสตร์"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-          />
-
-          {error && <p className="error">{error}</p>}
-          <button className="btn btn-primary" type="submit" disabled={busy} style={{ width: "100%", marginTop: 20 }}>
-            {busy ? "Signing up... · กำลังสมัคร..." : "Create Account · สร้างบัญชี"}
-          </button>
-        </form>
-        <p className="auth-link">
-          Already have an account? · มีบัญชีอยู่แล้ว? <a href="/login">Log In · เข้าสู่ระบบ</a>
+    <div style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(255,255,255,0.08)", padding: "56px 48px 80px" }}>
+      <div
+        className="bg-glow"
+        style={{
+          top: -260,
+          right: -160,
+          width: 760,
+          height: 760,
+          background: "radial-gradient(circle, rgba(124,58,237,0.20) 0%, rgba(10,8,16,0) 65%)",
+        }}
+      />
+      <div className="page-content" style={{ maxWidth: 900, margin: "0 auto" }}>
+        <div className="eyebrow" style={{ fontSize: "0.72rem", marginBottom: 18 }}>03 / GET STARTED</div>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.4vw, 2.75rem)", marginBottom: 8 }}>Sign Up as a Teacher</h2>
+        <p style={{ margin: "0 0 40px", fontSize: "1rem", color: "var(--ink-soft)" }}>
+          สมัครใช้งานสำหรับครู — สร้างห้องเรียนแรกได้ทันทีหลังสมัคร
         </p>
+        <form onSubmit={onSubmit} className="field-grid">
+          <label htmlFor="schoolName" className="field-span-2">
+            <span>SCHOOL NAME · ชื่อโรงเรียน</span>
+            <input id="schoolName" required value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
+          </label>
+
+          <label htmlFor="fullName">
+            <span>TEACHER&apos;S FULL NAME · ชื่อ-นามสกุลครู</span>
+            <input id="fullName" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          </label>
+
+          <label htmlFor="email">
+            <span>EMAIL · อีเมล</span>
+            <input
+              id="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
+              placeholder="kruaom@edutwin.app"
+            />
+          </label>
+
+          <label htmlFor="password">
+            <span>PASSWORD (MIN. 8 CHARACTERS) · รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)</span>
+            <input
+              id="password"
+              type="password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+          </label>
+
+          <label htmlFor="className">
+            <span>FIRST CLASS · ห้องเรียนแรก</span>
+            <input id="className" required placeholder="เช่น ป.6/1" value={className} onChange={(e) => setClassName(e.target.value)} />
+          </label>
+
+          <label htmlFor="subject" className="field-span-2">
+            <span>SUBJECT · วิชา</span>
+            <input id="subject" required placeholder="เช่น ภาษาไทย" value={subject} onChange={(e) => setSubject(e.target.value)} />
+          </label>
+
+          {error && (
+            <p className="error field-span-2">
+              {error}
+            </p>
+          )}
+
+          <div className="field-span-2" style={{ display: "flex", alignItems: "center", gap: 22, marginTop: 12, flexWrap: "wrap" }}>
+            <button className="btn btn-soft" type="submit" disabled={busy}>
+              {busy ? "Signing up... · กำลังสมัคร..." : "Create Account · สร้างบัญชี →"}
+            </button>
+            <span style={{ fontSize: "0.88rem", color: "var(--ink-soft)" }}>
+              Already have an account? <a href="/login">Log In</a>
+            </span>
+          </div>
+        </form>
       </div>
     </div>
   );

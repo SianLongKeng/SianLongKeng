@@ -46,9 +46,20 @@ export default async function AdminPage() {
   );
 
   return (
-    <div className="wrap">
-      <span className="brand-mark">EduTwin</span>
-      <AdminTabs classes={classes} students={students} email={session.email} />
+    <div style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(255,255,255,0.08)", padding: "48px 48px 80px" }}>
+      <div
+        className="bg-glow"
+        style={{
+          top: -240,
+          left: -140,
+          width: 700,
+          height: 700,
+          background: "radial-gradient(circle, rgba(124,58,237,0.18) 0%, rgba(10,8,16,0) 66%)",
+        }}
+      />
+      <div className="page-content" style={{ maxWidth: 1160, margin: "0 auto" }}>
+        <AdminTabs classes={classes} students={students} email={session.email} />
+      </div>
     </div>
   );
 }

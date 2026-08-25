@@ -88,16 +88,26 @@ export default async function DiagnosisPage({ params }: { params: { id: string }
 
   if (!attempt || !attempt.completed_at) {
     return (
-      <div className="wrap">
-        <span className="brand-mark">EduTwin</span>
-        <div className="card" style={{ textAlign: "center", padding: 48 }}>
-          <span className="eyebrow">Diagnosis</span>
-          <h1 style={{ margin: "10px 0" }}>ยังไม่มีข้อมูลการวิเคราะห์ · No Diagnosis Data Yet</h1>
+      <div style={{ position: "relative", overflow: "hidden", minHeight: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 24px" }}>
+        <div
+          className="bg-glow"
+          style={{
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)",
+            width: 800,
+            height: 800,
+            background: "radial-gradient(circle, rgba(124,58,237,0.18) 0%, rgba(10,8,16,0) 65%)",
+          }}
+        />
+        <div className="page-content card" style={{ textAlign: "center", padding: 48, maxWidth: 560 }}>
+          <span className="eyebrow" style={{ fontSize: "0.72rem" }}>DIAGNOSIS</span>
+          <h1 style={{ margin: "12px 0", fontSize: "1.8rem" }}>ยังไม่มีข้อมูลการวิเคราะห์ · No Diagnosis Data Yet</h1>
           <p className="lede" style={{ margin: "0 auto 20px" }}>
             {studentName} ยังไม่ได้ทำมิชชันจนจบ ลองให้นักเรียนทำมิชชันให้เสร็จก่อนนะคะ
           </p>
-          <a className="btn btn-primary" href={`/students/${student.id}/mission`}>
-            Go to Mission · ไปทำมิชชัน
+          <a className="btn btn-soft" href={`/students/${student.id}/mission`}>
+            Go to Mission · ไปทำมิชชัน →
           </a>
         </div>
       </div>
@@ -153,12 +163,22 @@ export default async function DiagnosisPage({ params }: { params: { id: string }
   const chipLabel = topMistakePct >= 15 && topMistake ? topMistake.label_en : "Mastery";
 
   return (
-    <div className="wrap" style={{ maxWidth: 900 }}>
-      <span className="brand-mark">EduTwin</span>
-
+    <div style={{ position: "relative", overflow: "hidden", padding: "52px 48px 90px" }}>
+      <div
+        className="bg-glow"
+        style={{
+          top: -260,
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: 1000,
+          height: 1000,
+          background: "radial-gradient(circle, rgba(124,58,237,0.18) 0%, rgba(10,8,16,0) 66%)",
+        }}
+      />
+      <div className="page-content" style={{ maxWidth: 1120, margin: "0 auto" }}>
       <div className="killer-banner">
-        <span className="eyebrow">Diagnosis · Learning DNA</span>
-        <h2>{studentName}</h2>
+        <span className="eyebrow" style={{ fontSize: "0.72rem" }}>11 / DIAGNOSIS · LEARNING DNA</span>
+        <h2 style={{ marginTop: 12, fontSize: "clamp(1.7rem, 3vw, 2.5rem)" }}>{studentName}</h2>
         <p>ผลวิเคราะห์จากมิชชัน &ldquo;{"สวนสาธารณะชุมชน"}&rdquo; ที่นักเรียนทำล่าสุด</p>
       </div>
 
@@ -258,10 +278,14 @@ export default async function DiagnosisPage({ params }: { params: { id: string }
         </div>
       )}
 
-      <div style={{ marginTop: 24 }}>
-        <a className="btn btn-ghost" href={`/students/${student.id}/mission`}>
-          Retry Mission · ทำภารกิจใหม่
+      <div style={{ marginTop: 24, display: "flex", gap: 14, flexWrap: "wrap" }}>
+        <a className="btn btn-soft" href={`/students/${student.id}/mission`}>
+          Retry Mission · ทำภารกิจใหม่ →
         </a>
+        <a className="btn btn-ghost" href="/admin">
+          ← กลับไปหน้า Dashboard
+        </a>
+      </div>
       </div>
     </div>
   );

@@ -257,7 +257,8 @@ export default function MissionRunner({
   if (phase === "grading") {
     return (
       <div className="card mission-complete">
-        <h3>AI กำลังวิเคราะห์… · AI is Analyzing…</h3>
+        <span className="eyebrow" style={{ fontSize: "0.72rem" }}>10b / MISSION COMPLETE</span>
+        <h3 style={{ marginTop: 18 }}>AI กำลังวิเคราะห์… · AI is Analyzing…</h3>
         <p>EduTwin กำลังประมวลผล Learning DNA และ Mistake DNA จากคำตอบของหนู รอสักครู่นะคะ</p>
       </div>
     );
@@ -266,17 +267,24 @@ export default function MissionRunner({
   if (phase === "complete") {
     return (
       <div className="card mission-complete">
-        <h3>Mission Complete · ภารกิจสำเร็จ</h3>
+        <span className="eyebrow" style={{ fontSize: "0.72rem" }}>10b / MISSION COMPLETE</span>
+        <h3 style={{ marginTop: 18 }}>Mission Complete · ภารกิจสำเร็จ</h3>
         {completeError ? (
           <p className="error">{completeError}</p>
         ) : (
-          <div className="mission-complete-score mono">
-            {completeResult ? `${completeResult.score} / ${completeResult.total}` : `${score} / ${questions.length}`}
-          </div>
+          <>
+            <div className="mission-complete-score mono">
+              {completeResult ? `${completeResult.score} / ${completeResult.total}` : `${score} / ${questions.length}`}
+            </div>
+            <p>EduTwin ประมวลผล Learning DNA และ Mistake DNA จากคำตอบของหนูเรียบร้อยแล้ว</p>
+          </>
         )}
         <div className="mission-actions">
-          <a className="btn btn-primary" href={`/students/${studentId}/diagnosis`}>
-            View Diagnosis · ดูผลวิเคราะห์
+          <a className="btn btn-soft" href={`/students/${studentId}/diagnosis`}>
+            View Diagnosis · ดูผลวิเคราะห์ →
+          </a>
+          <a className="btn btn-ghost" href={`/students/${studentId}/mission`}>
+            Retry Mission · ทำใหม่
           </a>
         </div>
       </div>
