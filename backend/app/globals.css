@@ -90,6 +90,7 @@ p {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: 28px;
+  animation: rise-in 0.45s var(--ease) both;
 }
 
 .card + .card {
@@ -137,6 +138,7 @@ select {
   font-size: 0.95rem;
   color: var(--ink);
   font-family: inherit;
+  transition: border-color 0.2s var(--ease), outline-color 0.2s var(--ease);
 }
 
 input:focus,
@@ -283,6 +285,14 @@ tr:last-child td {
   border-bottom: none;
 }
 
+tbody tr {
+  transition: background 0.2s var(--ease);
+}
+
+tbody tr:hover {
+  background: var(--accent-wash);
+}
+
 .row-actions {
   display: flex;
   gap: 6px;
@@ -406,6 +416,7 @@ tr:last-child td {
   height: 100%;
   background: var(--accent);
   border-radius: 999px;
+  transition: width 0.4s var(--ease);
 }
 
 .progress-label {
@@ -798,6 +809,17 @@ tr:last-child td {
 .mbar-fill {
   height: 100%;
   border-radius: 999px;
+  transform-origin: left;
+  animation: grow-bar 0.7s var(--ease) both;
+}
+
+@keyframes grow-bar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
 .mbar-pct {
