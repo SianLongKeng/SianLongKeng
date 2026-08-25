@@ -46,7 +46,7 @@ export default async function AdminPage() {
   );
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(255,255,255,0.08)", padding: "48px 48px 80px" }}>
+    <div className="screen" style={{ padding: "48px 48px 80px" }}>
       <div
         className="bg-glow"
         style={{

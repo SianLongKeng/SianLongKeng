@@ -23,7 +23,7 @@ export default async function NewMissionPage() {
   );
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", padding: "52px 48px 80px" }}>
+    <div className="screen" style={{ padding: "52px 48px 80px" }}>
       <div className="bg-dotgrid" style={{ opacity: 0.3 }} />
       <div className="page-content" style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>

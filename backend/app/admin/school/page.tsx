@@ -106,7 +106,7 @@ export default async function SchoolAnalyticsPage() {
   const kpi = kpiRows[0];
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", padding: "52px 48px 80px" }}>
+    <div className="screen" style={{ padding: "52px 48px 80px" }}>
       <div
         className="bg-glow"
         style={{

@@ -88,7 +88,7 @@ export default async function DiagnosisPage({ params }: { params: { id: string }
 
   if (!attempt || !attempt.completed_at) {
     return (
-      <div style={{ position: "relative", overflow: "hidden", minHeight: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 24px" }}>
+      <div className="screen" style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 24px" }}>
         <div
           className="bg-glow"
           style={{
@@ -163,7 +163,7 @@ export default async function DiagnosisPage({ params }: { params: { id: string }
   const chipLabel = topMistakePct >= 15 && topMistake ? topMistake.label_en : "Mastery";
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", padding: "52px 48px 90px" }}>
+    <div className="screen" style={{ padding: "52px 48px 90px" }}>
       <div
         className="bg-glow"
         style={{

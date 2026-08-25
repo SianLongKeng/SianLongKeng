@@ -2026,3 +2026,67 @@ tbody tr:hover {
   font-family: "IBM Plex Mono", monospace;
   font-size: 1.3rem;
 }
+
+/* ---------- global top nav ---------- */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 28px;
+  background: rgba(10, 8, 16, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.top-nav-wordmark {
+  font-family: "Archivo", sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: 0;
+  flex-shrink: 0;
+}
+
+.top-nav-links {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.top-nav-link {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.top-nav-link:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.top-nav-link.active {
+  background: var(--accent-wash);
+  color: var(--accent-2);
+}
+
+.top-nav-logout {
+  flex-shrink: 0;
+}
+
+/* full-height screen shell so short pages still fill the viewport instead
+   of leaving a stray divider with dead space beneath it */
+.screen {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 57px);
+}

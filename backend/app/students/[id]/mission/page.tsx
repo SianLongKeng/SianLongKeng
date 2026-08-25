@@ -80,7 +80,7 @@ export default async function MissionPage({ params }: { params: { id: string } }
   const studentShort = student.nickname || student.first_name;
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(255,255,255,0.08)", padding: "52px 48px 80px" }}>
+    <div className="screen" style={{ padding: "52px 48px 80px" }}>
       <div className="bg-dotgrid" style={{ opacity: 0.35 }} />
       <div className="page-content" style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div

@@ -37,7 +37,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid rgba(255,255,255,0.08)", padding: "56px 48px 80px" }}>
+    <div className="screen" style={{ padding: "56px 48px 80px" }}>
       <div
         className="bg-glow"
         style={{

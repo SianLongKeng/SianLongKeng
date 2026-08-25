@@ -160,7 +160,7 @@ export default async function ProgressPage({ params }: { params: { id: string } 
     : [];
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", padding: "52px 48px 80px" }}>
+    <div className="screen" style={{ padding: "52px 48px 80px" }}>
       <div className="bg-dotgrid" style={{ opacity: 0.3 }} />
       <div className="page-content" style={{ maxWidth: 1160, margin: "0 auto" }}>
         <div style={{ marginBottom: 24 }}>

@@ -160,7 +160,7 @@ export default async function ClassInsightsPage({ params }: { params: { id: stri
     `${s.nickname || s.first_name} ${s.nickname ? `(${s.first_name})` : ""}`.trim();
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", padding: "52px 48px 80px" }}>
+    <div className="screen" style={{ padding: "52px 48px 80px" }}>
       <div
         className="bg-glow"
         style={{

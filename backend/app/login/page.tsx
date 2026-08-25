@@ -36,14 +36,10 @@ function LoginForm() {
   return (
     <div
       style={{
-        position: "relative",
-        overflow: "hidden",
-        borderBottom: "1px solid rgba(255,255,255,0.08)",
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
-        minHeight: 660,
       }}
-      className="login-layout"
+      className="login-layout screen"
     >
       <div
         style={{

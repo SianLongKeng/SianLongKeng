@@ -158,7 +158,7 @@ export default async function StudentHomePage({ params }: { params: { id: string
     : null;
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", padding: "52px 48px 80px" }}>
+    <div className="screen" style={{ padding: "52px 48px 80px" }}>
       <div
         className="bg-glow"
         style={{

@@ -63,7 +63,7 @@ export default function JoinPage() {
 
   if (selectedStudent) {
     return (
-      <div style={{ position: "relative", overflow: "hidden", minHeight: 600, display: "flex", alignItems: "center", justifyContent: "center", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="screen" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div className="bg-dotgrid" style={{ opacity: 0.4 }} />
         <div className="page-content" style={{ textAlign: "center", maxWidth: 500, padding: "40px 32px" }}>
           <span className="eyebrow" style={{ fontSize: "0.72rem", display: "block", marginBottom: 12 }}>
@@ -108,7 +108,7 @@ export default function JoinPage() {
 
   if (students) {
     return (
-      <div style={{ position: "relative", overflow: "hidden", minHeight: 600, display: "flex", alignItems: "center", justifyContent: "center", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="screen" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div className="bg-dotgrid" style={{ opacity: 0.4 }} />
         <div
           className="page-content"
@@ -167,7 +167,7 @@ export default function JoinPage() {
   }
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", minHeight: 600, display: "flex", alignItems: "center", justifyContent: "center", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+    <div className="screen" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div
         className="bg-glow"
         style={{

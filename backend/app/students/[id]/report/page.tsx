@@ -92,7 +92,7 @@ export default async function ParentReportPage({
   const monthLabel = new Date().toLocaleDateString("th-TH", { month: "long", year: "numeric" });
 
   return (
-    <div style={{ padding: "48px 24px", display: "flex", justifyContent: "center" }}>
+    <div className="screen" style={{ padding: "48px 24px", display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 780 }}>
         <div className="report-sheet">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
