@@ -570,3 +570,51 @@ export function AddStudentPanel({ classes }: { classes: ClassOption[] }) {
     </div>
   );
 }
+
+type AdminTab = "roster" | "classes" | "add";
+
+const ADMIN_TABS: { key: AdminTab; label: string }[] = [
+  { key: "roster", label: "Roster · รายชื่อนักเรียน" },
+  { key: "classes", label: "Classes · ห้องเรียน" },
+  { key: "add", label: "Add Students · เพิ่มนักเรียน" },
+];
+
+export function AdminTabs({ classes, students, email }: { classes: ClassItem[]; students: Student[]; email: string }) {
+  const [tab, setTab] = useState<AdminTab>("roster");
+
+  return (
+    <>
+      <div className="card">
+        <div className="card-head">
+          <div>
+            <span className="eyebrow">Teacher Copilot</span>
+            <h1>Dashboard</h1>
+            <p className="lede">เข้าสู่ระบบในนาม {email}</p>
+          </div>
+          <LogoutButton />
+        </div>
+        <div className="tab-toggle" role="tablist" style={{ marginTop: 16, marginBottom: 0 }}>
+          {ADMIN_TABS.map((t) => (
+            <button key={t.key} type="button" role="tab" aria-selected={tab === t.key} onClick={() => setTab(t.key)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {tab === "roster" && (
+        <div className="card">
+          <RosterTable students={students} classes={classes} />
+        </div>
+      )}
+      {tab === "classes" && <ClassManager classes={classes} />}
+      {tab === "add" && (
+        <div className="card">
+          <span className="eyebrow">Roster</span>
+          <h2 style={{ marginBottom: 16 }}>Add Students · เพิ่มนักเรียน</h2>
+          <AddStudentPanel classes={classes} />
+        </div>
+      )}
+    </>
+  );
+}

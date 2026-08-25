@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { query } from "@/lib/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
-import { AddStudentPanel, ClassManager, LogoutButton, RosterTable } from "./components";
+import { AdminTabs } from "./components";
 
 interface ClassRow {
   id: string;
@@ -48,27 +48,7 @@ export default async function AdminPage() {
   return (
     <div className="wrap">
       <span className="brand-mark">EduTwin</span>
-
-      <div className="card">
-        <div className="card-head">
-          <div>
-            <span className="eyebrow">Teacher Copilot</span>
-            <h1>Student Roster · รายชื่อนักเรียน</h1>
-            <p className="lede">เข้าสู่ระบบในนาม {session.email}</p>
-          </div>
-          <LogoutButton />
-        </div>
-
-        <RosterTable students={students} classes={classes} />
-      </div>
-
-      <ClassManager classes={classes} />
-
-      <div className="card">
-        <span className="eyebrow">Roster</span>
-        <h2 style={{ marginBottom: 16 }}>Add Students · เพิ่มนักเรียน</h2>
-        <AddStudentPanel classes={classes} />
-      </div>
+      <AdminTabs classes={classes} students={students} email={session.email} />
     </div>
   );
 }
