@@ -1119,6 +1119,12 @@ tr:last-child td {
 
 .insight-group {
   padding: 20px;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.insight-group:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
 }
 
 .insight-group-head {
@@ -1142,6 +1148,12 @@ tr:last-child td {
   padding: 8px 10px;
   background: var(--surface-2);
   border-radius: var(--radius-md);
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.insight-student-list li:hover {
+  background: var(--accent-wash);
+  transform: translateX(2px);
 }
 
 .insight-student-list a {
