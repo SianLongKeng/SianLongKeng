@@ -88,14 +88,12 @@ export default async function MissionPage({ params }: { params: { id: string } }
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
             marginBottom: 22,
             fontSize: "0.72rem",
             letterSpacing: "0.16em",
-            color: "var(--ink-soft)",
           }}
         >
-          <span>10 / STUDENT · ADAPTIVE MISSION</span>
           <span style={{ color: "var(--accent-2)" }}>
             {studentShort} · {student.class_name}
           </span>

@@ -56,6 +56,29 @@ export async function verifyStudentSessionToken(token: string): Promise<StudentS
   }
 }
 
+// A long-lived, read-only link a teacher can hand to a parent — proves
+// nothing except "someone with this exact link may view this one student's
+// report," never upgraded to a full student/teacher session and never
+// usable for anything but GET-ing the report page.
+const REPORT_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+
+export async function createReportToken(studentId: string): Promise<string> {
+  return new SignJWT({ studentId, purpose: "parent-report" })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime(`${REPORT_TOKEN_TTL_SECONDS}s`)
+    .sign(getSecretKey());
+}
+
+export async function verifyReportToken(token: string, studentId: string): Promise<boolean> {
+  try {
+    const { payload } = await jwtVerify(token, getSecretKey());
+    return payload.purpose === "parent-report" && payload.studentId === studentId;
+  } catch {
+    return false;
+  }
+}
+
 // A single pooled connection reused across serverless invocations in the
 // same warm lambda. DATABASE_URL must be set as a Vercel environment
 // variable (never hardcoded, never committed).

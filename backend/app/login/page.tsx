@@ -53,7 +53,7 @@ function LoginForm() {
           borderRight: "1px solid rgba(255,255,255,0.08)",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
+          justifyContent: "center",
         }}
       >
         <div
@@ -66,9 +66,6 @@ function LoginForm() {
             background: "radial-gradient(circle, rgba(124,58,237,0.22) 0%, rgba(10,8,16,0) 65%)",
           }}
         />
-        <div className="page-content eyebrow" style={{ fontSize: "0.72rem" }}>
-          02 / TEACHER COPILOT
-        </div>
         <div className="page-content">
           <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.1rem)", lineHeight: 1.05 }}>Teacher Login</h2>
           <p style={{ margin: "18px 0 0", maxWidth: 380, fontSize: "1rem", lineHeight: 1.7, color: "var(--ink-soft)" }}>

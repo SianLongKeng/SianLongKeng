@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { query } from "@/lib/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
+import { bucketFor, type Bucket } from "@/lib/grouping";
+import NudgePanel from "./NudgePanel";
 
 export const dynamic = "force-dynamic";
 
@@ -34,14 +36,6 @@ interface DnaAvgRow {
   confidence: number | null;
 }
 
-type Bucket = "concept_gap" | "application_gap" | "mastery" | "pending";
-
-// Same two categories the "Killer Demo" in the pitch uses: two students with
-// the same score can land in different buckets depending on *which* mistake
-// type dominated their attempt, not how many they got wrong.
-const CONCEPT_CODES = new Set(["misconception", "wrong_concept_recall"]);
-const APPLICATION_CODES = new Set(["logic_gap", "calculation_error", "misread_question", "guessing"]);
-
 const GROUP_META: Record<Bucket, { title: string; titleTh: string; suggestion: string }> = {
   concept_gap: {
     title: "Concept Gap",
@@ -66,15 +60,6 @@ const GROUP_META: Record<Bucket, { title: string; titleTh: string; suggestion: s
 };
 
 const BUCKET_ORDER: Bucket[] = ["concept_gap", "application_gap", "mastery", "pending"];
-
-function bucketFor(row: StudentInsightRow): Bucket {
-  if (!row.completed_at) return "pending";
-  const pct = row.top_mistake_pct ? Number(row.top_mistake_pct) : 0;
-  if (!row.top_mistake_code || pct < 15) return "mastery";
-  if (CONCEPT_CODES.has(row.top_mistake_code)) return "concept_gap";
-  if (APPLICATION_CODES.has(row.top_mistake_code)) return "application_gap";
-  return "mastery";
-}
 
 const DNA_AXES: { key: keyof DnaAvgRow; label: string }[] = [
   { key: "concept", label: "Concept" },
@@ -138,6 +123,29 @@ export default async function ClassInsightsPage({ params }: { params: { id: stri
   const dnaAvg = dnaAvgRows[0];
   const hasDnaData = dnaAvg && dnaAvg.concept !== null;
 
+  const inProgressRows = await query<{
+    id: string;
+    first_name: string;
+    nickname: string | null;
+    started_at: string;
+    answered: number;
+    total: number;
+  }>(
+    `select s.id, s.first_name, s.nickname, att.started_at, att.answered, att.total
+       from students s
+       join lateral (
+         select ma.id, ma.started_at, ma.mission_id,
+                (select count(distinct question_id)::int from question_responses where attempt_id = ma.id) as answered,
+                (select count(*)::int from mission_questions where mission_id = ma.mission_id) as total
+           from mission_attempts ma
+          where ma.student_id = s.id and ma.completed_at is null
+          order by ma.started_at desc
+          limit 1
+       ) att on true
+      where s.class_id = $1`,
+    [cls.id]
+  );
+
   const groups: Record<Bucket, StudentInsightRow[]> = {
     concept_gap: [],
     application_gap: [],
@@ -177,7 +185,7 @@ export default async function ClassInsightsPage({ params }: { params: { id: stri
           }}
         >
           <div>
-            <span className="eyebrow" style={{ fontSize: "0.72rem" }}>09 / TEACHER COPILOT · AI GROUPING</span>
+            <span className="eyebrow" style={{ fontSize: "0.72rem" }}>Teacher Copilot · AI Grouping</span>
             <h2 style={{ marginTop: 12, fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>
               {cls.name} · {cls.subject}
             </h2>
@@ -247,6 +255,16 @@ export default async function ClassInsightsPage({ params }: { params: { id: stri
             );
           })}
         </div>
+
+        <NudgePanel
+          notStarted={groups.pending.map((s) => ({ id: s.id, name: s.nickname || s.first_name }))}
+          inProgress={inProgressRows.map((r) => ({
+            id: r.id,
+            name: r.nickname || r.first_name,
+            answered: r.answered,
+            total: r.total,
+          }))}
+        />
 
         <div style={{ marginTop: 26 }}>
           <a className="btn btn-ghost" href="/admin">

@@ -203,7 +203,7 @@ export function ClassManager({ classes }: { classes: ClassItem[] }) {
     <div>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", paddingBottom: 20, borderBottom: "1px solid var(--border-strong)", marginBottom: 28, flexWrap: "wrap", gap: 12 }}>
         <div>
-          <div className="eyebrow" style={{ fontSize: "0.72rem", marginBottom: 12 }}>07 / CLASSES</div>
+          <span className="eyebrow" style={{ fontSize: "0.72rem", display: "block", marginBottom: 12 }}>Classes</span>
           <h2 style={{ fontSize: "1.9rem" }}>Classes You Teach · ห้องเรียนที่สอน</h2>
           <p className="lede" style={{ marginTop: 10, maxWidth: 640 }}>
             อาจารย์หนึ่งคนสอนได้หลายห้อง หลายวิชา — เพิ่มห้องใหม่ได้ตลอดเวลา แจก Join Code ให้นักเรียนกรอกที่หน้า{" "}
@@ -338,6 +338,9 @@ function StudentRow({ student }: { student: Student }) {
         </Link>
         <Link className="row-chip outline" href={`/students/${student.id}/diagnosis`}>
           Diagnosis
+        </Link>
+        <Link className="row-chip outline" href={`/students/${student.id}/report`}>
+          Report
         </Link>
         <button className="row-chip outline" type="button" onClick={() => setEditing(true)}>
           Edit
@@ -604,11 +607,22 @@ export function AdminTabs({ classes, students, email }: { classes: ClassItem[]; 
     <>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 26, flexWrap: "wrap", gap: 16 }}>
         <div>
-          <div className="eyebrow" style={{ fontSize: "0.72rem", marginBottom: 12 }}>06 / TEACHER COPILOT</div>
+          <span className="eyebrow" style={{ fontSize: "0.72rem", display: "block", marginBottom: 12 }}>Teacher Copilot</span>
           <h1 style={{ fontSize: "clamp(1.9rem, 3.4vw, 2.6rem)" }}>Dashboard</h1>
           <p className="lede" style={{ marginTop: 10 }}>เข้าสู่ระบบในนาม {email}</p>
         </div>
-        <LogoutButton />
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <Link className="btn btn-ghost btn-small" href="/admin/interventions">
+            Interventions
+          </Link>
+          <Link className="btn btn-ghost btn-small" href="/admin/missions/new">
+            Mission Builder
+          </Link>
+          <Link className="btn btn-ghost btn-small" href="/admin/school">
+            School Analytics
+          </Link>
+          <LogoutButton />
+        </div>
       </div>
       <div className="tab-toggle" role="tablist">
         {ADMIN_TABS.map((t) => (
@@ -622,7 +636,7 @@ export function AdminTabs({ classes, students, email }: { classes: ClassItem[]; 
       {tab === "classes" && <ClassManager classes={classes} />}
       {tab === "add" && (
         <div>
-          <div className="eyebrow" style={{ fontSize: "0.72rem", marginBottom: 12 }}>08 / ADD STUDENTS</div>
+          <span className="eyebrow" style={{ fontSize: "0.72rem", display: "block", marginBottom: 12 }}>Roster</span>
           <h2 style={{ fontSize: "1.9rem", marginBottom: 24 }}>Add Students · เพิ่มนักเรียน</h2>
           <AddStudentPanel classes={classes} />
         </div>

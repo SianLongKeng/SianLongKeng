@@ -20,7 +20,6 @@ export default function Home() {
       <div className="page-content">
         <div className="topbar">
           <span className="wordmark">EDUTWIN</span>
-          <span>01 / WELCOME</span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 600, padding: "60px 32px" }}>

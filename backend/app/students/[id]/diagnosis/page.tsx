@@ -177,7 +177,7 @@ export default async function DiagnosisPage({ params }: { params: { id: string }
       />
       <div className="page-content" style={{ maxWidth: 1120, margin: "0 auto" }}>
       <div className="killer-banner">
-        <span className="eyebrow" style={{ fontSize: "0.72rem" }}>11 / DIAGNOSIS · LEARNING DNA</span>
+        <span className="eyebrow" style={{ fontSize: "0.72rem" }}>Diagnosis · Learning DNA</span>
         <h2 style={{ marginTop: 12, fontSize: "clamp(1.7rem, 3vw, 2.5rem)" }}>{studentName}</h2>
         <p>ผลวิเคราะห์จากมิชชัน &ldquo;{"สวนสาธารณะชุมชน"}&rdquo; ที่นักเรียนทำล่าสุด</p>
       </div>
@@ -281,6 +281,12 @@ export default async function DiagnosisPage({ params }: { params: { id: string }
       <div style={{ marginTop: 24, display: "flex", gap: 14, flexWrap: "wrap" }}>
         <a className="btn btn-soft" href={`/students/${student.id}/mission`}>
           Retry Mission · ทำภารกิจใหม่ →
+        </a>
+        <a className="btn btn-ghost" href={`/students/${student.id}/progress`}>
+          ดูพัฒนาการ · Progress
+        </a>
+        <a className="btn btn-ghost" href={`/students/${student.id}`}>
+          หน้าแรกของหนู · Home
         </a>
         <a className="btn btn-ghost" href="/admin">
           ← กลับไปหน้า Dashboard

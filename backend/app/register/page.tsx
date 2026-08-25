@@ -49,7 +49,6 @@ export default function RegisterPage() {
         }}
       />
       <div className="page-content" style={{ maxWidth: 900, margin: "0 auto" }}>
-        <div className="eyebrow" style={{ fontSize: "0.72rem", marginBottom: 18 }}>03 / GET STARTED</div>
         <h2 style={{ fontSize: "clamp(1.8rem, 3.4vw, 2.75rem)", marginBottom: 8 }}>Sign Up as a Teacher</h2>
         <p style={{ margin: "0 0 40px", fontSize: "1rem", color: "var(--ink-soft)" }}>
           สมัครใช้งานสำหรับครู — สร้างห้องเรียนแรกได้ทันทีหลังสมัคร

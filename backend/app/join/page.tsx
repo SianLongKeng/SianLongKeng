@@ -18,6 +18,8 @@ export default function JoinPage() {
   const [className, setClassName] = useState<string | null>(null);
   const [students, setStudents] = useState<StudentOption[] | null>(null);
   const [enteringId, setEnteringId] = useState<string | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<StudentOption | null>(null);
+  const [pin, setPin] = useState("");
 
   async function lookupCode(e: FormEvent) {
     e.preventDefault();
@@ -37,24 +39,71 @@ export default function JoinPage() {
     }
   }
 
-  async function enterAs(studentId: string) {
-    setEnteringId(studentId);
+  async function confirmPin(e: FormEvent) {
+    e.preventDefault();
+    if (!selectedStudent) return;
+    setEnteringId(selectedStudent.id);
     setError(null);
     try {
       const res = await fetch("/api/join/enter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ joinCode: code.trim(), studentId }),
+        body: JSON.stringify({ joinCode: code.trim(), studentId: selectedStudent.id, pin: pin.trim() }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data.error || "เข้าสู่ระบบไม่สำเร็จ");
         return;
       }
-      router.push(`/students/${studentId}/mission`);
+      router.push(`/students/${selectedStudent.id}/mission`);
     } finally {
       setEnteringId(null);
     }
+  }
+
+  if (selectedStudent) {
+    return (
+      <div style={{ position: "relative", overflow: "hidden", minHeight: 600, display: "flex", alignItems: "center", justifyContent: "center", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="bg-dotgrid" style={{ opacity: 0.4 }} />
+        <div className="page-content" style={{ textAlign: "center", maxWidth: 500, padding: "40px 32px" }}>
+          <span className="eyebrow" style={{ fontSize: "0.72rem", display: "block", marginBottom: 12 }}>
+            SECURE JOIN
+          </span>
+          <h2 style={{ fontSize: "clamp(1.6rem, 3vw, 2.2rem)", marginBottom: 12 }}>
+            สวัสดี {selectedStudent.nickname || selectedStudent.firstName}
+          </h2>
+          <p className="lede" style={{ marginBottom: 30 }}>ใส่เลขประจำตัวนักเรียนของหนูเพื่อยืนยันตัวตน</p>
+          <form onSubmit={confirmPin}>
+            <input
+              autoFocus
+              inputMode="numeric"
+              placeholder="1094"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              className="code-input pin-cell"
+              style={{ width: "100%", height: "auto", padding: "16px", fontSize: "1.4rem" }}
+            />
+            {error && <p className="error">{error}</p>}
+            <button className="btn btn-primary" type="submit" disabled={enteringId !== null} style={{ marginTop: 24 }}>
+              {enteringId ? "กำลังเข้าสู่ระบบ..." : "ยืนยันและเข้าทำมิชชัน →"}
+            </button>
+          </form>
+          <p style={{ marginTop: 20, fontSize: "0.88rem" }}>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedStudent(null);
+                setPin("");
+                setError(null);
+              }}
+            >
+              ← เลือกชื่ออื่น
+            </a>
+          </p>
+        </div>
+      </div>
+    );
   }
 
   if (students) {
@@ -73,8 +122,7 @@ export default function JoinPage() {
             background: "linear-gradient(160deg, rgba(124,58,237,0.16), rgba(255,255,255,0.02))",
           }}
         >
-          <div className="eyebrow" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.72rem", marginBottom: 26 }}>
-            <span>05 / STUDENT JOIN</span>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 26 }}>
             <span className="join-code-chip mono">{code.trim().toUpperCase()}</span>
           </div>
           <h2 style={{ fontSize: "1.9rem", marginBottom: 6 }}>{className}</h2>
@@ -85,8 +133,7 @@ export default function JoinPage() {
                 key={s.id}
                 type="button"
                 className="join-name-btn"
-                disabled={enteringId !== null}
-                onClick={() => enterAs(s.id)}
+                onClick={() => setSelectedStudent(s)}
                 style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 12, textAlign: "left" }}
               >
                 <span className="avatar-grad" style={{ width: 32, height: 32, fontSize: "0.72rem" }}>
@@ -133,7 +180,6 @@ export default function JoinPage() {
         }}
       />
       <div className="page-content" style={{ textAlign: "center", maxWidth: 600, padding: "40px 32px" }}>
-        <div className="eyebrow" style={{ fontSize: "0.72rem", marginBottom: 20 }}>04 / STUDENT</div>
         <h2 style={{ fontSize: "clamp(1.8rem, 3.4vw, 2.75rem)", marginBottom: 12 }}>Enter Your Class Code</h2>
         <p className="lede" style={{ marginBottom: 34, fontSize: "1rem" }}>
           กรอกรหัสห้องเรียน 6 หลักที่ได้จากคุณครู — ไม่ต้องใช้รหัสผ่าน
