@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { query } from "@/lib/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 import MissionBuilderForm from "./MissionBuilderForm";
+import { AdminNavLinks } from "@/app/admin/components";
 
 export const dynamic = "force-dynamic";
 
@@ -33,9 +34,7 @@ export default async function NewMissionPage() {
             </span>
             <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>Build &amp; Assign a Mission</h2>
           </div>
-          <a className="btn btn-ghost" href="/admin">
-            ← Dashboard
-          </a>
+          <AdminNavLinks current="missions" />
         </div>
         <MissionBuilderForm classes={classes} />
       </div>

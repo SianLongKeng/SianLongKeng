@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { query } from "@/lib/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 import InterventionsBoard, { type InterventionRow } from "./InterventionsBoard";
+import { AdminNavLinks } from "@/app/admin/components";
 
 export const dynamic = "force-dynamic";
 
@@ -63,9 +64,7 @@ export default async function InterventionsPage() {
             </span>
             <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>Intervention Loop</h2>
           </div>
-          <a className="btn btn-ghost" href="/admin">
-            ← Dashboard
-          </a>
+          <AdminNavLinks current="interventions" />
         </div>
 
         <InterventionsBoard initialRows={rows} />

@@ -2077,7 +2077,7 @@ tbody tr:hover {
 
 .top-nav-wordmark {
   font-family: "Archivo", sans-serif;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 800;
   color: var(--ink);
   text-decoration: none;
@@ -2111,10 +2111,6 @@ tbody tr:hover {
 .top-nav-link.active {
   background: var(--accent-wash);
   color: var(--accent-2);
-}
-
-.top-nav-logout {
-  flex-shrink: 0;
 }
 
 /* full-height screen shell so short pages still fill the viewport instead

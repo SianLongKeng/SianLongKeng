@@ -240,6 +240,31 @@ export function LogoutButton() {
   );
 }
 
+type AdminSection = "dashboard" | "interventions" | "missions" | "school";
+
+const ADMIN_SECTION_LINKS: { key: AdminSection; href: string; label: string }[] = [
+  { key: "dashboard", href: "/admin", label: "Dashboard" },
+  { key: "interventions", href: "/admin/interventions", label: "Interventions" },
+  { key: "missions", href: "/admin/missions/new", label: "Mission Builder" },
+  { key: "school", href: "/admin/school", label: "School Analytics" },
+];
+
+// The single row of cross-page navigation for the teacher side, shown once
+// per page (in its own header) instead of duplicated in a fixed top bar —
+// each page skips the link to itself.
+export function AdminNavLinks({ current }: { current: AdminSection }) {
+  return (
+    <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+      {ADMIN_SECTION_LINKS.filter((l) => l.key !== current).map((l) => (
+        <Link key={l.key} className="btn btn-ghost btn-small" href={l.href}>
+          {l.label}
+        </Link>
+      ))}
+      <LogoutButton />
+    </div>
+  );
+}
+
 function StudentRow({ student }: { student: Student }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
@@ -611,18 +636,7 @@ export function AdminTabs({ classes, students, email }: { classes: ClassItem[]; 
           <h1 style={{ fontSize: "clamp(1.9rem, 3.4vw, 2.6rem)" }}>Dashboard</h1>
           <p className="lede" style={{ marginTop: 10 }}>เข้าสู่ระบบในนาม {email}</p>
         </div>
-        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-          <Link className="btn btn-ghost btn-small" href="/admin/interventions">
-            Interventions
-          </Link>
-          <Link className="btn btn-ghost btn-small" href="/admin/missions/new">
-            Mission Builder
-          </Link>
-          <Link className="btn btn-ghost btn-small" href="/admin/school">
-            School Analytics
-          </Link>
-          <LogoutButton />
-        </div>
+        <AdminNavLinks current="dashboard" />
       </div>
       <div className="tab-toggle" role="tablist">
         {ADMIN_TABS.map((t) => (

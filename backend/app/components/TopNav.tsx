@@ -2,14 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogoutButton } from "@/app/admin/components";
-
-const ADMIN_LINKS = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/interventions", label: "Interventions" },
-  { href: "/admin/missions/new", label: "Mission Builder" },
-  { href: "/admin/school", label: "School Analytics" },
-];
 
 function studentLinks(id: string) {
   return [
@@ -24,10 +16,8 @@ function studentLinks(id: string) {
 export default function TopNav() {
   const pathname = usePathname() || "/";
 
-  const isAdmin = pathname.startsWith("/admin");
   const studentMatch = pathname.match(/^\/students\/([^/]+)/);
-
-  const links = isAdmin ? ADMIN_LINKS : studentMatch ? studentLinks(studentMatch[1]) : [];
+  const links = studentMatch ? studentLinks(studentMatch[1]) : [];
 
   return (
     <nav className="top-nav no-print">
@@ -41,11 +31,6 @@ export default function TopNav() {
               {l.label}
             </Link>
           ))}
-        </div>
-      )}
-      {isAdmin && (
-        <div className="top-nav-logout">
-          <LogoutButton />
         </div>
       )}
     </nav>

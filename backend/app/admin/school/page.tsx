@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { query } from "@/lib/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 import { bucketFor } from "@/lib/grouping";
+import { AdminNavLinks } from "@/app/admin/components";
 
 export const dynamic = "force-dynamic";
 
@@ -170,9 +171,7 @@ export default async function SchoolAnalyticsPage() {
             </span>
             <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.4rem)" }}>ภาพรวมทุกห้องที่คุณสอน</h2>
           </div>
-          <a className="btn btn-ghost" href="/admin">
-            ← Dashboard
-          </a>
+          <AdminNavLinks current="school" />
         </div>
 
         <span className="kpi-section-title">Student · ผลลัพธ์นักเรียน</span>
