@@ -102,6 +102,9 @@ function LoginForm() {
           <p className="auth-link">
             No account yet? · ยังไม่มีบัญชี? <a href="/register">Sign up · สมัครใช้งาน</a>
           </p>
+          <p className="auth-link" style={{ marginTop: 8 }}>
+            <a href="/forgot-password">ลืมรหัสผ่าน? · Forgot password?</a>
+          </p>
         </div>
       </div>
       <style>{`

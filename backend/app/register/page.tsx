@@ -11,6 +11,8 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [className, setClassName] = useState("");
   const [subject, setSubject] = useState("");
+  const [securityQuestion, setSecurityQuestion] = useState("");
+  const [securityAnswer, setSecurityAnswer] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -22,7 +24,16 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ schoolName, fullName, email, password, className, subject }),
+        body: JSON.stringify({
+          schoolName,
+          fullName,
+          email,
+          password,
+          className,
+          subject,
+          securityQuestion,
+          securityAnswer,
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -98,6 +109,27 @@ export default function RegisterPage() {
           <label htmlFor="subject" className="field-span-2">
             <span>SUBJECT · วิชา</span>
             <input id="subject" required placeholder="เช่น ภาษาไทย" value={subject} onChange={(e) => setSubject(e.target.value)} />
+          </label>
+
+          <label htmlFor="securityQuestion" className="field-span-2">
+            <span>SECURITY QUESTION · คำถามกันลืม (ใช้ตอนลืมรหัสผ่าน)</span>
+            <input
+              id="securityQuestion"
+              required
+              placeholder="เช่น ชื่อเล่นสมัยเด็กของคุณคืออะไร"
+              value={securityQuestion}
+              onChange={(e) => setSecurityQuestion(e.target.value)}
+            />
+          </label>
+
+          <label htmlFor="securityAnswer" className="field-span-2">
+            <span>ANSWER · คำตอบ</span>
+            <input
+              id="securityAnswer"
+              required
+              value={securityAnswer}
+              onChange={(e) => setSecurityAnswer(e.target.value)}
+            />
           </label>
 
           {error && (

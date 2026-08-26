@@ -11,8 +11,10 @@ export async function POST(req: NextRequest) {
   const password = typeof body?.password === "string" ? body.password : "";
   const className = typeof body?.className === "string" ? body.className.trim() : "";
   const subject = typeof body?.subject === "string" ? body.subject.trim() : "";
+  const securityQuestion = typeof body?.securityQuestion === "string" ? body.securityQuestion.trim() : "";
+  const securityAnswer = typeof body?.securityAnswer === "string" ? body.securityAnswer.trim() : "";
 
-  if (!schoolName || !fullName || !email || !password || !className || !subject) {
+  if (!schoolName || !fullName || !email || !password || !className || !subject || !securityQuestion || !securityAnswer) {
     return NextResponse.json({ error: "กรุณากรอกข้อมูลให้ครบ" }, { status: 400 });
   }
   if (password.length < 8) {
@@ -25,6 +27,9 @@ export async function POST(req: NextRequest) {
   }
 
   const passwordHash = await hashPassword(password);
+  // Same one-way hashing as the login password — a leaked database still
+  // can't be used to answer the security question and take over accounts.
+  const securityAnswerHash = await hashPassword(securityAnswer.toLowerCase());
 
   let teacher: { id: string; school_id: string; email: string };
   try {
@@ -36,10 +41,10 @@ export async function POST(req: NextRequest) {
       const schoolId = schoolRes.rows[0].id;
 
       const teacherRes = await client.query<{ id: string; school_id: string; email: string }>(
-        `insert into teachers (school_id, full_name, email, password_hash)
-         values ($1, $2, $3, $4)
+        `insert into teachers (school_id, full_name, email, password_hash, security_question, security_answer_hash)
+         values ($1, $2, $3, $4, $5, $6)
          returning id, school_id, email`,
-        [schoolId, fullName, email, passwordHash]
+        [schoolId, fullName, email, passwordHash, securityQuestion, securityAnswerHash]
       );
       const teacherRow = teacherRes.rows[0];
 
