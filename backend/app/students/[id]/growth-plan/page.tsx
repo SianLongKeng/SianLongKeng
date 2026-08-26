@@ -109,7 +109,7 @@ export default async function GrowthPlanPage({ params }: { params: { id: string 
       [student.id]
     ),
     query<AssignedRow>(
-      `select distinct m.title
+      `select m.title
          from mission_assignments ma
          join missions m on m.id = ma.mission_id
         where ma.class_id = (select class_id from students where id = $1)
