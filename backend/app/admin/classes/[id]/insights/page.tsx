@@ -3,7 +3,6 @@ import { redirect, notFound } from "next/navigation";
 import { query } from "@/lib/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 import { bucketFor, type Bucket } from "@/lib/grouping";
-import NudgePanel from "./NudgePanel";
 
 export const dynamic = "force-dynamic";
 
@@ -83,7 +82,7 @@ export default async function ClassInsightsPage({ params }: { params: { id: stri
   const cls = classRows[0];
   if (!cls) notFound();
 
-  const [students, dnaAvgRows, inProgressRows] = await Promise.all([
+  const [students, dnaAvgRows] = await Promise.all([
     query<StudentInsightRow>(
       `select s.id, s.first_name, s.last_name, s.nickname,
               att.id as attempt_id, att.completed_at, att.score,
@@ -117,28 +116,6 @@ export default async function ClassInsightsPage({ params }: { params: { id: stri
          join lateral (
            select * from learning_dna_snapshots where student_id = s.id order by computed_at desc limit 1
          ) d on true
-        where s.class_id = $1`,
-      [cls.id]
-    ),
-    query<{
-      id: string;
-      first_name: string;
-      nickname: string | null;
-      started_at: string;
-      answered: number;
-      total: number;
-    }>(
-      `select s.id, s.first_name, s.nickname, att.started_at, att.answered, att.total
-         from students s
-         join lateral (
-           select ma.id, ma.started_at, ma.mission_id,
-                  (select count(distinct question_id)::int from question_responses where attempt_id = ma.id) as answered,
-                  (select count(*)::int from mission_questions where mission_id = ma.mission_id) as total
-             from mission_attempts ma
-            where ma.student_id = s.id and ma.completed_at is null
-            order by ma.started_at desc
-            limit 1
-         ) att on true
         where s.class_id = $1`,
       [cls.id]
     ),
@@ -255,16 +232,6 @@ export default async function ClassInsightsPage({ params }: { params: { id: stri
             );
           })}
         </div>
-
-        <NudgePanel
-          notStarted={groups.pending.map((s) => ({ id: s.id, name: s.nickname || s.first_name }))}
-          inProgress={inProgressRows.map((r) => ({
-            id: r.id,
-            name: r.nickname || r.first_name,
-            answered: r.answered,
-            total: r.total,
-          }))}
-        />
 
         <div style={{ marginTop: 26 }}>
           <a className="btn btn-ghost" href="/admin">
