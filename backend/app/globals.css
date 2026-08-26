@@ -1928,6 +1928,12 @@ tbody tr:hover {
   padding: 40px;
 }
 
+.report-sheet h1,
+.report-sheet h2,
+.report-sheet h3 {
+  color: var(--ink-light);
+}
+
 .report-sheet .lede,
 .report-sheet p {
   color: var(--ink-soft-light);
