@@ -35,6 +35,7 @@ interface InterventionRow {
 }
 
 interface AssignedRow {
+  mission_id: string;
   title: string;
 }
 
@@ -109,7 +110,7 @@ export default async function GrowthPlanPage({ params }: { params: { id: string 
       [student.id]
     ),
     query<AssignedRow>(
-      `select m.title
+      `select m.id as mission_id, m.title
          from mission_assignments ma
          join missions m on m.id = ma.mission_id
         where ma.class_id = (select class_id from students where id = $1)
@@ -221,7 +222,10 @@ export default async function GrowthPlanPage({ params }: { params: { id: string 
         </div>
 
         <div style={{ marginTop: 26, display: "flex", gap: 14, flexWrap: "wrap" }}>
-          <a className="btn btn-soft" href={`/students/${student.id}/mission`}>
+          <a
+            className="btn btn-soft"
+            href={nextAssigned ? `/students/${student.id}/mission?mission=${nextAssigned.mission_id}` : `/students/${student.id}/mission`}
+          >
             เริ่มทำตามแผน →
           </a>
           <a className="btn btn-ghost" href={`/students/${student.id}/diagnosis`}>

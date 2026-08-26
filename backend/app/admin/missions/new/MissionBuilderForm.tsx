@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { upload } from "@vercel/blob/client";
 
 interface ClassOption {
   id: string;
@@ -16,12 +17,14 @@ interface ChoiceDraft {
 
 interface QuestionDraft {
   text: string;
+  imageUrl: string | null;
   choices: ChoiceDraft[];
 }
 
 function emptyQuestion(): QuestionDraft {
   return {
     text: "",
+    imageUrl: null,
     choices: [
       { text: "", isCorrect: true },
       { text: "", isCorrect: false },
@@ -50,8 +53,31 @@ export default function MissionBuilderForm({ classes }: { classes: ClassOption[]
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const selectedClass = classes.find((c) => c.id === classId);
+
+  async function onImagePicked(qi: number, file: File | undefined) {
+    if (!file) return;
+    setUploadError(null);
+    setUploadingIndex(qi);
+    try {
+      const blob = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/missions/upload-image",
+      });
+      setQuestions((qs) => qs.map((q, i) => (i === qi ? { ...q, imageUrl: blob.url } : q)));
+    } catch {
+      setUploadError("อัปโหลดรูปไม่สำเร็จ ลองใหม่อีกครั้ง (ไฟล์ต้องเป็นรูปภาพ ไม่เกิน 5MB)");
+    } finally {
+      setUploadingIndex(null);
+    }
+  }
+
+  function removeImage(qi: number) {
+    setQuestions((qs) => qs.map((q, i) => (i === qi ? { ...q, imageUrl: null } : q)));
+  }
 
   function updateQuestionText(qi: number, text: string) {
     setQuestions((qs) => qs.map((q, i) => (i === qi ? { ...q, text } : q)));
@@ -183,6 +209,29 @@ export default function MissionBuilderForm({ classes }: { classes: ClassOption[]
                   </button>
                 )}
               </div>
+
+              <div className="question-image-field">
+                {q.imageUrl ? (
+                  <div className="question-image-preview">
+                    <img src={q.imageUrl} alt="" />
+                    <button type="button" className="row-chip danger" onClick={() => removeImage(qi)}>
+                      ลบรูป
+                    </button>
+                  </div>
+                ) : (
+                  <label className="btn btn-ghost btn-small question-image-upload-btn">
+                    {uploadingIndex === qi ? "กำลังอัปโหลด..." : "🖼️ เพิ่มรูปภาพ (ไม่บังคับ)"}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/gif"
+                      style={{ display: "none" }}
+                      disabled={uploadingIndex !== null}
+                      onChange={(e) => onImagePicked(qi, e.target.files?.[0])}
+                    />
+                  </label>
+                )}
+              </div>
+
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {q.choices.map((c, ci) => (
                   <label key={ci} style={{ display: "flex", alignItems: "center", gap: 10, margin: 0 }}>
@@ -209,6 +258,7 @@ export default function MissionBuilderForm({ classes }: { classes: ClassOption[]
           </button>
         </div>
 
+        {uploadError && <p className="error">{uploadError}</p>}
         {error && <p className="error">{error}</p>}
         {success && <p className="success">{success}</p>}
 

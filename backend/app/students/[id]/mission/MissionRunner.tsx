@@ -17,10 +17,12 @@ interface Question {
   id: string;
   orderIndex: number;
   questionText: string;
+  imageUrl: string | null;
   choices: Choice[];
 }
 
 interface Mission {
+  id: string;
   title: string;
   scenarioText: string;
 }
@@ -79,7 +81,7 @@ export default function MissionRunner({
     fetch("/api/mission-attempts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ studentId }),
+      body: JSON.stringify({ studentId, missionId: mission.id }),
     })
       .then(async (res) => {
         const data = await res.json().catch(() => ({}));
@@ -321,7 +323,7 @@ export default function MissionRunner({
           <a className="btn btn-soft" href={`/students/${studentId}/diagnosis`}>
             View Diagnosis · ดูผลวิเคราะห์ →
           </a>
-          <a className="btn btn-ghost" href={`/students/${studentId}/mission`}>
+          <a className="btn btn-ghost" href={`/students/${studentId}/mission?mission=${mission.id}`}>
             Retry Mission · ทำใหม่
           </a>
         </div>
@@ -385,6 +387,10 @@ export default function MissionRunner({
             />
           </div>
           <p className="question-text">{question.questionText}</p>
+          {question.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={question.imageUrl} alt="" className="question-image" />
+          )}
           <div className="choices">
             {question.choices.map((choice, i) => {
               const classes = ["choice"];

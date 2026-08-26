@@ -204,7 +204,7 @@ export default async function StudentHomePage({ params }: { params: { id: string
                   <div className="mission-row-title">{m.title}</div>
                   {m.due_at && <div className="mission-row-meta">กำหนดส่ง {new Date(m.due_at).toLocaleDateString("th-TH")}</div>}
                 </div>
-                <a className="btn btn-soft btn-small" href={`/students/${student.id}/mission`}>
+                <a className="btn btn-soft btn-small" href={`/students/${student.id}/mission?mission=${m.mission_id}`}>
                   เริ่มทำ
                 </a>
               </div>

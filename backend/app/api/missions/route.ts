@@ -10,6 +10,7 @@ interface ChoiceInput {
 
 interface QuestionInput {
   text: string;
+  imageUrl?: string;
   choices: ChoiceInput[];
 }
 
@@ -65,11 +66,12 @@ export async function POST(req: NextRequest) {
     let orderIndex = 0;
     for (const q of questions) {
       orderIndex += 1;
+      const imageUrl = typeof q.imageUrl === "string" && q.imageUrl.startsWith("https://") ? q.imageUrl : null;
       const questionResult = await client.query<{ id: string }>(
-        `insert into mission_questions (mission_id, order_index, question_text)
-         values ($1, $2, $3)
+        `insert into mission_questions (mission_id, order_index, question_text, image_url)
+         values ($1, $2, $3, $4)
          returning id`,
-        [id, orderIndex, q.text.trim()]
+        [id, orderIndex, q.text.trim(), imageUrl]
       );
       const questionId = questionResult.rows[0].id;
 
