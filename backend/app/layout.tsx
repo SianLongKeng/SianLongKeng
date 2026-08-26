@@ -1,12 +1,20 @@
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 import "./globals.css";
 import TopNav from "./components/TopNav";
+import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 
 export const metadata = {
   title: "EduTwin Admin",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  // Read server-side (the cookie is httpOnly, invisible to client JS) so
+  // TopNav can tell a teacher browsing a student's pages apart from the
+  // student themself, instead of guessing purely from the URL.
+  const token = cookies().get(SESSION_COOKIE)?.value;
+  const isTeacherSession = token ? !!(await verifySessionToken(token)) : false;
+
   return (
     <html lang="th">
       <head>
@@ -17,7 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
-        <TopNav />
+        <TopNav isTeacherSession={isTeacherSession} />
         {children}
       </body>
     </html>

@@ -250,8 +250,9 @@ const ADMIN_SECTION_LINKS: { key: AdminSection; href: string; label: string }[] 
 
 // The single row of cross-page navigation for the teacher side, shown once
 // per page (in its own header) instead of duplicated in a fixed top bar —
-// each page skips the link to itself.
-export function AdminNavLinks({ current }: { current: AdminSection }) {
+// each page skips the link to itself. Also reused by TopNav for a teacher
+// browsing a student's pages (no `current` there — nothing to skip).
+export function AdminNavLinks({ current }: { current?: AdminSection }) {
   return (
     <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
       {ADMIN_SECTION_LINKS.filter((l) => l.key !== current).map((l) => (

@@ -2029,6 +2029,17 @@ tbody tr:hover {
   flex: 1;
 }
 
+.top-nav-viewing-badge {
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warning);
+  border: 1px solid var(--warning);
+  border-radius: 999px;
+  padding: 3px 10px;
+  flex-shrink: 0;
+}
+
 .top-nav-link {
   padding: 8px 14px;
   border-radius: 999px;
