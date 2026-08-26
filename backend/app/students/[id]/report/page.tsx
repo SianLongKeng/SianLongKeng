@@ -65,17 +65,15 @@ export default async function ParentReportPage({
   if (!student) notFound();
   const studentName = `${student.first_name} ${student.last_name}${student.nickname ? ` (${student.nickname})` : ""}`;
 
-  const attemptRows = await query<AttemptRow>(
-    `select id, score, completed_at, (select count(*)::int from mission_questions where mission_id = mission_attempts.mission_id) as total
-       from mission_attempts
-      where student_id = $1 and completed_at is not null
-      order by completed_at desc
-      limit 1`,
-    [student.id]
-  );
-  const attempt = attemptRows[0];
-
-  const [dnaRows, interventionRows] = await Promise.all([
+  const [attemptRows, dnaRows, interventionRows] = await Promise.all([
+    query<AttemptRow>(
+      `select id, score, completed_at, (select count(*)::int from mission_questions where mission_id = mission_attempts.mission_id) as total
+         from mission_attempts
+        where student_id = $1 and completed_at is not null
+        order by completed_at desc
+        limit 1`,
+      [student.id]
+    ),
     query<DnaRow>(
       `select concept_score, application_score, critical_thinking_score, problem_solving_score
          from learning_dna_snapshots where student_id = $1 order by computed_at desc limit 1`,
@@ -86,6 +84,7 @@ export default async function ParentReportPage({
       [student.id]
     ),
   ]);
+  const attempt = attemptRows[0];
   const dna = dnaRows[0];
   const intervention = interventionRows[0];
 

@@ -27,23 +27,24 @@ export default async function AdminPage() {
   const session = token ? await verifySessionToken(token) : null;
   if (!session) redirect("/login");
 
-  const classes = await query<ClassRow>(
-    `select c.id, c.name, c.subject, c.join_code,
-            (select count(*)::int from students s where s.class_id = c.id) as student_count
-       from classes c
-      where c.teacher_id = $1
-      order by c.name, c.subject`,
-    [session.teacherId]
-  );
-
-  const students = await query<StudentRowData>(
-    `select s.id, s.student_number, s.first_name, s.last_name, s.nickname, s.class_id, c.name as class_name
-       from students s
-       join classes c on c.id = s.class_id
-      where c.teacher_id = $1
-      order by c.name, s.last_name, s.first_name`,
-    [session.teacherId]
-  );
+  const [classes, students] = await Promise.all([
+    query<ClassRow>(
+      `select c.id, c.name, c.subject, c.join_code,
+              (select count(*)::int from students s where s.class_id = c.id) as student_count
+         from classes c
+        where c.teacher_id = $1
+        order by c.name, c.subject`,
+      [session.teacherId]
+    ),
+    query<StudentRowData>(
+      `select s.id, s.student_number, s.first_name, s.last_name, s.nickname, s.class_id, c.name as class_name
+         from students s
+         join classes c on c.id = s.class_id
+        where c.teacher_id = $1
+        order by c.name, s.last_name, s.first_name`,
+      [session.teacherId]
+    ),
+  ]);
 
   return (
     <div className="screen" style={{ padding: "48px 48px 80px" }}>

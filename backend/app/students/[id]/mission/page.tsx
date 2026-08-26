@@ -37,35 +37,35 @@ interface ChoiceRow {
 export default async function MissionPage({ params }: { params: { id: string } }) {
   if (!(await canAccessStudent(params.id))) notFound();
 
-  const studentRows = await query<StudentRow>(
-    `select s.id, s.first_name, s.last_name, s.nickname, c.name as class_name
-       from students s
-       join classes c on c.id = s.class_id
-      where s.id = $1`,
-    [params.id]
-  );
+  // MISSION_ID is a fixed constant (not derived from the student), so all
+  // four lookups below are independent — no need to wait on each other.
+  const [studentRows, missionRows, questionRows, choiceRows] = await Promise.all([
+    query<StudentRow>(
+      `select s.id, s.first_name, s.last_name, s.nickname, c.name as class_name
+         from students s
+         join classes c on c.id = s.class_id
+        where s.id = $1`,
+      [params.id]
+    ),
+    query<MissionRow>("select id, title, scenario_text from missions where id = $1", [MISSION_ID]),
+    query<QuestionRow>(
+      "select id, order_index, question_text from mission_questions where mission_id = $1 order by order_index",
+      [MISSION_ID]
+    ),
+    query<ChoiceRow>(
+      `select qc.id, qc.question_id, qc.order_index, qc.choice_text
+         from question_choices qc
+         join mission_questions mq on mq.id = qc.question_id
+        where mq.mission_id = $1
+        order by qc.order_index`,
+      [MISSION_ID]
+    ),
+  ]);
   const student = studentRows[0];
   if (!student) notFound();
 
-  const missionRows = await query<MissionRow>(
-    "select id, title, scenario_text from missions where id = $1",
-    [MISSION_ID]
-  );
   const mission = missionRows[0];
   if (!mission) notFound();
-
-  const questionRows = await query<QuestionRow>(
-    "select id, order_index, question_text from mission_questions where mission_id = $1 order by order_index",
-    [mission.id]
-  );
-  const choiceRows = await query<ChoiceRow>(
-    `select qc.id, qc.question_id, qc.order_index, qc.choice_text
-       from question_choices qc
-       join mission_questions mq on mq.id = qc.question_id
-      where mq.mission_id = $1
-      order by qc.order_index`,
-    [mission.id]
-  );
 
   const questions = questionRows.map((q) => ({
     id: q.id,

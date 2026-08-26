@@ -83,68 +83,68 @@ export default async function ClassInsightsPage({ params }: { params: { id: stri
   const cls = classRows[0];
   if (!cls) notFound();
 
-  const students = await query<StudentInsightRow>(
-    `select s.id, s.first_name, s.last_name, s.nickname,
-            att.id as attempt_id, att.completed_at, att.score,
-            tm.code as top_mistake_code, tm.label_en as top_mistake_label, tm.pct as top_mistake_pct
-       from students s
-       left join lateral (
-         select id, completed_at, score
-           from mission_attempts
-          where student_id = s.id and completed_at is not null
-          order by completed_at desc
-          limit 1
-       ) att on true
-       left join lateral (
-         select mt.code, mt.label_en, mr.pct::text as pct
-           from mistake_records mr
-           join mistake_types mt on mt.id = mr.mistake_type_id
-          where mr.attempt_id = att.id
-          order by mr.pct desc
-          limit 1
-       ) tm on true
-      where s.class_id = $1
-      order by s.first_name, s.last_name`,
-    [cls.id]
-  );
-
-  const dnaAvgRows = await query<DnaAvgRow>(
-    `select avg(d.concept_score)::int as concept, avg(d.application_score)::int as application,
-            avg(d.critical_thinking_score)::int as critical_thinking, avg(d.problem_solving_score)::int as problem_solving,
-            avg(d.creativity_score)::int as creativity, avg(d.collaboration_score)::int as collaboration,
-            avg(d.confidence_score)::int as confidence
-       from students s
-       join lateral (
-         select * from learning_dna_snapshots where student_id = s.id order by computed_at desc limit 1
-       ) d on true
-      where s.class_id = $1`,
-    [cls.id]
-  );
+  const [students, dnaAvgRows, inProgressRows] = await Promise.all([
+    query<StudentInsightRow>(
+      `select s.id, s.first_name, s.last_name, s.nickname,
+              att.id as attempt_id, att.completed_at, att.score,
+              tm.code as top_mistake_code, tm.label_en as top_mistake_label, tm.pct as top_mistake_pct
+         from students s
+         left join lateral (
+           select id, completed_at, score
+             from mission_attempts
+            where student_id = s.id and completed_at is not null
+            order by completed_at desc
+            limit 1
+         ) att on true
+         left join lateral (
+           select mt.code, mt.label_en, mr.pct::text as pct
+             from mistake_records mr
+             join mistake_types mt on mt.id = mr.mistake_type_id
+            where mr.attempt_id = att.id
+            order by mr.pct desc
+            limit 1
+         ) tm on true
+        where s.class_id = $1
+        order by s.first_name, s.last_name`,
+      [cls.id]
+    ),
+    query<DnaAvgRow>(
+      `select avg(d.concept_score)::int as concept, avg(d.application_score)::int as application,
+              avg(d.critical_thinking_score)::int as critical_thinking, avg(d.problem_solving_score)::int as problem_solving,
+              avg(d.creativity_score)::int as creativity, avg(d.collaboration_score)::int as collaboration,
+              avg(d.confidence_score)::int as confidence
+         from students s
+         join lateral (
+           select * from learning_dna_snapshots where student_id = s.id order by computed_at desc limit 1
+         ) d on true
+        where s.class_id = $1`,
+      [cls.id]
+    ),
+    query<{
+      id: string;
+      first_name: string;
+      nickname: string | null;
+      started_at: string;
+      answered: number;
+      total: number;
+    }>(
+      `select s.id, s.first_name, s.nickname, att.started_at, att.answered, att.total
+         from students s
+         join lateral (
+           select ma.id, ma.started_at, ma.mission_id,
+                  (select count(distinct question_id)::int from question_responses where attempt_id = ma.id) as answered,
+                  (select count(*)::int from mission_questions where mission_id = ma.mission_id) as total
+             from mission_attempts ma
+            where ma.student_id = s.id and ma.completed_at is null
+            order by ma.started_at desc
+            limit 1
+         ) att on true
+        where s.class_id = $1`,
+      [cls.id]
+    ),
+  ]);
   const dnaAvg = dnaAvgRows[0];
   const hasDnaData = dnaAvg && dnaAvg.concept !== null;
-
-  const inProgressRows = await query<{
-    id: string;
-    first_name: string;
-    nickname: string | null;
-    started_at: string;
-    answered: number;
-    total: number;
-  }>(
-    `select s.id, s.first_name, s.nickname, att.started_at, att.answered, att.total
-       from students s
-       join lateral (
-         select ma.id, ma.started_at, ma.mission_id,
-                (select count(distinct question_id)::int from question_responses where attempt_id = ma.id) as answered,
-                (select count(*)::int from mission_questions where mission_id = ma.mission_id) as total
-           from mission_attempts ma
-          where ma.student_id = s.id and ma.completed_at is null
-          order by ma.started_at desc
-          limit 1
-       ) att on true
-      where s.class_id = $1`,
-    [cls.id]
-  );
 
   const groups: Record<Bucket, StudentInsightRow[]> = {
     concept_gap: [],
