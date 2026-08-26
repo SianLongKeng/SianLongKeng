@@ -856,6 +856,7 @@ tbody tr:hover {
 }
 
 .mbar-fill {
+  display: block;
   height: 100%;
   border-radius: 999px;
   transform-origin: left;
@@ -1906,6 +1907,7 @@ tbody tr:hover {
 }
 
 .ba-fill {
+  display: block;
   height: 100%;
   border-radius: 999px;
 }
