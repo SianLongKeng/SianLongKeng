@@ -12,27 +12,27 @@ interface StudentOption {
 
 export default function JoinPage() {
   const router = useRouter();
-  const [code, setCode] = useState("");
+  const [classInput, setClassInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [className, setClassName] = useState<string | null>(null);
+  const [classInfo, setClassInfo] = useState<{ name: string; subject: string } | null>(null);
   const [students, setStudents] = useState<StudentOption[] | null>(null);
   const [enteringId, setEnteringId] = useState<string | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<StudentOption | null>(null);
   const [pin, setPin] = useState("");
 
-  async function lookupCode(e: FormEvent) {
+  async function lookupClass(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch(`/api/join?code=${encodeURIComponent(code.trim())}`);
+      const res = await fetch(`/api/join?name=${encodeURIComponent(classInput.trim())}`);
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data.error || "ไม่พบห้องเรียน");
         return;
       }
-      setClassName(`${data.class.name} · ${data.class.subject}`);
+      setClassInfo({ name: data.class.name, subject: data.class.subject });
       setStudents(data.students);
     } finally {
       setBusy(false);
@@ -41,14 +41,14 @@ export default function JoinPage() {
 
   async function confirmPin(e: FormEvent) {
     e.preventDefault();
-    if (!selectedStudent) return;
+    if (!selectedStudent || !classInfo) return;
     setEnteringId(selectedStudent.id);
     setError(null);
     try {
       const res = await fetch("/api/join/enter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ joinCode: code.trim(), studentId: selectedStudent.id, pin: pin.trim() }),
+        body: JSON.stringify({ className: classInfo.name, studentId: selectedStudent.id, pin: pin.trim() }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -123,9 +123,11 @@ export default function JoinPage() {
           }}
         >
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 26 }}>
-            <span className="join-code-chip mono">{code.trim().toUpperCase()}</span>
+            <span className="join-code-chip mono">{classInfo?.name}</span>
           </div>
-          <h2 style={{ fontSize: "1.9rem", marginBottom: 6 }}>{className}</h2>
+          <h2 style={{ fontSize: "1.9rem", marginBottom: 6 }}>
+            {classInfo?.name} · {classInfo?.subject}
+          </h2>
           <p className="lede" style={{ marginBottom: 26 }}>Who are you? แตะชื่อของคุณเพื่อเข้าทำมิชชัน</p>
           <div className="join-name-grid">
             {students.map((s) => (
@@ -155,10 +157,10 @@ export default function JoinPage() {
               onClick={(e) => {
                 e.preventDefault();
                 setStudents(null);
-                setClassName(null);
+                setClassInfo(null);
               }}
             >
-              ← Enter a different code · ใส่รหัสอื่น
+              ← Enter a different class · ใส่ชื่อห้องอื่น
             </a>
           </p>
         </div>
@@ -180,20 +182,19 @@ export default function JoinPage() {
         }}
       />
       <div className="page-content" style={{ textAlign: "center", maxWidth: 600, padding: "40px 32px" }}>
-        <h2 style={{ fontSize: "clamp(1.8rem, 3.4vw, 2.75rem)", marginBottom: 12 }}>Enter Your Class Code</h2>
+        <h2 style={{ fontSize: "clamp(1.8rem, 3.4vw, 2.75rem)", marginBottom: 12 }}>Enter Your Class</h2>
         <p className="lede" style={{ marginBottom: 34, fontSize: "1rem" }}>
-          กรอกรหัสห้องเรียน 6 หลักที่ได้จากคุณครู — ไม่ต้องใช้รหัสผ่าน
+          กรอกชื่อห้องเรียนที่คุณครูบอก เช่น 5/2 — ไม่ต้องใช้รหัสผ่าน
         </p>
-        <form onSubmit={lookupCode}>
+        <form onSubmit={lookupClass}>
           <input
-            id="joinCode"
+            id="className"
             required
             autoFocus
-            maxLength={6}
-            placeholder="A3F9K2"
-            value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
-            className="code-input"
+            placeholder="5/2"
+            value={classInput}
+            onChange={(e) => setClassInput(e.target.value)}
+            className="classname-input"
           />
           {error && <p className="error">{error}</p>}
           <button className="btn btn-primary" type="submit" disabled={busy} style={{ marginTop: 30 }}>

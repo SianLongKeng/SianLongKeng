@@ -3,18 +3,6 @@ import { query, withTransaction } from "@/lib/server";
 import { hashPassword } from "@/lib/server";
 import { createSessionToken, SESSION_COOKIE } from "@/lib/session";
 
-// Excludes visually ambiguous characters (0/O, 1/I/L) so a code read off a
-// whiteboard is never misheard between students typing it in on /join.
-const JOIN_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-
-function generateJoinCode(): string {
-  let code = "";
-  for (let i = 0; i < 6; i++) {
-    code += JOIN_CODE_ALPHABET[Math.floor(Math.random() * JOIN_CODE_ALPHABET.length)];
-  }
-  return code;
-}
-
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const schoolName = typeof body?.schoolName === "string" ? body.schoolName.trim() : "";
@@ -55,30 +43,28 @@ export async function POST(req: NextRequest) {
       );
       const teacherRow = teacherRes.rows[0];
 
-      // A join_code collision would throw the same 23505 code as a duplicate
-      // email — vanishingly unlikely (1-in-~10^9), but retry a couple of
-      // times here specifically so it can't be misreported as "email taken".
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          await client.query(
-            "insert into classes (school_id, teacher_id, name, subject, join_code) values ($1, $2, $3, $4, $5)",
-            [schoolId, teacherRow.id, className, subject, generateJoinCode()]
-          );
-          break;
-        } catch (classErr) {
-          const pgErr = classErr as { code?: string; constraint?: string };
-          if (pgErr.code === "23505" && pgErr.constraint?.includes("join_code") && attempt < 2) continue;
-          throw classErr;
-        }
-      }
+      // Class names double as the join code students type on /join, so
+      // they must be unique across every teacher/school, not just this one.
+      await client.query(
+        "insert into classes (school_id, teacher_id, name, subject) values ($1, $2, $3, $4)",
+        [schoolId, teacherRow.id, className, subject]
+      );
 
       return teacherRow;
     });
   } catch (err) {
     // Two concurrent registrations with the same email: the earlier
     // `select` check above can't catch this, only the unique constraint can.
-    const pgErr = err as { code?: string };
+    // The class-name uniqueness constraint can fail the same way, so tell
+    // them apart by which constraint actually fired.
+    const pgErr = err as { code?: string; constraint?: string };
     if (pgErr.code === "23505") {
+      if (pgErr.constraint?.includes("classes_name") || pgErr.constraint?.includes("idx_classes_name")) {
+        return NextResponse.json(
+          { error: "ชื่อห้องเรียนนี้มีคนใช้แล้วในระบบ กรุณาตั้งชื่ออื่น" },
+          { status: 409 }
+        );
+      }
       return NextResponse.json({ error: "อีเมลนี้มีบัญชีอยู่แล้ว" }, { status: 409 });
     }
     throw err;

@@ -1283,6 +1283,16 @@ tbody tr:hover {
   border-color: rgba(167, 139, 250, 0.45);
 }
 
+/* Class-name join input — same treatment as .code-input minus the
+   uppercase/wide-letter-spacing, which only made sense for a random
+   fixed-width code like "A3F9K2", not a real class name like "5/2". */
+.classname-input {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.6rem;
+  text-align: center;
+  border-color: rgba(167, 139, 250, 0.45);
+}
+
 /* ---------- join-code chip (class card / student join header) ---------- */
 .join-code-chip {
   display: inline-block;

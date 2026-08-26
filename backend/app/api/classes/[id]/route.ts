@@ -20,16 +20,27 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ error: "กรุณากรอกชื่อห้องเรียนและวิชา" }, { status: 400 });
   }
 
-  const rows = await query<{ id: string; name: string; subject: string }>(
-    `update classes set name = $1, subject = $2
-      where id = $3 and teacher_id = $4
-      returning id, name, subject`,
-    [name, subject, params.id, session.teacherId]
-  );
-  if (rows.length === 0) {
-    return NextResponse.json({ error: "Class not found" }, { status: 404 });
+  try {
+    const rows = await query<{ id: string; name: string; subject: string }>(
+      `update classes set name = $1, subject = $2
+        where id = $3 and teacher_id = $4
+        returning id, name, subject`,
+      [name, subject, params.id, session.teacherId]
+    );
+    if (rows.length === 0) {
+      return NextResponse.json({ error: "Class not found" }, { status: 404 });
+    }
+    return NextResponse.json({ class: rows[0] });
+  } catch (err) {
+    const pgErr = err as { code?: string };
+    if (pgErr.code === "23505") {
+      return NextResponse.json(
+        { error: "ชื่อห้องนี้มีคนใช้แล้วในระบบ กรุณาตั้งชื่ออื่น (นักเรียนใช้ชื่อห้องพิมพ์เพื่อเข้าเรียน จึงต้องไม่ซ้ำกัน)" },
+        { status: 409 }
+      );
+    }
+    throw err;
   }
-  return NextResponse.json({ class: rows[0] });
 }
 
 // Deleting a class cascades to delete every student in it (students.class_id

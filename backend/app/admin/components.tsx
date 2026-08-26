@@ -12,7 +12,6 @@ interface ClassOption {
 
 interface ClassItem extends ClassOption {
   student_count: number;
-  join_code: string;
 }
 
 interface Student {
@@ -121,9 +120,9 @@ function ClassRow({ cls }: { cls: ClassItem }) {
           <div className="class-card-subject">{cls.subject}</div>
         </div>
         <div>
-          <div className="class-card-code-label">JOIN CODE</div>
+          <div className="class-card-code-label">STUDENTS TYPE</div>
           <div className="join-code-chip mono" style={{ marginTop: 8, fontSize: "1.05rem" }}>
-            {cls.join_code}
+            {cls.name}
           </div>
         </div>
       </div>
@@ -206,8 +205,8 @@ export function ClassManager({ classes }: { classes: ClassItem[] }) {
           <span className="eyebrow" style={{ fontSize: "0.72rem", display: "block", marginBottom: 12 }}>Classes</span>
           <h2 style={{ fontSize: "1.9rem" }}>Classes You Teach · ห้องเรียนที่สอน</h2>
           <p className="lede" style={{ marginTop: 10, maxWidth: 640 }}>
-            อาจารย์หนึ่งคนสอนได้หลายห้อง หลายวิชา — เพิ่มห้องใหม่ได้ตลอดเวลา แจก Join Code ให้นักเรียนกรอกที่หน้า{" "}
-            <a href="/join">/join</a> เพื่อเข้าทำมิชชันเองได้เลย ไม่ต้องมีรหัสผ่าน
+            อาจารย์หนึ่งคนสอนได้หลายห้อง หลายวิชา — เพิ่มห้องใหม่ได้ตลอดเวลา บอกชื่อห้อง (เช่น 5/2) ให้นักเรียนกรอกที่หน้า{" "}
+            <a href="/join">/join</a> เพื่อเข้าทำมิชชันเองได้เลย ไม่ต้องมีรหัสผ่าน — ชื่อห้องต้องไม่ซ้ำกับห้องอื่นในระบบ
           </p>
         </div>
       </div>

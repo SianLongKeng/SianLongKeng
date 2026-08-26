@@ -8,19 +8,20 @@ interface StudentRow {
   student_number: string;
 }
 
-// Issues a student session cookie once someone has proven they know a valid
-// class join code, picked a real student id from that exact class, AND
-// entered that student's own student_number as a PIN — the join code alone
-// used to be enough, which meant any student in a class could open any
-// classmate's mission by picking their name off the list. The PIN (their
-// own id number, which they already know) closes that hole without adding
-// a real password students would have to be issued and remember.
+// Issues a student session cookie once someone has proven they know the
+// exact class name, picked a real student id from that exact class, AND
+// entered that student's own student_number as a PIN — the class name
+// alone used to be enough (same as the old random join code), which meant
+// any student in a class could open any classmate's mission by picking
+// their name off the list. The PIN (their own id number, which they
+// already know) closes that hole without adding a real password students
+// would have to be issued and remember.
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  const joinCode = typeof body?.joinCode === "string" ? body.joinCode.trim().toUpperCase() : "";
+  const className = typeof body?.className === "string" ? body.className.trim() : "";
   const studentId = typeof body?.studentId === "string" ? body.studentId : "";
   const pin = typeof body?.pin === "string" ? body.pin.trim() : "";
-  if (!joinCode || !studentId || !pin) {
+  if (!className || !studentId || !pin) {
     return NextResponse.json({ error: "ข้อมูลไม่ครบ" }, { status: 400 });
   }
 
@@ -28,8 +29,8 @@ export async function POST(req: NextRequest) {
     `select s.id, s.class_id, s.student_number
        from students s
        join classes c on c.id = s.class_id
-      where s.id = $1 and c.join_code = $2`,
-    [studentId, joinCode]
+      where s.id = $1 and c.name = $2`,
+    [studentId, className]
   );
   const student = rows[0];
   if (!student) {

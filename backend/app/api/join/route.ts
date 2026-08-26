@@ -14,22 +14,24 @@ interface StudentRow {
   nickname: string | null;
 }
 
-// Public lookup by class join code — no auth required, matches a game-PIN
-// trust model. Never returns anything beyond names needed to pick yourself
-// from the roster (no student numbers, no other classes).
+// Public lookup by the class's own name (e.g. "5/2") — no auth required,
+// same trust model a game PIN has. Class names are unique across the whole
+// system precisely so they can double as this lookup key. Never returns
+// anything beyond names needed to pick yourself from the roster (no
+// student numbers, no other classes).
 export async function GET(req: NextRequest) {
-  const code = req.nextUrl.searchParams.get("code")?.trim().toUpperCase() ?? "";
-  if (!code) {
-    return NextResponse.json({ error: "กรุณากรอกรหัสห้องเรียน" }, { status: 400 });
+  const className = req.nextUrl.searchParams.get("name")?.trim() ?? "";
+  if (!className) {
+    return NextResponse.json({ error: "กรุณากรอกชื่อห้องเรียน" }, { status: 400 });
   }
 
   const classRows = await query<ClassRow>(
-    "select id, name, subject from classes where join_code = $1",
-    [code]
+    "select id, name, subject from classes where name = $1",
+    [className]
   );
   const cls = classRows[0];
   if (!cls) {
-    return NextResponse.json({ error: "ไม่พบห้องเรียนสำหรับรหัสนี้ ลองตรวจสอบรหัสอีกครั้ง" }, { status: 404 });
+    return NextResponse.json({ error: "ไม่พบห้องเรียนชื่อนี้ ลองตรวจสอบอีกครั้ง" }, { status: 404 });
   }
 
   const students = await query<StudentRow>(
