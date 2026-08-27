@@ -2134,11 +2134,16 @@ tbody tr:hover {
   z-index: 80;
   display: flex;
   align-items: center;
-  gap: 24px;
+  flex-wrap: wrap;
+  gap: 12px 24px;
   padding: 14px 28px;
   background: rgba(10, 8, 16, 0.85);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.top-nav > * {
+  min-width: 0;
 }
 
 .top-nav-wordmark {
