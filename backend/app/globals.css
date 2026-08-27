@@ -48,6 +48,36 @@
   box-sizing: border-box;
 }
 
+/* A CSS Grid item defaults to min-width: auto, which floors its track at
+   the item's content-based minimum size -- for any item whose subtree has
+   a white-space: nowrap descendant (a button row, a pill bar), that floor
+   can be far wider than the 1fr track it's supposed to shrink into on a
+   phone. The child then renders at its full un-shrunk width regardless of
+   the grid's own column definition, silently pushing everything in that
+   column past the viewport -- invisibly, since a clipping ancestor like
+   .screen{overflow:hidden} hides the evidence from document scroll width
+   checks. min-width: 0 removes that floor so these items actually respect
+   their track. Every multi-column layout in the app is covered here so
+   this class of bug can't resurface in a spot no one's screenshotted yet. */
+.mission-builder-layout > *,
+.add-student-layout > *,
+.student-home-layout > *,
+.progress-layout > *,
+.login-layout > *,
+.mission-layout > *,
+.score-row > *,
+.diag-grid > *,
+.join-name-grid > *,
+.insight-groups > *,
+.field-grid > *,
+.class-card-grid > *,
+.board-columns > *,
+.kpi-grid > *,
+.roster-grid > *,
+.pulse-grid > * {
+  min-width: 0;
+}
+
 html,
 body {
   margin: 0;
