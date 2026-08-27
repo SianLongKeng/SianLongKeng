@@ -28,21 +28,23 @@ export default function TopNav({ isTeacherSession }: { isTeacherSession: boolean
       <Link href="/" className="top-nav-wordmark">
         EDUTWIN
       </Link>
-      {studentMatch && isTeacherSession && (
-        <>
-          <span className="top-nav-viewing-badge mono">TEACHER VIEW</span>
-          <AdminNavLinks />
-        </>
-      )}
-      {studentMatch && !isTeacherSession && (
-        <div className="top-nav-links">
-          {studentLinks(studentMatch[1]).map((l) => (
-            <Link key={l.href} href={l.href} className={`top-nav-link${pathname === l.href ? " active" : ""}`}>
-              {l.label}
-            </Link>
-          ))}
-        </div>
-      )}
+      <div className="top-nav-scroll">
+        {studentMatch && isTeacherSession && (
+          <>
+            <span className="top-nav-viewing-badge mono">TEACHER VIEW</span>
+            <AdminNavLinks />
+          </>
+        )}
+        {studentMatch && !isTeacherSession && (
+          <div className="top-nav-links">
+            {studentLinks(studentMatch[1]).map((l) => (
+              <Link key={l.href} href={l.href} className={`top-nav-link${pathname === l.href ? " active" : ""}`}>
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
     </nav>
   );
 }

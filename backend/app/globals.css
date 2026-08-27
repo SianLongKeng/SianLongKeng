@@ -2134,8 +2134,7 @@ tbody tr:hover {
   z-index: 80;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 12px 24px;
+  gap: 24px;
   padding: 14px 28px;
   background: rgba(10, 8, 16, 0.85);
   backdrop-filter: blur(10px);
@@ -2144,6 +2143,30 @@ tbody tr:hover {
 
 .top-nav > * {
   min-width: 0;
+}
+
+/* Everything except the wordmark lives in here so the logo/home link stays
+   put while the rest scrolls horizontally as one row -- badges, nav links,
+   student links never wrap onto multiple lines, they just scroll into view.
+   flex-shrink: 0 on the direct children stops them from being squeezed
+   (which is what would let them wrap internally instead of overflowing). */
+.top-nav-scroll {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.top-nav-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.top-nav-scroll > * {
+  flex-shrink: 0;
 }
 
 .top-nav-wordmark {
@@ -2161,6 +2184,11 @@ tbody tr:hover {
   gap: 4px;
   flex-wrap: wrap;
   flex: 1;
+}
+
+.top-nav-scroll > .top-nav-links {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
 }
 
 .top-nav-viewing-badge {
