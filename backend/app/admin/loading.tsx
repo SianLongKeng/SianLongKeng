@@ -7,7 +7,7 @@ export default function AdminLoading() {
         <SkelLine width={160} height={13} />
         <SkelLine width={280} height={30} />
 
-        <div style={{ display: "flex", gap: 10, margin: "24px 0" }}>
+        <div className="dash-tabs-skel" style={{ display: "flex", gap: 10, margin: "24px 0" }}>
           <SkelBlock width={110} height={38} radius={999} />
           <SkelBlock width={110} height={38} radius={999} />
           <SkelBlock width={130} height={38} radius={999} />
@@ -24,6 +24,11 @@ export default function AdminLoading() {
           ))}
         </div>
       </div>
+      <style>{`
+        @media (max-width: 400px) {
+          .dash-tabs-skel { max-width: 100%; overflow-x: auto; }
+        }
+      `}</style>
     </div>
   );
 }

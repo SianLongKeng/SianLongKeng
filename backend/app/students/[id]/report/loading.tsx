@@ -5,7 +5,7 @@ export default function ReportLoading() {
     <div className="screen" style={{ padding: "48px 24px", display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 780 }}>
         <div className="skel-card">
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 8 }}>
             <SkelLine width={160} height={12} />
             <SkelLine width={110} height={12} />
           </div>

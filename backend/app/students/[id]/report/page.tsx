@@ -94,7 +94,7 @@ export default async function ParentReportPage({
     <div className="screen" style={{ padding: "48px 24px", display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 780 }}>
         <div className="report-sheet">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 8 }}>
             <span className="eyebrow mono">EDUTWIN · LEARNING REPORT</span>
             {attempt && (
               <span className="mono" style={{ fontSize: "0.9rem" }}>

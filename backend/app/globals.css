@@ -1169,6 +1169,8 @@ tbody tr:hover {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .insight-student-list {
@@ -1392,6 +1394,7 @@ tbody tr:hover {
   justify-content: space-between;
   margin-bottom: 24px;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .class-card-name {
@@ -1421,6 +1424,8 @@ tbody tr:hover {
   justify-content: space-between;
   padding-top: 18px;
   border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 /* ---------- dashed add panel (new class / new student) ---------- */
@@ -1715,6 +1720,7 @@ tbody tr:hover {
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .board-card-name {
@@ -1912,6 +1918,7 @@ tbody tr:hover {
   border: 1px solid var(--border);
   background: var(--surface);
   animation: rise-in 0.4s var(--ease) both;
+  flex-wrap: wrap;
 }
 
 .mission-row + .mission-row {
