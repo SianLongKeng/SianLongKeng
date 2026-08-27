@@ -16,7 +16,7 @@ export default function StudentHomeLoading() {
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 24 }} className="student-home-layout">
           <div>
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="skel-card" style={{ marginBottom: 12 }}>
@@ -36,6 +36,11 @@ export default function StudentHomeLoading() {
           </div>
         </div>
       </div>
+      <style>{`
+        @media (max-width: 900px) {
+          .student-home-layout { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }

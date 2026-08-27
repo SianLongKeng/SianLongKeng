@@ -1454,7 +1454,7 @@ tbody tr:hover {
   grid-template-columns: 110px 1.35fr 0.85fr 0.8fr 1.5fr;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .roster-grid {
     grid-template-columns: 1fr;
     row-gap: 6px;

@@ -18,7 +18,7 @@ export default function InsightsLoading() {
           ))}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18, marginTop: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18, marginTop: 24 }} className="insights-loading-grid">
           {Array.from({ length: 3 }).map((_, col) => (
             <div key={col} className="skel-card">
               <SkelLine width="50%" height={13} />
@@ -31,6 +31,14 @@ export default function InsightsLoading() {
           ))}
         </div>
       </div>
+      <style>{`
+        @media (max-width: 900px) {
+          .insights-loading-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 560px) {
+          .insights-loading-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }

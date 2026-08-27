@@ -31,11 +31,16 @@ export default function DiagnosisLoading() {
           <SkelLine width={70} height={30} />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 20 }} className="diag-grid">
           <DiagCardSkel />
           <DiagCardSkel />
         </div>
       </div>
+      <style>{`
+        @media (max-width: 900px) {
+          .diag-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }

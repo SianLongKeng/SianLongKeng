@@ -7,7 +7,7 @@ export default function InterventionsLoading() {
         <SkelLine width={200} height={13} />
         <SkelLine width={260} height={30} />
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18, marginTop: 28 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18, marginTop: 28 }} className="board-columns">
           {Array.from({ length: 3 }).map((_, col) => (
             <div key={col}>
               <SkelLine width="60%" height={13} />
@@ -22,6 +22,11 @@ export default function InterventionsLoading() {
           ))}
         </div>
       </div>
+      <style>{`
+        @media (max-width: 900px) {
+          .board-columns { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }
