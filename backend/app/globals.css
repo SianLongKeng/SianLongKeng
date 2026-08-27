@@ -875,6 +875,13 @@ tbody tr:hover {
   font-size: 0.84rem;
 }
 
+@media (max-width: 480px) {
+  .mbar-row {
+    grid-template-columns: 92px 1fr 36px;
+    gap: 8px;
+  }
+}
+
 .mbar-label {
   color: var(--ink-soft);
   white-space: nowrap;
@@ -1447,6 +1454,16 @@ tbody tr:hover {
   grid-template-columns: 110px 1.35fr 0.85fr 0.8fr 1.5fr;
 }
 
+@media (max-width: 760px) {
+  .roster-grid {
+    grid-template-columns: 1fr;
+    row-gap: 6px;
+  }
+  .roster-grid-head {
+    display: none;
+  }
+}
+
 .roster-grid-head {
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.66rem;
@@ -1507,6 +1524,18 @@ tbody tr:hover {
   gap: 1px;
   background: rgba(255, 255, 255, 0.1);
   margin-bottom: 26px;
+}
+
+@media (max-width: 900px) {
+  .pulse-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .pulse-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .pulse-cell {
@@ -1809,6 +1838,14 @@ tbody tr:hover {
   font-size: 0.88rem;
 }
 
+@media (max-width: 560px) {
+  .gap-table-row {
+    grid-template-columns: 70px 1fr 90px;
+    gap: 8px;
+    font-size: 0.8rem;
+  }
+}
+
 .gap-table-row:last-child {
   border-bottom: none;
 }
@@ -1936,6 +1973,13 @@ tbody tr:hover {
   gap: 10px;
   font-size: 0.82rem;
   margin-bottom: 12px;
+}
+
+@media (max-width: 480px) {
+  .ba-row {
+    grid-template-columns: 78px 1fr 40px;
+    gap: 8px;
+  }
 }
 
 .ba-bars {
